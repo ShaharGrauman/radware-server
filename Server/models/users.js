@@ -1,5 +1,4 @@
 const sql = require("./db.js");
-const mysql = require('mysql');
 
 var User = function (user) {
     this.id = user.id;
@@ -8,8 +7,6 @@ var User = function (user) {
     this.password = user.password;
     this.status = user.status;
 };
-
-
 
 
 User.getAll = () => {
