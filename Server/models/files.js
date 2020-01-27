@@ -1,3 +1,4 @@
+
 module.exports = (db, type) => {
     return db.define('files', {
         id: {

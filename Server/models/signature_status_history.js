@@ -1,5 +1,4 @@
 
-
 module.exports = (db, type) => {
     return db.define('signature_status_history', {
         id: {

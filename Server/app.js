@@ -4,13 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var attackRouter = require('./routes/attack');
 var signatureRouter = require('./routes/signatures');
-var sendEmailRouter = require('./routes/sendEmail');
 
 var app = express();
 
@@ -24,8 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
+//// check connection with sequelize 
 const db = require('./config/database');
 
 db
@@ -36,13 +32,11 @@ db
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-  sendEmailRouter
 
 
 app.use('/users', usersRouter);
 app.use('/attack', attackRouter);
 app.use('/signature', signatureRouter);
-app.use('/sendEmail', sendEmailRouter);
 
 
 

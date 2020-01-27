@@ -22,7 +22,6 @@ const create = async (data) =>{
     }
 }
 
-
 module.exports = {
     findAll,
     create

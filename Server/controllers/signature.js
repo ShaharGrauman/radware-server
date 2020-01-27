@@ -157,6 +157,7 @@ const Delete = async id => {
     }
 }
 
+
 module.exports = {
     findAll,
     findById,

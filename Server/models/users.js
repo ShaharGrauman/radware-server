@@ -1,5 +1,4 @@
 
-
 module.exports = (db, type) => {
     return db.define('users', {
         id: {

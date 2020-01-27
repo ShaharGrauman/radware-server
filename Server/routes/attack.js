@@ -1,6 +1,7 @@
 var express = require('express');
-var router = express.Router();
 var attackController = require('../controllers/attack');
+
+var router = express.Router();
 
 
 /* GET home page. */
@@ -11,9 +12,7 @@ router.get('/', async (req, res, next) => {
     }catch (error) {
         res.status(500).json({ msg: error.message });
     }
-    // attack.findAll().then(attacks=>{
-    //     res.json(attacks);
-    // })
+  
 });
 
 router.post('/', async (req, res, next) => {
@@ -23,9 +22,7 @@ router.post('/', async (req, res, next) => {
     }catch (error) {
         res.status(500).json({ msg: error.message });
     }
-    // attack.findAll().then(attacks=>{
-    //     res.json(attacks);
-    // })
+
 });
 
 

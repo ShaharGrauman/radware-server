@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 const db = require("../config/database");
-
 const attackModel = require('./attack');
 const web_server_Model = require('./web_server');
 const vuln_data_extra = require('./vuln_data_extra');
