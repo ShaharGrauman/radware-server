@@ -1,10 +1,51 @@
 const { signatures, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
-
+const sequelize = require('../config/database');
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
         return signatureData;
     } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
+const loadSignatures = async (query) => {
+    try{
+        let signatureData, signaturesCountByStatus;
+        if(query.status === 'all'){
+                signatureData = await signatures.findAll({
+                    attributes: ['id', 'pattern_id', 'description'],
+                    order: 
+                    [
+                        [query.sortBy, query.orderBy]
+                    ],
+                    offset: (parseInt(query.page)-1)*parseInt(query.size),
+                    limit: parseInt(query.size),
+                });        
+            }else{
+                signatureData = await signatures.findAll({
+                    attributes: ['id', 'pattern_id', 'description'],
+                    where: {
+                        status: query.status
+                      },
+                    order: 
+                    [
+                        [query.sortBy, query.orderBy]
+                    ],
+                    offset: (parseInt(query.page)-1)*parseInt(query.size),
+                    limit: parseInt(query.size),
+                });
+
+            }
+            signaturesCountByStatus = await signatures.findAll({
+                group: ['status'],
+                attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
+              });
+            return {
+                signatureData,
+                signaturesCountByStatus
+            };
+    }catch(error){
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
@@ -163,5 +204,6 @@ module.exports = {
     findById,
     create,
     update,
-    Delete
+    Delete,
+    loadSignatures
 };
