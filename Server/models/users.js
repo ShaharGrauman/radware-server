@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const sql = require("./db.js");
 
 var User = function (user) {
@@ -28,3 +29,27 @@ User.getAll = () => {
 
 
 module.exports = User;
+=======
+
+module.exports = (db, type) => {
+    return db.define('users', {
+        id: {
+            type: type.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        username: {
+            type: type.STRING(50)
+        },
+        phone: {
+            type: type.STRING(15)
+        },
+        password: {
+            type: type.STRING
+        },
+        status: {
+            type: type.ENUM('active', 'locked', 'deleted')
+        }
+    }, { timestamps: false, underscored: true })
+} 
+>>>>>>> master
