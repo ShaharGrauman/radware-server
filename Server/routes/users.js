@@ -13,7 +13,20 @@ router.get('/', async (req, res) => {
     res.status(500).json({msg: error.message});
   }
 });
-
-
+router.post('/newUser', async (req, res, next) => {
+  if(!req.body.username || 
+     !req.body.phone || 
+     !req.body.password || 
+     !req.body.status)
+  {
+    res.status(400).json({ msg: "body is not valid" });
+  }
+  try {
+      const result = await userController.createUser(req.body);
+      res.status(201).json({userId: result.id});
+  } catch (error) {
+      res.status(500).json({ msg: error.message });
+  }
+})
 
 module.exports = router;
