@@ -41,9 +41,20 @@ const loadSignatures = async (query) => {
                 group: ['status'],
                 attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
               });
+            let hasNext = true, hasPrev = false;
+            if(signatureData.length%(query.size*query.page) != 0){
+              hasNext = false;
+            }
+            if(query.page != 1){
+                hasPrev = true;
+            }
+
             return {
                 signatureData,
-                signaturesCountByStatus
+                signaturesCountByStatus,
+                hasNext,
+                hasPrev,
+                
             };
     }catch(error){
         throw new Error(`Cant get signatures: ${error.message}`);
