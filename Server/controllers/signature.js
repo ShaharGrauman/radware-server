@@ -1,5 +1,20 @@
 const { signatures, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 
+
+// const searchSignature = async (search) => {
+//     try {
+//         const signatureData = await signatures.findAll({
+//             where:  search 
+
+//         }
+//         );
+//         return signatureData;
+//     } catch (error) {
+//         throw new Error(`Cant get signatures: ${error.message}`);
+//     }
+// }
+
+
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -71,16 +86,16 @@ const create = async (signatureData) => {
             ///feach vuln_data_extras data 
             signatureData.vuln_data_extras.map(vlunData => {
                 vulnDataExtra.create({
-                    id: vlunData.id,                  
+                    id: vlunData.id,
                     signatureId: signatureData.id,
-                    parameter:vlunData.description
+                    parameter: vlunData.description
                 });
             });
             /// feach parameters data 
             signatureData.parameters.map(params => {
                 param.create({
-                    id: params.id,   
-                    parameter:params.parameter,               
+                    id: params.id,
+                    parameter: params.parameter,
                     signatureId: signatureData.id,
                 });
             });
@@ -94,7 +109,24 @@ const create = async (signatureData) => {
     }
 }
 
+const searchSignature = async (search) => {
+    console.log(search)
+    try {
+        const signatureData = await signatures.findAll({
+            where: {...search},
+            include: [{ model: file },
+            ]
+        }
+        );
+        return signatureData;
+    } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
 const findById = async (id) => {
+    console.log('ss')
+    console.log(search)
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -137,7 +169,7 @@ const update = async (DataToUpdate, id) => {
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
         }, { returning: true, where: { id: id } })
-        
+
         console.log('updatedSignature');
         console.log(updatedSignature);
         return updatedSignature;
@@ -163,5 +195,6 @@ module.exports = {
     findById,
     create,
     update,
-    Delete
+    Delete,
+    searchSignature
 };

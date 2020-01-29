@@ -1,10 +1,29 @@
 var express = require('express');
 var SignatureController = require('../controllers/signature');
 const { signatures, files } = require('../models');
+const SearchBuilder = require('../controllers/builders/SearchBuilder');
 
 var router = express.Router();
 
+router.get('/search', async (req, res, next) => {
+    const search = new SearchBuilder();
+    if (req.query.attackname != undefined) search.setAtack_id(req.query.attack_id);
+    if (req.query.description != undefined) search.setDescription(req.query.description);
+    if (req.query.severity != undefined) search.setSeverity(req.query.severity);
+    if (req.query.status != undefined) search.setStatus(req.query.status);
+    if (req.query.vulnerability != undefined) search.setVulnerability(req.query.vulnerability);
+    if (req.query.scan != undefined) search.setScan(req.query.scan);
+    if (req.query.reference != undefined) search.setReference(req.query.reference);
 
+    search.build();
+    try {
+        const data = await SignatureController.searchSignature(search);
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+
+});
 /* GET home page. */
 router.get('/', async (req, res, next) => {
     try {
@@ -43,6 +62,7 @@ router.put('/:id', async (req, res, next) => {
         res.status(500).json({ msg: error.message });
     }
 })
+
 
 
 router.delete('/:id', async (req, res, next) => {
