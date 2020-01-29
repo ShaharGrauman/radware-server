@@ -1,25 +1,62 @@
 const { signatures, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 
-
-// const searchSignature = async (search) => {
-//     try {
-//         const signatureData = await signatures.findAll({
-//             where:  search 
-
-//         }
-//         );
-//         return signatureData;
-//     } catch (error) {
-//         throw new Error(`Cant get signatures: ${error.message}`);
-//     }
-// }
-
-
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
         return signatureData;
     } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
+const loadSignatures = async (query) => {
+    try{
+        let signatureData, signaturesCountByStatus;
+        if(query.status === 'all'){
+                signatureData = await signatures.findAll({
+                    attributes: ['id', 'pattern_id', 'description'],
+                    order: 
+                    [
+                        [query.sortBy, query.orderBy]
+                    ],
+                    offset: (parseInt(query.page)-1)*parseInt(query.size),
+                    limit: parseInt(query.size),
+                });        
+            }else{
+                signatureData = await signatures.findAll({
+                    attributes: ['id', 'pattern_id', 'description'],
+                    where: {
+                        status: query.status
+                      },
+                    order: 
+                    [
+                        [query.sortBy, query.orderBy]
+                    ],
+                    offset: (parseInt(query.page)-1)*parseInt(query.size),
+                    limit: parseInt(query.size),
+                });
+
+            }
+            signaturesCountByStatus = await signatures.findAll({
+                group: ['status'],
+                attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
+              });
+            let hasNext = true, hasPrev = false;
+            if(signatureData.length%(query.size*query.page) != 0){
+              hasNext = false;
+            }
+            if(query.page != 1){
+                hasPrev = true;
+            }
+
+            return {
+                signatureData,
+                signaturesCountByStatus,
+                hasNext,
+                hasPrev,
+                
+            };
+    }catch(error){
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
@@ -196,5 +233,6 @@ module.exports = {
     create,
     update,
     Delete,
-    searchSignature
+    searchSignature,
+    loadSignatures
 };
