@@ -9,6 +9,7 @@ const findAll = async () => {
 }
 
 const createUser = async (userData) => {
+    console.log(userData);
     try {
         const newUser = await users.create({
             username: userData.username,
