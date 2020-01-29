@@ -26,8 +26,20 @@ return rolesData;
 //     }
 // }
 
+
+const findRoles = async () => {
+    try {
+        const rolesData = await roles.findAll({
+            attributes: ['id', 'name']
+        })
+        return rolesData;
+    } catch (error) {
+        throw new Error(`Cant get roles: ${error.message}`);
+    }
+}
+
 module.exports = {
-    findAll
-    ,
+    findAll,
+    findRoles
     // create
 };
