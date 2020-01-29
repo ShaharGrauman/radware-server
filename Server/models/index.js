@@ -9,7 +9,7 @@ const external_references = require('./external_references');
 const Users = require('./users');
 const Signatures = require('./signatures');
 const signature_status_history = require('./signature_status_history');
-
+const Roles=require('./roles');
 
 const externalReferences = external_references(db, Sequelize);
 const file = files(db, Sequelize);
@@ -20,6 +20,14 @@ const attack = attackModel(db, Sequelize);
 const users = Users(db, Sequelize);
 const signatures = Signatures(db, Sequelize);
 const signatureStatusHistory = signature_status_history(db, Sequelize);
+const roles=Roles(db,Sequelize);
+const roles_user=db.define('roles_user',{},{timestamps:false});
+
+
+
+///user:name N:M
+roles.belongsToMany(users,{through:roles_user,foreignKey:'role_id'});
+users.belongsToMany(roles,{through:roles_user,foreignKey:'user_id'});
 
 /// relationship attackId to Signature table (add column attack_id in signatures table )
 attack.hasMany(signatures);
@@ -70,5 +78,6 @@ module.exports = {
     externalReferences,
     users,
     signatures,
-    signatureStatusHistory
+    signatureStatusHistory,
+    roles
 }
