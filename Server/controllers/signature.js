@@ -13,49 +13,49 @@ const loadSignatures = async (query) => {
     try{
         let signatureData, signaturesCountByStatus;
         if(query.status === 'all'){
-                signatureData = await signatures.findAll({
-                    attributes: ['id', 'pattern_id', 'description'],
-                    order: 
+            signatureData = await signatures.findAll({
+                attributes: ['id', 'pattern_id', 'description'],
+                order:
                     [
                         [query.sortBy, query.orderBy]
                     ],
                     offset: (parseInt(query.page)-1)*parseInt(query.size),
-                    limit: parseInt(query.size),
-                });        
-            }else{
-                signatureData = await signatures.findAll({
-                    attributes: ['id', 'pattern_id', 'description'],
-                    where: {
-                        status: query.status
-                      },
-                    order: 
+                limit: parseInt(query.size),
+            });
+        }else{
+            signatureData = await signatures.findAll({
+                attributes: ['id', 'pattern_id', 'description'],
+                where: {
+                    status: query.status
+                },
+                order:
                     [
                         [query.sortBy, query.orderBy]
                     ],
                     offset: (parseInt(query.page)-1)*parseInt(query.size),
-                    limit: parseInt(query.size),
-                });
+                limit: parseInt(query.size),
+            });
 
-            }
-            signaturesCountByStatus = await signatures.findAll({
-                group: ['status'],
-                attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
-              });
-            let hasNext = true, hasPrev = false;
-            if(signatureData.length%(query.size*query.page) != 0){
-              hasNext = false;
-            }
-            if(query.page != 1){
-                hasPrev = true;
-            }
+        }
+        signaturesCountByStatus = await signatures.findAll({
+            group: ['status'],
+            attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
+        });
+        let hasNext = true, hasPrev = false;
+        if(signatureData.length%(query.size*query.page) != 0){
+            hasNext = false;
+        }
+        if(query.page != 1){
+            hasPrev = true;
+        }
 
-            return {
-                signatureData,
-                signaturesCountByStatus,
-                hasNext,
-                hasPrev,
-                
-            };
+        return {
+            signatureData,
+            signaturesCountByStatus,
+            hasNext,
+            hasPrev,
+
+        };
     }catch(error){
         throw new Error(`Cant get signatures: ${error.message}`);
     }
@@ -150,9 +150,8 @@ const searchSignature = async (search) => {
     console.log(search)
     try {
         const signatureData = await signatures.findAll({
-            where: {...search},
-            include: [{ model: file },
-            ]
+            where: { ...search },
+            attributes: ['id', 'pattern_id', 'description']
         }
         );
         return signatureData;
@@ -162,8 +161,8 @@ const searchSignature = async (search) => {
 }
 
 const findById = async (id) => {
-    console.log('ss')
-    console.log(search)
+    // console.log('ss')
+    //  console.log(search)
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -184,6 +183,7 @@ const findById = async (id) => {
 }
 
 const update = async (DataToUpdate, id) => {
+    console.log(DataToUpdate);
     try {
         const updatedSignature = signatures.update({
             type: DataToUpdate.type,
@@ -206,6 +206,12 @@ const update = async (DataToUpdate, id) => {
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
         }, { returning: true, where: { id: id } })
+
+        DataToUpdate.web_servers.map(webServ =>
+            webServer.update({
+                web: webServ.web,
+            }, { where: { signatureId: webServ.signatureId } })
+        );
 
         console.log('updatedSignature');
         console.log(updatedSignature);
