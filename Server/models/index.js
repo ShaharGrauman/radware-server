@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+
 const db = require("../config/database");
 const attackModel = require('./attack');
 const web_server_Model = require('./web_server');
@@ -11,7 +12,6 @@ const Signatures = require('./signatures');
 const signature_status_history = require('./signature_status_history');
 const Roles = require('./roles');
 const Permissions = require('./permissions');
-// const Permissions_roles = require('./permissions_roles');
 
 const externalReferences = external_references(db, Sequelize);
 const file = files(db, Sequelize);
@@ -22,15 +22,20 @@ const attack = attackModel(db, Sequelize);
 const users = Users(db, Sequelize);
 const signatures = Signatures(db, Sequelize);
 const signatureStatusHistory = signature_status_history(db, Sequelize);
+
 const roles = Roles(db, Sequelize);
 const permissions = Permissions(db, Sequelize);
 const permissions_roles = db.define('permissions_roles', {},{timestamps: false});
+const roles_users = db.define('roles_users', {},{timestamps: false});
 
 // relationship many to many between roles and permissions tables
 // The junction table that will keep track of the associations will be called permissions_roles, which will contain the foreign keys roleID and permissionID
 roles.belongsToMany(permissions, {  through: permissions_roles, foreignKey: 'role_id' })
 permissions.belongsToMany(roles, {  through: permissions_roles, foreignKey: 'permission_id' })
 
+// relationship many to many between roles and users tables
+roles.belongsToMany(users, {  through: roles_users, foreignKey: 'role_id' })
+users.belongsToMany(roles, {  through: roles_users, foreignKey: 'user_id' })
 
 /// relationship attackId to Signature table (add column attack_id in signatures table )
 attack.hasMany(signatures);
@@ -67,10 +72,7 @@ file.belongsTo(signatures);
 
 db.sync({ force: false }).then(() => {
     console.log('created');
-
 });
-
-
 
 module.exports = {
     attack,

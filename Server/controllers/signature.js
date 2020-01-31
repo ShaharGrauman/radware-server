@@ -11,7 +11,7 @@ const findAll = async () => {
 
 const loadSignaturesToExport = async (query) => {
     try{
-        let signatureData, signaturesCountByStatus, returnByStatus1, returnByStatus2;
+        let signatureData, lastExportedSignatureByStatus, returnByStatus1, returnByStatus2;
         if(query.exportTo === 'Git'){
             returnByStatus1='published';
             returnByStatus2='published';
@@ -49,7 +49,7 @@ const loadSignaturesToExport = async (query) => {
             }
             return {
                 signatureData,
-                signaturesCountByStatus,
+                lastExportedSignatureByStatus,
                 hasNext,
                 hasPrev,
             };
@@ -172,14 +172,14 @@ const create = async (signatureData) => {
                 vulnDataExtra.create({
                     id: vlunData.id,                  
                     signatureId: signatureData.id,
-                    parameter:vlunData.description
+                    parameter: vlunData.description
                 });
             });
             /// feach parameters data 
             signatureData.parameters.map(params => {
                 param.create({
                     id: params.id,   
-                    parameter:params.parameter,               
+                    parameter: params.parameter,
                     signatureId: signatureData.id,
                 });
             });
@@ -191,10 +191,26 @@ const create = async (signatureData) => {
     } catch (error) {
         throw new Error(`Cant create signatures: ${error.message}`);
     }
+
+const searchSignature = async (search) => {
+    console.log(search)
+    try {
+        const signatureData = await signatures.findAll({
+            where: {...search},
+            include: [{ model: file },
+            ]
+        }
+        );
+        return signatureData;
+    } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
 }
 
 const findById = async (id) => {
-    try {
+    console.log('ss')
+    console.log(search)
+        try {
         const signatureData = await signatures.findAll({
             where: { id: id },
             include: [{ model: file },
@@ -263,6 +279,7 @@ module.exports = {
     create,
     update,
     Delete,
+    searchSignature,
     loadSignatures,
     loadSignaturesToExport
 };
