@@ -6,8 +6,9 @@ var roleController = require('../controllers/roles');
 
 /* GET users listing. */
 router.get('/', async (req, res) => {
+  console.log('ssssssss');
   try{
-    const users = await userController.findAll();
+    const users = await userController.getUserWithRoles();
     res.status(200).json(users);
   }catch(error){
     res.status(500).json({msg: error.message});
@@ -25,7 +26,7 @@ router.post('/new_user', async (req, res, next) => {
   try {
       const result = await userController.createUser(req.body);
       res.status(201).json({userId: result.id});
-  } catch (error) {
+  }catch (error) {
       res.status(500).json({ msg: error.message });
   }
 });

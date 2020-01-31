@@ -60,6 +60,31 @@ router.get('/researcher', async (req, res, next) => {
     }
   });
 
+  //export signatures
+  router.get('/export', async (req, res, next) => {
+    try{
+      // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&exportto={“Git ” , “Testing” , “ QA” }
+      const page = req.query.page || 1;
+      const size = req.query.size || 20;
+      let sortBy = req.query.sortby || 'creation_time';
+      const orderBy = req.query.orderby || 'asc';
+      const exportTo = req.query.exportto;
+      // *status => all / inProgress / inTest / inQa / published / suspended
+      query = Object.assign({}, {
+          page,
+          size,
+          sortBy,
+          orderBy,
+          exportTo
+      });
+     
+      const signatures = await SignatureController.loadSignaturesToExport(query);
+      res.status(200).json(signatures);
+    }catch(error){
+      res.status(500).json({msg: error.message});
+    }
+  });
+
 router.get('/:id', async (req, res, next) => {
     try {
         const Signatures = await SignatureController.findById(req.params.id);
