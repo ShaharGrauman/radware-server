@@ -9,6 +9,55 @@ const findAll = async () => {
     }
 }
 
+const loadSignaturesToExport = async (query) => {
+    try{
+        let signatureData, signaturesCountByStatus, returnByStatus1, returnByStatus2;
+        if(query.exportTo === 'Git'){
+            returnByStatus1='published';
+            returnByStatus2='published';
+        }
+        if(query.exportTo === 'Testing'){
+            returnByStatus1='published';
+            returnByStatus2= 'in_test';
+        }
+        if(query.exportTo === 'QA'){
+            returnByStatus1='published';
+            returnByStatus2= 'in_qa';
+        }
+
+
+        signatureData = await signatures.findAll({
+            attributes: ['id', 'pattern_id', 'description'],
+            where: {
+                status: returnByStatus1 || returnByStatus2
+              },
+            order: 
+            [
+                [query.sortBy, query.orderBy]
+            ],
+            offset: (parseInt(query.page)-1)*parseInt(query.size),
+            limit: parseInt(query.size),
+        });
+            
+            
+            let hasNext = true, hasPrev = false;
+            if(signatureData.length%(query.size*query.page) != 0){
+              hasNext = false;
+            }
+            if(query.page != 1){
+                hasPrev = true;
+            }
+            return {
+                signatureData,
+                signaturesCountByStatus,
+                hasNext,
+                hasPrev,
+            };
+    }catch(error){
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
 const loadSignatures = async (query) => {
     try{
         let signatureData, signaturesCountByStatus;
@@ -48,13 +97,11 @@ const loadSignatures = async (query) => {
             if(query.page != 1){
                 hasPrev = true;
             }
-
             return {
                 signatureData,
                 signaturesCountByStatus,
                 hasNext,
                 hasPrev,
-                
             };
     }catch(error){
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -216,5 +263,6 @@ module.exports = {
     create,
     update,
     Delete,
-    loadSignatures
+    loadSignatures,
+    loadSignaturesToExport
 };
