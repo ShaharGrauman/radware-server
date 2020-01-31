@@ -17,6 +17,8 @@ const getUserWithRoles = async () => {
             include:{model:roles,attributes:['description'],through: {attributes: []}}
         });
         return data;
+    } catch (error) {
+        throw new Error(`Cant get users with roles: ${error.message}`);
     }
 }
       
