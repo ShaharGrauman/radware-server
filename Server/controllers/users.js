@@ -1,7 +1,7 @@
-const { users ,roles} = require("../models/");
+const { users ,roles } = require("../models/");
 
 
-const getAll = async () => {
+const findAll = async () => {
     try {
         const data = await users.findAll();
         return data;
@@ -9,6 +9,7 @@ const getAll = async () => {
         throw new Error(`Cant get users: ${error.message}`);
     }
 }
+
 const getUserWithRoles = async () => {
     try {
         const data = await users.findAll({
@@ -16,15 +17,27 @@ const getUserWithRoles = async () => {
             include:{model:roles,attributes:['description'],through: {attributes: []}}
         });
         return data;
-    } catch (error) {
-        throw new Error(`Cant get users: ${error.message}`);
+    }
+}
+      
+const createUser = async (userData) => {
+    console.log(userData);
+    try {
+        const newUser = await users.create({
+            username: userData.username,
+            phone: userData.phone,
+            password: userData.password,
+            status: userData.status
+        });
+        return newUser;
+    } 
+    catch (error) {
+        throw new Error(`Cant create user: ${error.message}`);
     }
 }
 
-
-
-
 module.exports = {
-    getAll,
-    getUserWithRoles
+    findAll,
+    getUserWithRoles,
+    createUser
 };

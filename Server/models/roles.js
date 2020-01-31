@@ -1,5 +1,5 @@
-module.exports= (dataBase,type) =>{
-    return dataBase.define('roles',{
+module.exports= (db,type) =>{
+    return db.define('roles',{
         id:{
             type:type.INTEGER,
             autoIncrement: true,

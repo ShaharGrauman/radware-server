@@ -9,6 +9,58 @@ const findAll = async () => {
     }
 }
 
+const loadSignatures = async (query) => {
+    try{
+        let signatureData, signaturesCountByStatus;
+        if(query.status === 'all'){
+                signatureData = await signatures.findAll({
+                    attributes: ['id', 'pattern_id', 'description'],
+                    order: 
+                    [
+                        [query.sortBy, query.orderBy]
+                    ],
+                    offset: (parseInt(query.page)-1)*parseInt(query.size),
+                    limit: parseInt(query.size),
+                });        
+            }else{
+                signatureData = await signatures.findAll({
+                    attributes: ['id', 'pattern_id', 'description'],
+                    where: {
+                        status: query.status
+                      },
+                    order: 
+                    [
+                        [query.sortBy, query.orderBy]
+                    ],
+                    offset: (parseInt(query.page)-1)*parseInt(query.size),
+                    limit: parseInt(query.size),
+                });
+
+            }
+            signaturesCountByStatus = await signatures.findAll({
+                group: ['status'],
+                attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
+              });
+            let hasNext = true, hasPrev = false;
+            if(signatureData.length%(query.size*query.page) != 0){
+              hasNext = false;
+            }
+            if(query.page != 1){
+                hasPrev = true;
+            }
+
+            return {
+                signatureData,
+                signaturesCountByStatus,
+                hasNext,
+                hasPrev,
+                
+            };
+    }catch(error){
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
 const create = async (signatureData) => {
     console.log(signatureData);
     try {
@@ -71,16 +123,16 @@ const create = async (signatureData) => {
             ///feach vuln_data_extras data 
             signatureData.vuln_data_extras.map(vlunData => {
                 vulnDataExtra.create({
-                    id: vlunData.id,                  
+                    id: vlunData.id,
                     signatureId: signatureData.id,
-                    parameter:vlunData.description
+                    parameter: vlunData.description
                 });
             });
             /// feach parameters data 
             signatureData.parameters.map(params => {
                 param.create({
-                    id: params.id,   
-                    parameter:params.parameter,               
+                    id: params.id,
+                    parameter: params.parameter,
                     signatureId: signatureData.id,
                 });
             });
@@ -94,7 +146,24 @@ const create = async (signatureData) => {
     }
 }
 
+const searchSignature = async (search) => {
+    console.log(search)
+    try {
+        const signatureData = await signatures.findAll({
+            where: {...search},
+            include: [{ model: file },
+            ]
+        }
+        );
+        return signatureData;
+    } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
 const findById = async (id) => {
+    console.log('ss')
+    console.log(search)
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -137,7 +206,7 @@ const update = async (DataToUpdate, id) => {
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
         }, { returning: true, where: { id: id } })
-        
+
         console.log('updatedSignature');
         console.log(updatedSignature);
         return updatedSignature;
@@ -163,5 +232,7 @@ module.exports = {
     findById,
     create,
     update,
-    Delete
+    Delete,
+    searchSignature,
+    loadSignatures
 };
