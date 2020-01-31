@@ -191,6 +191,7 @@ const create = async (signatureData) => {
     } catch (error) {
         throw new Error(`Cant create signatures: ${error.message}`);
     }
+}
 
 const searchSignature = async (search) => {
     console.log(search)
