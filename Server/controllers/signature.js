@@ -1,10 +1,59 @@
 const { signatures, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
-
+const sequelize = require('../config/database');
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
         return signatureData;
     } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
+const loadSignaturesToExport = async (query) => {
+    try{
+        let signatureData, lastExportedSignatureByStatus, returnByStatus1, returnByStatus2;
+        if(query.exportTo === 'Git'){
+            returnByStatus1='published';
+            returnByStatus2='published';
+        }
+        if(query.exportTo === 'Testing'){
+            returnByStatus1='published';
+            returnByStatus2= 'in_test';
+        }
+        if(query.exportTo === 'QA'){
+            returnByStatus1='published';
+            returnByStatus2= 'in_qa';
+        }
+
+
+        signatureData = await signatures.findAll({
+            attributes: ['id', 'pattern_id', 'description'],
+            where: {
+                status: returnByStatus1 || returnByStatus2
+              },
+            order: 
+            [
+                [query.sortBy, query.orderBy]
+            ],
+            offset: (parseInt(query.page)-1)*parseInt(query.size),
+            limit: parseInt(query.size),
+        });
+            
+            
+            let hasNext = true, hasPrev = false;
+            if(signatureData.length%(query.size*query.page) != 0){
+              hasNext = false;
+            }
+            if(query.page != 1){
+                hasPrev = true;
+            }
+            return {
+                signatureData,
+                lastExportedSignatureByStatus,
+                hasNext,
+                hasPrev,
+            };
+    }catch(error){
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
@@ -48,13 +97,11 @@ const loadSignatures = async (query) => {
             if(query.page != 1){
                 hasPrev = true;
             }
-
             return {
                 signatureData,
                 signaturesCountByStatus,
                 hasNext,
                 hasPrev,
-                
             };
     }catch(error){
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -123,7 +170,7 @@ const create = async (signatureData) => {
             ///feach vuln_data_extras data 
             signatureData.vuln_data_extras.map(vlunData => {
                 vulnDataExtra.create({
-                    id: vlunData.id,
+                    id: vlunData.id,                  
                     signatureId: signatureData.id,
                     parameter: vlunData.description
                 });
@@ -131,7 +178,7 @@ const create = async (signatureData) => {
             /// feach parameters data 
             signatureData.parameters.map(params => {
                 param.create({
-                    id: params.id,
+                    id: params.id,   
                     parameter: params.parameter,
                     signatureId: signatureData.id,
                 });
@@ -164,7 +211,7 @@ const searchSignature = async (search) => {
 const findById = async (id) => {
     console.log('ss')
     console.log(search)
-    try {
+        try {
         const signatureData = await signatures.findAll({
             where: { id: id },
             include: [{ model: file },
@@ -206,7 +253,7 @@ const update = async (DataToUpdate, id) => {
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
         }, { returning: true, where: { id: id } })
-
+        
         console.log('updatedSignature');
         console.log(updatedSignature);
         return updatedSignature;
@@ -234,5 +281,6 @@ module.exports = {
     update,
     Delete,
     searchSignature,
-    loadSignatures
+    loadSignatures,
+    loadSignaturesToExport
 };

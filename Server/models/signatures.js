@@ -76,8 +76,5 @@ module.exports = (db, type) => {
             type: type.TEXT
         },
 
-
-
-
     }, { timestamps: false, underscored: true })
 } 

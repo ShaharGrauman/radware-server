@@ -5,7 +5,7 @@ const findAll = async () => {
     try {
         const data = await users.findAll();
         return data;
-    } catch (error) {
+    }catch (error) {
         throw new Error(`Cant get users: ${error.message}`);
     }
 }
