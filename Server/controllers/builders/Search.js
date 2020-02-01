@@ -6,7 +6,7 @@ class Search {
         this.status = status;
         this.vulnerability = vulnerability;
         this.reference = reference;
-        this.scan = scan;
+        this.scan = scan;  
     }
 }
 module.exports = Search;

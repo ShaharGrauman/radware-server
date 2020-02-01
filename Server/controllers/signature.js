@@ -65,16 +65,19 @@ const loadSignatures = async (query) => {
     try {
         let signatureData, signaturesCountByStatus;
         if (query.status === 'all') {
+
             signatureData = await signatures.findAll({
                 attributes: ['id', 'pattern_id', 'description'],
                 order:
                     [
                         [query.sortBy, query.orderBy]
                     ],
+
                 offset: (parseInt(query.page) - 1) * parseInt(query.size),
                 limit: parseInt(query.size),
             });
         } else {
+
             signatureData = await signatures.findAll({
                 attributes: ['id', 'pattern_id', 'description'],
                 where: {
@@ -84,7 +87,9 @@ const loadSignatures = async (query) => {
                     [
                         [query.sortBy, query.orderBy]
                     ],
+
                 offset: (parseInt(query.page) - 1) * parseInt(query.size),
+
                 limit: parseInt(query.size),
             });
 
@@ -100,13 +105,16 @@ const loadSignatures = async (query) => {
         if (query.page != 1) {
             hasPrev = true;
         }
+
         return {
             signatureData,
             signaturesCountByStatus,
             hasNext,
             hasPrev,
+
         };
     } catch (error) {
+
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
@@ -201,8 +209,10 @@ const searchSignature = async (search) => {
     try {
         const signatureData = await signatures.findAll({
             where: { ...search },
+
             include: [{ model: file },
             ]
+
         }
         );
         return signatureData;
@@ -212,8 +222,8 @@ const searchSignature = async (search) => {
 }
 
 const findById = async (id) => {
-    console.log('ss')
-    console.log(search)
+
+
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -234,6 +244,7 @@ const findById = async (id) => {
 }
 
 const update = async (DataToUpdate, id) => {
+    console.log(DataToUpdate);
     try {
         const updatedSignature = signatures.update({
             type: DataToUpdate.type,
@@ -256,6 +267,14 @@ const update = async (DataToUpdate, id) => {
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
         }, { returning: true, where: { id: id } })
+
+
+        DataToUpdate.web_servers.map(webServ =>
+            webServer.update({
+                web: webServ.web,
+            }, { where: { signatureId: webServ.signatureId } })
+        );
+
 
         console.log('updatedSignature');
         console.log(updatedSignature);
