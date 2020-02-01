@@ -1,8 +1,11 @@
 const { signatures, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
+require('./sendEmail');
+
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
+        sendMail('<h1>find all success </h1>');
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -10,19 +13,19 @@ const findAll = async () => {
 }
 
 const loadSignaturesToExport = async (query) => {
-    try{
+    try {
         let signatureData, lastExportedSignatureByStatus, returnByStatus1, returnByStatus2;
-        if(query.exportTo === 'Git'){
-            returnByStatus1='published';
-            returnByStatus2='published';
+        if (query.exportTo === 'Git') {
+            returnByStatus1 = 'published';
+            returnByStatus2 = 'published';
         }
-        if(query.exportTo === 'Testing'){
-            returnByStatus1='published';
-            returnByStatus2= 'in_test';
+        if (query.exportTo === 'Testing') {
+            returnByStatus1 = 'published';
+            returnByStatus2 = 'in_test';
         }
-        if(query.exportTo === 'QA'){
-            returnByStatus1='published';
-            returnByStatus2= 'in_qa';
+        if (query.exportTo === 'QA') {
+            returnByStatus1 = 'published';
+            returnByStatus2 = 'in_qa';
         }
 
 
@@ -30,48 +33,51 @@ const loadSignaturesToExport = async (query) => {
             attributes: ['id', 'pattern_id', 'description'],
             where: {
                 status: returnByStatus1 || returnByStatus2
-              },
-            order: 
-            [
-                [query.sortBy, query.orderBy]
-            ],
-            offset: (parseInt(query.page)-1)*parseInt(query.size),
+            },
+            order:
+                [
+                    [query.sortBy, query.orderBy]
+                ],
+            offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
         });
-            
-            
-            let hasNext = true, hasPrev = false;
-            if(signatureData.length%(query.size*query.page) != 0){
-              hasNext = false;
-            }
-            if(query.page != 1){
-                hasPrev = true;
-            }
-            return {
-                signatureData,
-                lastExportedSignatureByStatus,
-                hasNext,
-                hasPrev,
-            };
-    }catch(error){
+
+
+        let hasNext = true, hasPrev = false;
+        if (signatureData.length % (query.size * query.page) != 0) {
+            hasNext = false;
+        }
+        if (query.page != 1) {
+            hasPrev = true;
+        }
+        return {
+            signatureData,
+            lastExportedSignatureByStatus,
+            hasNext,
+            hasPrev,
+        };
+    } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
 
 const loadSignatures = async (query) => {
-    try{
+    try {
         let signatureData, signaturesCountByStatus;
-        if(query.status === 'all'){
+        if (query.status === 'all') {
+
             signatureData = await signatures.findAll({
                 attributes: ['id', 'pattern_id', 'description'],
                 order:
                     [
                         [query.sortBy, query.orderBy]
                     ],
-                    offset: (parseInt(query.page)-1)*parseInt(query.size),
+
+                offset: (parseInt(query.page) - 1) * parseInt(query.size),
                 limit: parseInt(query.size),
             });
-        }else{
+        } else {
+
             signatureData = await signatures.findAll({
                 attributes: ['id', 'pattern_id', 'description'],
                 where: {
@@ -81,7 +87,9 @@ const loadSignatures = async (query) => {
                     [
                         [query.sortBy, query.orderBy]
                     ],
-                    offset: (parseInt(query.page)-1)*parseInt(query.size),
+
+                offset: (parseInt(query.page) - 1) * parseInt(query.size),
+
                 limit: parseInt(query.size),
             });
 
@@ -91,10 +99,10 @@ const loadSignatures = async (query) => {
             attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
         });
         let hasNext = true, hasPrev = false;
-        if(signatureData.length%(query.size*query.page) != 0){
+        if (signatureData.length % (query.size * query.page) != 0) {
             hasNext = false;
         }
-        if(query.page != 1){
+        if (query.page != 1) {
             hasPrev = true;
         }
 
@@ -105,7 +113,8 @@ const loadSignatures = async (query) => {
             hasPrev,
 
         };
-    }catch(error){
+    } catch (error) {
+
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
@@ -172,7 +181,7 @@ const create = async (signatureData) => {
             ///feach vuln_data_extras data 
             signatureData.vuln_data_extras.map(vlunData => {
                 vulnDataExtra.create({
-                    id: vlunData.id,                  
+                    id: vlunData.id,
                     signatureId: signatureData.id,
                     parameter: vlunData.description
                 });
@@ -180,7 +189,7 @@ const create = async (signatureData) => {
             /// feach parameters data 
             signatureData.parameters.map(params => {
                 param.create({
-                    id: params.id,   
+                    id: params.id,
                     parameter: params.parameter,
                     signatureId: signatureData.id,
                 });
@@ -200,7 +209,10 @@ const searchSignature = async (search) => {
     try {
         const signatureData = await signatures.findAll({
             where: { ...search },
-            attributes: ['id', 'pattern_id', 'description']
+
+            include: [{ model: file },
+            ]
+
         }
         );
         return signatureData;
@@ -210,6 +222,8 @@ const searchSignature = async (search) => {
 }
 
 const findById = async (id) => {
+
+
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -254,11 +268,13 @@ const update = async (DataToUpdate, id) => {
             attack_id: DataToUpdate.attackId,
         }, { returning: true, where: { id: id } })
 
+
         DataToUpdate.web_servers.map(webServ =>
             webServer.update({
                 web: webServ.web,
             }, { where: { signatureId: webServ.signatureId } })
         );
+
 
         console.log('updatedSignature');
         console.log(updatedSignature);
