@@ -4,7 +4,7 @@ const findAll = async () => {
     try {
         const rolesData = await roles.findAll({
             attributes: ['id','name'],
-            include: [{ model: permissions ,attributes:['name']}]
+            include: [{ model: permissions ,attributes:['name'], through: {attributes: []}}]
           })
 return rolesData;
     } catch (error) {

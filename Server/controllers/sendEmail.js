@@ -16,7 +16,7 @@ const nodemailer = require('nodemailer');
     let mailOptions = {
         from: 'radware.test.mail01@gmail.com', // sender address
         to: 'radware.test.mail02@gmail.com', // list of receivers
-        subject: 'Test', // Subject line
+        subject: 'Radware-SignatureManage', // Subject line
         text: 'Hello world?', // plain text body
         // html: `<h1>Hello ${req.body.name} Node Send Mails</h1>` // html body
         html: body // html body
