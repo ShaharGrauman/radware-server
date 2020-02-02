@@ -18,9 +18,9 @@ module.exports = (db, type) => {
         screen_name: {
             type: type.ENUM('in_progress', 'in_test', 'in_qa', 'published', 'deleted')
         },
-        description: {
-            type: type.String
-        },
+        // description: {
+
+        // },
         time: {
             type: type.TIME      
         },

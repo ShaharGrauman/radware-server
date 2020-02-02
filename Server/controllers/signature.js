@@ -1,4 +1,4 @@
-const { signatures, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
+const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 const findAll = async () => {
     try {
@@ -11,7 +11,7 @@ const findAll = async () => {
 
 const loadSignaturesToExport = async (query) => {
     try{
-        let signatureData, lastExportedSignatureByStatus, returnByStatus1, returnByStatus2;
+        let signatureData, lastExportedSignatureDateByStatus, returnByStatus1, returnByStatus2;
         if(query.exportTo === 'Git'){
             returnByStatus1='published';
             returnByStatus2='published';
@@ -24,7 +24,17 @@ const loadSignaturesToExport = async (query) => {
             returnByStatus1='published';
             returnByStatus2= 'in_qa';
         }
-
+        lastExportedSignatureDateByStatus = await historyUsersActions.findAll({
+            attributes: ['date'],
+            where: {
+                action_name: 'export'
+              },
+            order: 
+            [
+                ['date', 'asc']
+            ],
+            limit: 1,
+        });
 
         signatureData = await signatures.findAll({
             attributes: ['id', 'pattern_id', 'description'],
@@ -49,7 +59,7 @@ const loadSignaturesToExport = async (query) => {
             }
             return {
                 signatureData,
-                lastExportedSignatureByStatus,
+                lastExportedSignatureDateByStatus,
                 hasNext,
                 hasPrev,
             };
