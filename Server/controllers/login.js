@@ -1,4 +1,5 @@
 const { users, roles, login, file} = require('../models');
+require('./sendEmail');
 
 
 const Login = async (user) => {
@@ -79,6 +80,8 @@ const Login = async (user) => {
                         
                          {returning: true, where: { id: lastLogin.user_id }
                      })
+
+                     sendMail('<h1>Unfortunately! your account is locked after 3 invalid login attempts</h1>');
                     }
                 }
             }
