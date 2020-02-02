@@ -81,7 +81,7 @@ const Login = async (user) => {
                          {returning: true, where: { id: lastLogin.user_id }
                      })
 
-                     sendMail('<h1>Unfortunately! your account is locked after 3 invalid login attempts</h1>');
+                     sendMail(`<h1>Unfortunately! your account: ${exist.username} is locked after 3 invalid login attempts</h1>`);
                     }
                 }
             }
