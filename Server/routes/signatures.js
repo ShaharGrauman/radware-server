@@ -7,7 +7,7 @@ var router = express.Router();
 
 router.get('/search', async (req, res, next) => {
     const search = new SearchBuilder();
-    if (req.query.attackname != undefined) search.setAtack_id(req.query.attack_id);
+    if (req.query.attackId != undefined) search.setAtack_id(req.query.attackId);
     if (req.query.description != undefined) search.setDescription(req.query.description);
     if (req.query.severity != undefined) search.setSeverity(req.query.severity);
     if (req.query.status != undefined) search.setStatus(req.query.status);

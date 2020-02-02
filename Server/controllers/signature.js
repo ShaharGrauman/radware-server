@@ -208,11 +208,8 @@ const searchSignature = async (search) => {
     console.log(search)
     try {
         const signatureData = await signatures.findAll({
-            where: { ...search },
-
-            include: [{ model: file },
-            ]
-
+            where: {...search }
+            
         }
         );
         return signatureData;

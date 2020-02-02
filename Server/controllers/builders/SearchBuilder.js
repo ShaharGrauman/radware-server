@@ -18,8 +18,8 @@ class SearchBuilder {
         this.description = description;
         return this;
     }
-    setAtack_id(attack_id) {
-        this.attack_id = attack_id;
+    setAtack_id(attackId) {
+        this.attackId = attackId;
         return this;
     }
     setSeverity(severity) {
