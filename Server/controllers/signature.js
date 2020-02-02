@@ -1,6 +1,7 @@
 const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
+const Op = require('Sequelize').Op;
 
 const findAll = async () => {
     try {
@@ -13,36 +14,32 @@ const findAll = async () => {
 }
 
 const loadSignaturesToExport = async (query) => {
-<<<<<<< HEAD
     try{
-        let signatureData, lastExportedSignatureDateByStatus, returnByStatus1, returnByStatus2;
+        let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf;
         if(query.exportTo === 'Git'){
-            returnByStatus1='published';
-            returnByStatus2='published';
-=======
-    try {
-        let signatureData, lastExportedSignatureByStatus, returnByStatus1, returnByStatus2;
-        if (query.exportTo === 'Git') {
-            returnByStatus1 = 'published';
-            returnByStatus2 = 'published';
->>>>>>> master
+            firstStatus='published';
+            secStatus='published';
+            checkDateOf='export_for_git';
         }
         if (query.exportTo === 'Testing') {
-            returnByStatus1 = 'published';
-            returnByStatus2 = 'in_test';
+            firstStatus = 'published';
+            secStatus = 'in_test';
+            checkDateOf='export_for_testing';
         }
         if (query.exportTo === 'QA') {
-            returnByStatus1 = 'published';
-            returnByStatus2 = 'in_qa';
+            firstStatus = 'published';
+            secStatus = 'in_qa';
+            checkDateOf='export_for_qa';
+
         }
         lastExportedSignatureDateByStatus = await historyUsersActions.findAll({
             attributes: ['date'],
             where: {
-                action_name: 'export'
+                action_name: checkDateOf
               },
             order: 
             [
-                ['date', 'asc']
+                ['date', 'desc']
             ],
             limit: 1,
         });
@@ -50,7 +47,9 @@ const loadSignaturesToExport = async (query) => {
         signatureData = await signatures.findAll({
             attributes: ['id', 'pattern_id', 'description'],
             where: {
-                status: returnByStatus1 || returnByStatus2
+                status: {
+                    [Op.or]: [firstStatus, secStatus]
+                  }
             },
             order:
                 [
@@ -59,7 +58,6 @@ const loadSignaturesToExport = async (query) => {
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
         });
-<<<<<<< HEAD
             
             
             let hasNext = true, hasPrev = false;
@@ -69,31 +67,19 @@ const loadSignaturesToExport = async (query) => {
             if(query.page != 1){
                 hasPrev = true;
             }
+            if(firstStatus === secStatus)
+            {
+                secStatus = undefined;
+            }
             return {
                 signatureData,
                 lastExportedSignatureDateByStatus,
                 hasNext,
                 hasPrev,
+                firstStatus,
+                secStatus 
             };
     }catch(error){
-=======
-
-
-        let hasNext = true, hasPrev = false;
-        if (signatureData.length % (query.size * query.page) != 0) {
-            hasNext = false;
-        }
-        if (query.page != 1) {
-            hasPrev = true;
-        }
-        return {
-            signatureData,
-            lastExportedSignatureByStatus,
-            hasNext,
-            hasPrev,
-        };
-    } catch (error) {
->>>>>>> master
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }

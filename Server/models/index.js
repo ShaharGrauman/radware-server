@@ -25,13 +25,10 @@ const attack = attackModel(db, Sequelize);
 const users = Users(db, Sequelize);
 const signatures = Signatures(db, Sequelize);
 const signatureStatusHistory = signature_status_history(db, Sequelize);
-<<<<<<< HEAD
 const historyUsersActions = history_users_actions(db, Sequelize);
 
 
 
-=======
->>>>>>> master
 const roles = Roles(db, Sequelize);
 const permissions = Permissions(db, Sequelize);
 const login = Login(db, Sequelize);
@@ -101,9 +98,6 @@ module.exports = {
     roles,
     permissions,
     permissions_roles,
-<<<<<<< HEAD
-    historyUsersActions
-=======
+    historyUsersActions,
     login
->>>>>>> master
 }
