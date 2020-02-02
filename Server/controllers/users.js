@@ -1,4 +1,4 @@
-const { users ,roles } = require("../models/");
+const { users ,roles } = require("../models");
 
 
 const findAll = async () => {
