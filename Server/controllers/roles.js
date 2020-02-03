@@ -1,6 +1,8 @@
 const { roles, permissions } = require('../models');
 const { permissions_roles } = require('../models/index');
-const findAll = async () => {
+
+
+const getRoleWithPermissions = async () => {
     try {
         const rolesData = await roles.findAll({
             attributes: ['id','name'],
@@ -27,7 +29,7 @@ return rolesData;
 // }
 
 
-const findRoles = async () => {
+const getRoles = async () => {
     try {
         const rolesData = await roles.findAll({
             attributes: ['id', 'name']
@@ -39,7 +41,7 @@ const findRoles = async () => {
 }
 
 module.exports = {
-    findAll,
-    findRoles
+    getRoleWithPermissions,
+    getRoles
     // create
 };
