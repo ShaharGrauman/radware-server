@@ -28,6 +28,7 @@ router.post('/new_user', async (req, res, next) => {
       res.status(201).json({userId: result.id});
   }catch (error) {
       res.status(500).json({ msg: error.message });
+      console.log("create user doesn't work from routes");
   }
 });
 

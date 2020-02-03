@@ -3,6 +3,7 @@ const sequelize = require('../config/database');
 require('./sendEmail');
 const Op = require('Sequelize').Op;
 
+
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -23,12 +24,12 @@ const loadSignaturesToExport = async (query) => {
         }
         if (query.exportTo === 'Testing') {
             firstStatus = 'published';
-            secStatus = 'in_test';
+            secStatus = 'in testing';
             checkDateOf='export_for_testing';
         }
         if (query.exportTo === 'QA') {
             firstStatus = 'published';
-            secStatus = 'in_qa';
+            secStatus = 'in QA';
             checkDateOf='export_for_qa';
 
         }
@@ -43,9 +44,10 @@ const loadSignaturesToExport = async (query) => {
             ],
             limit: 1,
         });
+        let date=lastExportedSignatureDateByStatus[0].date;
 
         signatureData = await signatures.findAll({
-            attributes: ['id', 'pattern_id', 'description'],
+            attributes: ['id', 'pattern_id', 'description', 'test_data'],
             where: {
                 status: {
                     [Op.or]: [firstStatus, secStatus]
@@ -59,7 +61,6 @@ const loadSignaturesToExport = async (query) => {
             limit: parseInt(query.size),
         });
             
-            
             let hasNext = true, hasPrev = false;
             if(signatureData.length%(query.size*query.page) != 0){
               hasNext = false;
@@ -67,17 +68,27 @@ const loadSignaturesToExport = async (query) => {
             if(query.page != 1){
                 hasPrev = true;
             }
+            let status = [firstStatus]+", "+[secStatus];
             if(firstStatus === secStatus)
             {
                 secStatus = undefined;
+                status = [firstStatus];
             }
+
+            signatureData.map((signature) => {
+                if(signature.test_data==""){
+                    signature.test_data = false;
+                }else{
+                    signature.test_data = true;
+                }
+
+            });
             return {
                 signatureData,
-                lastExportedSignatureDateByStatus,
+                date,
                 hasNext,
                 hasPrev,
-                firstStatus,
-                secStatus 
+                status
             };
     }catch(error){
         throw new Error(`Cant get signatures: ${error.message}`);
