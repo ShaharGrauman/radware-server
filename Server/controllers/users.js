@@ -1,5 +1,4 @@
-const Joi = require('joi');
-const userCreation = require('../middleware/schemas');
+
 
 const { users ,roles } = require("../models");
 
@@ -26,15 +25,7 @@ const getUserWithRoles = async () => {
 }
       
 const createUser = async (userData) => {
-    Joi.validate(userData, userCreation, async (err, value) => {
-        if (err) {
-            console.log('failed validation');
-           return {
-              success: false,
-              message: err.message,
-              status: 400
-           }
-        }
+    
         try {
                 const newUser = await users.create({
                     username: userData.username,
@@ -47,8 +38,7 @@ const createUser = async (userData) => {
         catch (error) {
                 throw new Error(`Cant create user: ${error.message}`);
         }       
-     }
-    )
+    
 }
 
 module.exports = {

@@ -24,12 +24,12 @@ const loadSignaturesToExport = async (query) => {
         }
         if (query.exportTo === 'Testing') {
             firstStatus = 'published';
-            secStatus = 'in testing';
+            secStatus = 'in_test';
             checkDateOf='export_for_testing';
         }
         if (query.exportTo === 'QA') {
             firstStatus = 'published';
-            secStatus = 'in QA';
+            secStatus = 'in_qa';
             checkDateOf='export_for_qa';
 
         }
@@ -60,7 +60,12 @@ const loadSignaturesToExport = async (query) => {
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
         });
-            
+            if(  secStatus === 'in_qa'){
+                secStatus = 'In QA';
+            }
+            if(secStatus === 'in_test'){
+                secStatus = 'In Test';
+            }
             let hasNext = true, hasPrev = false;
             if(signatureData.length%(query.size*query.page) != 0){
               hasNext = false;
@@ -76,12 +81,11 @@ const loadSignaturesToExport = async (query) => {
             }
 
             signatureData.map((signature) => {
-                if(signature.test_data==""){
+                if(signature.test_data==("" || null)){
                     signature.test_data = false;
                 }else{
                     signature.test_data = true;
                 }
-
             });
             return {
                 signatureData,
