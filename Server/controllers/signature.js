@@ -1,10 +1,16 @@
 const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
+const { signatureCreation, signatureUpdate } = require('../middleware/validations');
+
+
 const Op = require('Sequelize').Op;
 
 
 const findAll = async () => {
+
+    
+
     try {
         const signatureData = await signatures.findAll();
         sendMail('<h1>find all success </h1>');
@@ -158,6 +164,13 @@ const loadSignatures = async (query) => {
 }
 
 const create = async (signatureData) => {
+
+    const result = await Joi.validate(signatureData, signatureCreation);
+    console.log(result);
+    if (!result) {
+        return result;
+    }
+
     console.log(signatureData);
     try {
         const signatureDataCreate = await signatures.create({
@@ -282,6 +295,12 @@ const findById = async (id) => {
 }
 
 const update = async (DataToUpdate, id) => {
+    const result = await Joi.validate(DataToUpdate, signatureUpdate);
+    console.log(result);
+    if (!result) {
+        return result;
+    }
+
     console.log(DataToUpdate);
     try {
         const updatedSignature = signatures.update({
