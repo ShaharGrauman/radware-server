@@ -1,38 +1,74 @@
-const Search = require('./Search');
+const { externalReferences, attack, vulnDataExtra } = require('../../models');
+
 class SearchBuilder {
     constructor() {
-
+        this.include = [];
+        this.where = {};
     }
     build() {
-        return new Search(this);
+        return {
+            where: this.where,
+            include: this.include
+        };
     }
     setReference(reference) {
-        this.reference = reference;
-        return this;
+        this.include.push({
+            model: externalReferences,
+            where: {
+                reference
+            },
+            attributes: ['reference']
+        });
     }
-    setScan(scan) {
-        this.scan = scan;
-        return this;
+    setScanUri(scan_uri) {
+        Object.assign(this.where, { scan_uri });
+
+    }
+    setScanHeader(scan_header){
+        Object.assign(this.where, { scan_header });
+
+    }
+    setScanBody(scan_body){
+        Object.assign(this.where, { scan_body });
+
+    }
+    setScanParameters(scan_parameters){
+        Object.assign(this.where, { scan_parameters });
+
+    }
+    setScanFile(scan_file_name){
+        Object.assign(this.where, { scan_file_name });
     }
     setDescription(description) {
-        this.description = description;
-        return this;
+        Object.assign(this.where, { description });
+
     }
-    setAtack_id(attackId) {
-        this.attackId = attackId;
-        return this;
+    setAttackName(name) {
+        this.include.push({
+            model: attack,
+            where: {
+                name
+            },
+            attributes: ['name']
+        });
+
     }
     setSeverity(severity) {
-        this.severity = severity;
-        return this;
+        Object.assign(this.where, { severity });
+
     }
     setStatus(status) {
-        this.status = status;
-        return this;
+        console.log(Object.assign(this.where, { status }));
+
     }
-    setVulnerability(vulnerability) {
-        this.vulnerability = vulnerability;
-        return this;
+    setVulnerability(description) {
+        this.include.push({
+            model: vulnDataExtra,
+            where: {
+                description
+            },
+            attributes: ['description']
+        });
     }
 
 }
