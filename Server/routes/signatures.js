@@ -7,17 +7,22 @@ var router = express.Router();
 
 router.get('/search', async (req, res, next) => {
     const search = new SearchBuilder();
-    if (req.query.attackname != undefined) search.setAtack_id(req.query.attack_id);
-    if (req.query.description != undefined) search.setDescription(req.query.description);
-    if (req.query.severity != undefined) search.setSeverity(req.query.severity);
-    if (req.query.status != undefined) search.setStatus(req.query.status);
-    if (req.query.vulnerability != undefined) search.setVulnerability(req.query.vulnerability);
-    if (req.query.scan != undefined) search.setScan(req.query.scan);
-    if (req.query.reference != undefined) search.setReference(req.query.reference);
+    if (req.query.attackName) search.setAttackName(req.query.attackName);
+    if (req.query.description) search.setDescription(req.query.description);
+    if (req.query.severity) search.setSeverity(req.query.severity);
+    if (req.query.status) search.setStatus(req.query.status);
+    if (req.query.vulnerability) search.setVulnerability(req.query.vulnerability);
+    if (req.query.scanUri) search.setScanUri(req.query.scanUri);
+    if (req.query.scanHeader) search.setScanHeader(req.query.scanHeader);
+    if (req.query.scanBody) search.setScanBody(req.query.scanBody);
+    if (req.query.scanParameters) search.setScanParameters(req.query.scanParameters);
+    if (req.query.scanFile) search.setScanFile(req.query.scanFile);
 
-    search.build();
+    
+    if (req.query.reference) search.setReference(req.query.reference);
+
     try {
-        const data = await SignatureController.searchSignature(search);
+        const data = await SignatureController.searchSignature(search.build());
         res.json(data);
     } catch (error) {
         res.status(500).json({ msg: error.message });
