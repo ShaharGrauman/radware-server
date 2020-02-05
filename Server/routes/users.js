@@ -55,7 +55,7 @@ router.put('/:id', async (req, res, next) => {
 
 router.get('/roles', async (req, res) => {
   try{
-    const roles = await roleController.findRoles();
+    const roles = await roleController.getRoles();
     res.status(200).json(roles);
   }catch(error){
     res.status(500).json({msg: error.message});
