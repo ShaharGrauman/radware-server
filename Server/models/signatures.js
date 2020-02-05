@@ -9,9 +9,9 @@ module.exports = (db, type) => {
         user_id: {
             type: type.INTEGER
         },
-        attack_id: {
-            type: type.INTEGER
-        },
+        // attack_id: {
+        //     type: type.INTEGER
+        // },
         pattern_id: {
             type: type.INTEGER
         },
@@ -75,9 +75,6 @@ module.exports = (db, type) => {
         test_data: {
             type: type.TEXT
         },
-
-
-
 
     }, { timestamps: false, underscored: true })
 } 

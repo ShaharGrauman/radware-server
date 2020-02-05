@@ -10,8 +10,11 @@ const external_references = require('./external_references');
 const Users = require('./users');
 const Signatures = require('./signatures');
 const signature_status_history = require('./signature_status_history');
+const history_users_actions = require('./history_users_actions');
+
 const Roles = require('./roles');
 const Permissions = require('./permissions');
+const Login = require('./login');
 
 const externalReferences = external_references(db, Sequelize);
 const file = files(db, Sequelize);
@@ -22,9 +25,13 @@ const attack = attackModel(db, Sequelize);
 const users = Users(db, Sequelize);
 const signatures = Signatures(db, Sequelize);
 const signatureStatusHistory = signature_status_history(db, Sequelize);
+const historyUsersActions = history_users_actions(db, Sequelize);
+
+
 
 const roles = Roles(db, Sequelize);
 const permissions = Permissions(db, Sequelize);
+const login = Login(db, Sequelize);
 const permissions_roles = db.define('permissions_roles', {},{timestamps: false});
 const roles_users = db.define('roles_users', {},{timestamps: false});
 
@@ -69,6 +76,10 @@ vulnDataExtra.belongsTo(signatures);
 signatures.hasMany(file);
 file.belongsTo(signatures);
 
+/// relationships one to many
+users.hasMany(login)
+login.belongsTo(users)
+
 
 db.sync({ force: false }).then(() => {
     console.log('created');
@@ -87,5 +98,7 @@ module.exports = {
     signatureStatusHistory,
     roles,
     permissions,
-    permissions_roles
+    permissions_roles,
+    historyUsersActions,
+    login
 }

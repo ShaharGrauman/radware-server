@@ -1,5 +1,7 @@
-const { users, roles} = require("../models/");
-const {roles_users} = require("../models/index")
+
+
+const { users ,roles } = require("../models");
+const { userCreation } = require('../middleware/validations');
 
 
 const getUserWithRoles = async (userId) => {
@@ -26,8 +28,27 @@ const getUserWithRoles = async (userId) => {
         }
     }
 }
+ 
+
+const deleteUser = async (username) => {
+    users.update(
+        {status: 'deleted'},
+        {where: {username: username}}
+      )
+      .then(function() {
+        return 'deleted successfully'
+      }).catch(function(error) {
+        return (error);
+      });
+}
 
 const createUser = async (userData) => {
+    const result = await Joi.validate(userData, userCreation);
+    console.log(result);
+    if (!result) {
+        return result;
+    }
+
     try {
         const newUser = await users.create({
             name: userData.name,
@@ -42,8 +63,6 @@ const createUser = async (userData) => {
         throw new Error(`Cant create user: ${error.message}`);
     }
 }
-
-
 
 const editUser = async (userData, id) => {
     try {
@@ -83,6 +102,7 @@ const editUser = async (userData, id) => {
 
 module.exports = {
     getUserWithRoles,
+    deleteUser,
     createUser,
     editUser
 };
