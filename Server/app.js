@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
 var attackRouter = require('./routes/attack');
 var signatureRouter = require('./routes/signatures');
+var roleRouter=require('./routes/roles');
 var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
 
@@ -36,7 +37,7 @@ db
     console.error('Unable to connect to the database:', err);
   });
 
-
+app.use('/role',roleRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
 app.use('/attack', attackRouter);
