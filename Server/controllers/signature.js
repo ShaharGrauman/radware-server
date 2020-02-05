@@ -20,9 +20,13 @@ const findAll = async () => {
     }
 }
 
+
+
 const loadSignaturesToExport = async (query) => {
     try{
-        let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf;
+        let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf,signatureDataToXML;
+           
+
         if(query.exportTo === 'Git'){
             firstStatus='published';
             secStatus='published';
@@ -66,12 +70,27 @@ const loadSignaturesToExport = async (query) => {
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
         });
-            if(  secStatus === 'in_qa'){
-                secStatus = 'In QA';
-            }
-            if(secStatus === 'in_test'){
-                secStatus = 'In Test';
-            }
+      
+     ////////// for xml 
+        
+     signatureDataToXML = await signatures.findAll({
+        where: {
+            status: {
+                [Op.or]: [firstStatus, secStatus]
+              }
+        },
+        include: [
+            { model: attack },
+            { model: param },
+            { model: externalReferences },
+            { model: vulnDataExtra },
+            { model: webServer }
+            ]
+
+    });
+    export_XML_Vuln_Signature(signatureDataToXML);
+    ///////
+            
             let hasNext = true, hasPrev = false;
             if(signatureData.length%(query.size*query.page) != 0){
               hasNext = false;
@@ -93,6 +112,12 @@ const loadSignaturesToExport = async (query) => {
                     signature.test_data = true;
                 }
             });
+            if(  secStatus === 'in_qa'){
+                secStatus = 'In QA';
+            }
+            if(secStatus === 'in_test'){
+                secStatus = 'In Test';
+            }
             return {
                 signatureData,
                 date,
@@ -174,7 +199,7 @@ const create = async (signatureData) => {
     console.log(signatureData);
     try {
         const signatureDataCreate = await signatures.create({
-            id: signatureData.id,
+            // id: signatureData.id,
             pattern_id: signatureData.pattern_id,
             type: signatureData.type,
             creation_time: signatureData.creation_time,
@@ -202,8 +227,8 @@ const create = async (signatureData) => {
         //// feach file data 
         signatureData.files.map(FileData => {
             file.create({
-                id: FileData.id,
-                signatureId: signatureData.id,
+                // id: FileData.id,
+                signatureId: signatureDataCreate.id,
                 file: FileData.file
             });
 
@@ -216,33 +241,33 @@ const create = async (signatureData) => {
         ///feach external reference data
         signatureData.external_references.map(externalRef => {
             externalReferences.create({
-                id: externalRef.id,
+                // id: externalRef.id,
                 type: externalRef.type,
                 reference: externalRef.reference,
-                signatureId: signatureData.id
+                signatureId:  signatureDataCreate.id
             });
             ///feach web server data
             signatureData.web_servers.map(webServ => {
                 webServer.create({
-                    id: webServ.id,
+                    // id: webServ.id,
                     web: webServ.web,
-                    signatureId: signatureData.id
+                    signatureId:  signatureDataCreate.id
                 });
             });
             ///feach vuln_data_extras data 
             signatureData.vuln_data_extras.map(vlunData => {
                 vulnDataExtra.create({
-                    id: vlunData.id,
-                    signatureId: signatureData.id,
+                    // id: vlunData.id,
+                    signatureId:  signatureDataCreate.id,
                     parameter: vlunData.description
                 });
             });
             /// feach parameters data 
             signatureData.parameters.map(params => {
                 param.create({
-                    id: params.id,
+                    // id: params.id,
                     parameter: params.parameter,
-                    signatureId: signatureData.id,
+                    signatureId: signatureDataCreate.id.id,
                 });
             });
 
@@ -258,14 +283,7 @@ const create = async (signatureData) => {
 const searchSignature = async (search) => {
     console.log(search)
     try {
-        const signatureData = await signatures.findAll({
-            where: { ...search },
-
-            include: [{ model: file },
-            ]
-
-        }
-        );
+        const signatureData = await signatures.findAll(search);
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
