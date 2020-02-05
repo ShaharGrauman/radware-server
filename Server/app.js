@@ -10,6 +10,7 @@ var adminRouter = require('./routes/admin');
 var attackRouter = require('./routes/attack');
 var signatureRouter = require('./routes/signatures');
 var loginRouter = require('./routes/login');
+var QaRouter = require('./routes/Qa');
 
 var app = express();
 
@@ -41,6 +42,7 @@ app.use('/admin', adminRouter);
 app.use('/attack', attackRouter);
 app.use('/signature', signatureRouter);
 app.use('/login', loginRouter);
+app.use('/Qa', QaRouter);
 
 
 // catch 404 and forward to error handler
