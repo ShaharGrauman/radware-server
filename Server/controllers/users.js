@@ -1,6 +1,7 @@
 
 
-const { users ,roles } = require("../models");
+const { users, roles} = require("../models/");
+const {roles_users} = require("../models/index")
 const { userCreation } = require('../middleware/validations');
 
 
@@ -43,11 +44,11 @@ const deleteUser = async (username) => {
 }
 
 const createUser = async (userData) => {
-    const result = await Joi.validate(userData, userCreation);
-    console.log(result);
-    if (!result) {
-        return result;
-    }
+    // const result = await Joi.validate(userData, userCreation);
+    // console.log(result);
+    // if (!result) {
+    //     return result;
+    // }
 
     try {
         const newUser = await users.create({
