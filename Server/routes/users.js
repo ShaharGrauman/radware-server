@@ -26,7 +26,21 @@ router.post('/new_user', async (req, res, next) => {
   try {
       const result = await userController.createUser(req.body);
       res.status(201).json({userId: result.id});
-  } catch (error) {
+  }catch (error) {
+      res.status(500).json({ msg: error.message });
+      console.log("create user doesn't work from routes");
+  }
+});
+
+router.put('/delete_user', async (req, res, next) => {
+  if(!req.body.username )
+  {
+    res.status(400).json({ msg: "username is not valid" });
+  }
+  try {
+      const result = await userController.deleteUser(req.body.username);
+      res.status(201).json({msg: 'deleted successfully'});
+  }catch (error) {
       res.status(500).json({ msg: error.message });
   }
 });

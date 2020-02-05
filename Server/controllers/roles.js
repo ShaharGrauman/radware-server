@@ -54,6 +54,10 @@ try {
        attributes: ['id','name'],
        include: [{ model: permissions ,attributes:['name']}]
      })
+        const rolesData = await roles.findAll({
+            attributes: ['id','name'],
+            include: [{ model: permissions ,attributes:['name'], through: {attributes: []}}]
+          })
 return rolesData;
 } catch (error) {
 throw new Error(`Cant get roles: ${error.message}`);
