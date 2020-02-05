@@ -6,21 +6,20 @@ var roleController = require('../controllers/roles');
 
 /* GET users listing. */
 router.get('/', async (req, res) => {
-  console.log('ssssssss');
-  try{
+  try {
     const users = await userController.getUserWithRoles();
     res.status(200).json(users);
-  }catch(error){
-    res.status(500).json({msg: error.message});
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
 });
 
 router.post('/new_user', async (req, res, next) => {
-  if(!req.body.username || 
-     !req.body.phone || 
-     !req.body.password || 
-     !req.body.status)
-  {
+  if (!req.body.name ||
+    !req.body.username ||
+    !req.body.phone ||
+    !req.body.password ||
+    !req.body.status) {
     res.status(400).json({ msg: "body is not valid" });
   }
   try {
@@ -42,6 +41,15 @@ router.put('/delete_user', async (req, res, next) => {
       res.status(201).json({msg: 'deleted successfully'});
   }catch (error) {
       res.status(500).json({ msg: error.message });
+  }
+});
+
+router.put('/:id', async (req, res, next) => {
+  try {
+    const result = await userController.editUser(req.body, req.params.id);
+    res.status(201).json({ userId: req.params.id });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
 });
 
