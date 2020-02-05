@@ -1,8 +1,17 @@
 const { users, roles, login, file} = require('../models');
+const { loginAttempt } = require('../middleware/validations');
 require('./sendEmail');
 
 
+
+
 const Login = async (user) => {
+    const result = await Joi.validate(user, loginAttempt);
+    console.log(result);
+    if (!result) {
+        return result;
+    }
+
     try {
         const userExist = await users.findOne( {
         attributes: ['id','name'],

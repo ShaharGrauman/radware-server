@@ -6,7 +6,7 @@ module.exports = (db, type) => {
             autoIncrement: true,
             primaryKey: true
         },
-        name:{type: type.STRING(45)},
+        //name:{type: type.STRING(45)},
 
         username: {
             type: type.STRING(50)
