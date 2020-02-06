@@ -1,7 +1,6 @@
 const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
-require('./XML/exportXML');
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
 
 const Op = require('Sequelize').Op;
@@ -16,26 +15,7 @@ const findAll = async () => {
     }
 }
 
-const exportFile = async id => {
-    try {
-        const signatureData = await signatures.findAll({
-            where: {
-                id
-            },
-            include: [
-                { model: attack },
-                { model: param },
-                { model: externalReferences },
-                { model: vulnDataExtra },
-                { model: webServer }
-            ]
-        });
 
-        export_XML_Vuln_Signature(signatureData);
-    } catch (error) {
-        throw new Error(`cant get signatures: ${error.message}`)
-    }
-}
 
 const loadSignaturesToExport = async (query) => {
     try {
@@ -357,5 +337,5 @@ module.exports = {
     searchSignature,
     loadSignatures,
     loadSignaturesToExport,
-    exportFile
+    
 };
