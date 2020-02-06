@@ -1,7 +1,7 @@
 
 
-const { users, roles} = require("../models/");
-const {roles_users} = require("../models/index")
+const { users, roles } = require("../models/");
+const { roles_users } = require("../models/index")
 const { userCreation } = require('../middleware/validations');
 
 
@@ -20,27 +20,28 @@ const getUserWithRoles = async (userId) => {
     else {
         try {
             const user = await users.findByPk(userId,
-                {attributes: ['name', 'username', 'password', 'phone'],
-                include: { model: roles, attributes: ['id', 'name'], through: { attributes: [] } }
-            });
+                {
+                    attributes: ['name', 'username', 'password', 'phone'],
+                    include: { model: roles, attributes: ['id', 'name'], through: { attributes: [] } }
+                });
             return user;
         } catch (error) {
             throw new Error(`Cant get user: ${error.message}`);
         }
     }
 }
- 
+
 
 const deleteUser = async (username) => {
     users.update(
-        {status: 'deleted'},
-        {where: {username: username}}
-      )
-      .then(function() {
-        return 'deleted successfully'
-      }).catch(function(error) {
-        return (error);
-      });
+        { status: 'deleted' },
+        { where: { username: username } }
+    )
+        .then(function () {
+            return 'deleted successfully'
+        }).catch(function (error) {
+            return (error);
+        });
 }
 
 const createUser = async (userData) => {
@@ -56,8 +57,10 @@ const createUser = async (userData) => {
             username: userData.username,
             phone: userData.phone,
             password: userData.password,
-            status: userData.status
         });
+
+        updateRolesUsers(userData.roles, newUser.id);
+
         return newUser;
     }
     catch (error) {
@@ -73,33 +76,43 @@ const editUser = async (userData, id) => {
             password: userData.password,
             phone: userData.phone
         },
-            {returning: true, where: { id: id } 
-        });
-        
+            {
+                returning: true, where: { id: id }
+            });
+
         const roles = userData.roles;
 
         roles_users.destroy({
             where: { user_Id: id }
         });
 
-        var rolesUsers = [];
-        for (var i=0; i < roles.length; i++){
-            var roleUser = {
-                role_id: roles[i],
-                user_id: id
-            };
-            rolesUsers.push(roleUser);
-        }
-
-        roles_users.bulkCreate(rolesUsers, {returning: true})
-    
+        //Updating roles_users table
+        updateRolesUsers(roles, id);
     }
     catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
     }
 }
 
+const updateRolesUsers = async (roles, userId) => {
+    try {
+        var rolesUsers = [];
+        for (var i = 0; i < roles.length; i++) {
+            var roleUser = {
+                role_id: roles[i],
+                user_id: userId
+            };
+            rolesUsers.push(roleUser);
+        }
 
+        await roles_users.bulkCreate(rolesUsers, { returning: true });
+
+    }
+    catch (error) {
+        throw new Error(`Cant create user: ${error.message}`);
+    }
+
+}
 
 module.exports = {
     getUserWithRoles,
