@@ -88,7 +88,7 @@ const loadSignaturesToExport = async (query) => {
             ]
 
     });
-    export_XML_Vuln_Signature(signatureDataToXML);
+    // export_XML_Vuln_Signature(signatureDataToXML);
     ///////
             
             let hasNext = true, hasPrev = false;
@@ -98,12 +98,7 @@ const loadSignaturesToExport = async (query) => {
             if(query.page != 1){
                 hasPrev = true;
             }
-            let status = [firstStatus]+", "+[secStatus];
-            if(firstStatus === secStatus)
-            {
-                secStatus = undefined;
-                status = [firstStatus];
-            }
+           
 
             signatureData.map((signature) => {
                 if(signature.test_data==("" || null)){
@@ -117,6 +112,12 @@ const loadSignaturesToExport = async (query) => {
             }
             if(secStatus === 'in_test'){
                 secStatus = 'In Test';
+            }
+            let status = [firstStatus]+", "+[secStatus];
+            if(firstStatus === secStatus)
+            {
+                secStatus = undefined;
+                status = [firstStatus];
             }
             return {
                 signatureData,
@@ -313,11 +314,10 @@ const findById = async (id) => {
 }
 
 const update = async (DataToUpdate, id) => {
-    const result = await Joi.validate(DataToUpdate, signatureUpdate);
-    console.log(result);
-    if (!result) {
-        return result;
-    }
+    // const result = await Joi.validate(DataToUpdate, signatureUpdate);
+    // if (!result) {
+    //     return result;
+    // }
 
     console.log(DataToUpdate);
     try {
@@ -341,15 +341,68 @@ const update = async (DataToUpdate, id) => {
             description: DataToUpdate.description,
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
-        }, { returning: true, where: { id: id } })
-
-
-        DataToUpdate.web_servers.map(webServ =>
-            webServer.update({
-                web: webServ.web,
-            }, { where: { signatureId: webServ.signatureId } })
+        }, { returning: true, where: { id: id } });
+        
+        DataToUpdate.web_servers.map(() =>
+            webServer.destroy(
+             { where: { signatureId: id } })
         );
 
+        DataToUpdate.web_servers.map(webServ =>
+            webServer.create({signatureId: id,
+                web: webServ.webserver})
+        );
+
+        DataToUpdate.vuln_data_extras.map( () =>
+            vulnDataExtra.destroy(
+                { where: { signatureId: id } })
+        );
+
+        DataToUpdate.vuln_data_extras.map((vuln) =>
+            vulnDataExtra.create({
+                 signatureId: id, description: vuln.description})
+        );
+        DataToUpdate.parameters.map(() =>
+            param.destroy(
+                {  where: { signatureId: id } })
+        );
+
+        DataToUpdate.parameters.map(paramNode =>
+            param.create({
+                 signatureId: id, parameter: paramNode.parameter})
+        );
+        
+        DataToUpdate.files.map(() =>
+            file.destroy(
+                {  where: { signatureId: id } })
+        );
+
+        DataToUpdate.files.map(fileNode =>
+            file.create({
+                 signatureId: id, file: fileNode.file})
+        );
+
+        DataToUpdate.external_references.map(() =>
+            externalReferences.destroy(
+                {  where: { signatureId: id } })
+        );
+
+        DataToUpdate.external_references.map(ref =>
+            externalReferences.create({
+                 signatureId: id, reference: ref.reference, type: ref.type})
+        );
+
+        signatureStatusHistory.create({signatureId: id, userId: DataToUpdate.user_id, status: DataToUpdate.status, 
+             time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+                hour: "numeric", 
+                minute: "numeric"}), date: new Date()
+        })
+
+        historyUsersActions.create({ userId: DataToUpdate.user_id, action_name: "edit", 
+             time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+                hour: "numeric", 
+                minute: "numeric"}), date: new Date(),system_name: 'system 1', screen_name: 'system 1'
+        })
 
         console.log('updatedSignature');
         console.log(updatedSignature);
