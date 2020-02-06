@@ -1,8 +1,17 @@
 const { users, roles, login, file} = require('../models');
+const { loginAttempt } = require('../middleware/validations');
 require('./sendEmail');
 
 
+
+
 const Login = async (user) => {
+    const result = await Joi.validate(user, loginAttempt);
+    console.log(result);
+    if (!result) {
+        return result;
+    }
+
     try {
         const userExist = await users.findOne( {
         attributes: ['id','name'],
@@ -81,7 +90,8 @@ const Login = async (user) => {
                          {returning: true, where: { id: lastLogin.user_id }
                      })
 
-                     sendMail('<h1>Unfortunately! your account is locked after 3 invalid login attempts</h1>');
+                     sendMail(`<h1>Unfortunately! your account ${exist.username} is locked after 3 invalid login attempts</h1>`);
+                     return "Incorrect email or password, Your account is locked Now"
                     }
                 }
             }

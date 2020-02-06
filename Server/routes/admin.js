@@ -5,7 +5,7 @@ var RolesController = require('../controllers/roles');
 
 router.get('/roles', async (req, res) => {
   try{
-    const roles = await RolesController.findAll();
+    const roles = await RolesController.getRoleWithPermissions();
     res.status(200).json(roles);
   }catch(error){
     res.status(500).json({msg: error.message});

@@ -93,6 +93,7 @@ module.exports = {
     file,
     externalReferences,
     users,
+    roles_users,
     signatures,
     signatureStatusHistory,
     roles,

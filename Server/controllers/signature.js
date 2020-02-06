@@ -1,11 +1,20 @@
 const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
+<<<<<<< HEAD
 require('./XML/exportXML');
+=======
+const { signatureCreation, signatureUpdate } = require('../middleware/validations');
+
+>>>>>>> master
 
 const Op = require('Sequelize').Op;
 
+
 const findAll = async () => {
+
+    
+
     try {
         const signatureData = await signatures.findAll();
         sendMail('<h1>find all success </h1>');
@@ -68,9 +77,10 @@ const loadSignaturesToExport = async (query) => {
                 ],
             limit: 1,
         });
+        let date=lastExportedSignatureDateByStatus[0].date;
 
         signatureData = await signatures.findAll({
-            attributes: ['id', 'pattern_id', 'description'],
+            attributes: ['id', 'pattern_id', 'description', 'test_data'],
             where: {
                 status: {
                     [Op.or]: [firstStatus, secStatus]
@@ -83,6 +93,7 @@ const loadSignaturesToExport = async (query) => {
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
         });
+<<<<<<< HEAD
 
 
         let hasNext = true, hasPrev = false;
@@ -104,6 +115,64 @@ const loadSignaturesToExport = async (query) => {
             secStatus
         };
     } catch (error) {
+=======
+      
+     ////////// for xml 
+        
+     signatureDataToXML = await signatures.findAll({
+        where: {
+            status: {
+                [Op.or]: [firstStatus, secStatus]
+              }
+        },
+        include: [
+            { model: attack },
+            { model: param },
+            { model: externalReferences },
+            { model: vulnDataExtra },
+            { model: webServer }
+            ]
+
+    });
+    export_XML_Vuln_Signature(signatureDataToXML);
+    ///////
+            
+            let hasNext = true, hasPrev = false;
+            if(signatureData.length%(query.size*query.page) != 0){
+              hasNext = false;
+            }
+            if(query.page != 1){
+                hasPrev = true;
+            }
+            let status = [firstStatus]+", "+[secStatus];
+            if(firstStatus === secStatus)
+            {
+                secStatus = undefined;
+                status = [firstStatus];
+            }
+
+            signatureData.map((signature) => {
+                if(signature.test_data==("" || null)){
+                    signature.test_data = false;
+                }else{
+                    signature.test_data = true;
+                }
+            });
+            if(  secStatus === 'in_qa'){
+                secStatus = 'In QA';
+            }
+            if(secStatus === 'in_test'){
+                secStatus = 'In Test';
+            }
+            return {
+                signatureData,
+                date,
+                hasNext,
+                hasPrev,
+                status
+            };
+    }catch(error){
+>>>>>>> master
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
@@ -167,6 +236,7 @@ const loadSignatures = async (query) => {
 }
 
 const create = async (signatureData) => {
+<<<<<<< HEAD
     // console.log(signatureData);
     signatures.addHook('afterCreate', (signatureDataCreate, options) => {
         signatures.update({
@@ -174,6 +244,16 @@ const create = async (signatureData) => {
         }, { where: { id: signatureDataCreate.id } })
         // signatureDataCreate.pattern_id = signatureDataCreate.id;
     });
+=======
+
+    const result = await Joi.validate(signatureData, signatureCreation);
+    console.log(result);
+    if (!result) {
+        return result;
+    }
+
+    console.log(signatureData);
+>>>>>>> master
     try {
         const signatureDataCreate = await signatures.create({
 
@@ -295,6 +375,12 @@ const findById = async (id) => {
 }
 
 const update = async (DataToUpdate, id) => {
+    const result = await Joi.validate(DataToUpdate, signatureUpdate);
+    console.log(result);
+    if (!result) {
+        return result;
+    }
+
     console.log(DataToUpdate);
     try {
         const updatedSignature = signatures.update({
