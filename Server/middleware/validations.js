@@ -10,7 +10,6 @@ module.exports = {
     signatureCreation: Joi.object().keys({
         user_id: Joi.required(),
         attack_id: Joi.required(),
-        pattern_id: Joi.required(),
         type: Joi.string().valid('vuln', 'vuln_ex', 'vuln_reg_ex'),
         creation_time: Joi.required(),
         creation_date: Joi.required(),
