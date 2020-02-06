@@ -15,34 +15,37 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/new_user', async (req, res, next) => {
-  if (!req.body.name ||
-    !req.body.username ||
-    !req.body.phone ||
-    !req.body.password ||
-    !req.body.status) {
-    res.status(400).json({ msg: "body is not valid" });
-  }
   try {
-      const result = await userController.createUser(req.body);
-      res.status(201).json({userId: result.id});
-  }catch (error) {
-      res.status(500).json({ msg: error.message });
-      console.log("create user doesn't work from routes");
+    const result = await userController.createUser(req.body);
+    res.status(201).json({ userId: result.id });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+    console.log("create user doesn't work from routes");
   }
 });
 
 router.put('/delete_user', async (req, res, next) => {
-  if(!req.body.username )
-  {
+  if (!req.body.username) {
     res.status(400).json({ msg: "username is not valid" });
   }
   try {
-      const result = await userController.deleteUser(req.body.username);
-      res.status(201).json({msg: 'deleted successfully'});
-  }catch (error) {
-      res.status(500).json({ msg: error.message });
+    const result = await userController.deleteUser(req.body.username);
+    res.status(201).json({ msg: 'deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
 });
+
+
+router.get('/:id', async (req, res) => {
+  try {
+    const user = await userController.getUserWithRoles(req.params.id);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+});
+
 
 router.put('/:id', async (req, res, next) => {
   try {
@@ -53,13 +56,16 @@ router.put('/:id', async (req, res, next) => {
   }
 });
 
-router.get('/roles', async (req, res) => {
-  try{
-    const roles = await roleController.findRoles();
-    res.status(200).json(roles);
-  }catch(error){
-    res.status(500).json({msg: error.message});
-  }
-});
+
+//constant
+
+// router.get('/roles', async (req, res) => {
+//   try {
+//     const roles = await roleController.getRoles();
+//     res.status(200).json(roles);
+//   } catch (error) {
+//     res.status(500).json({ msg: error.message });
+//   }
+// });
 
 module.exports = router;

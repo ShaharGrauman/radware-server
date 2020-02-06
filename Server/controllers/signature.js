@@ -190,7 +190,6 @@ const loadSignatures = async (query) => {
 }
 
 const create = async (signatureData) => {
-
     const result = await Joi.validate(signatureData, signatureCreation);
     console.log(result);
     if (!result) {
