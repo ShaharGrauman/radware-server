@@ -18,7 +18,7 @@ router.get('/search', async (req, res, next) => {
     if (req.query.scanParameters) search.setScanParameters(req.query.scanParameters);
     if (req.query.scanFile) search.setScanFile(req.query.scanFile);
 
-    
+
     if (req.query.reference) search.setReference(req.query.reference);
 
     try {
@@ -42,53 +42,54 @@ router.get('/', async (req, res, next) => {
 
 /* GET signatures listing. */
 router.get('/researcher', async (req, res, next) => {
-    try{
-      // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&status=all
-      const page = req.query.page || 1;
-      const size = req.query.size || 20;
-      let sortBy = req.query.sortby || 'creation_time';
-      const orderBy = req.query.orderby || 'asc';
-      const status = req.query.status || 'all';
-      // *status => all / inProgress / inTest / inQa / published / suspended
-      query = Object.assign({}, {
-          page,
-          size,
-          sortBy,
-          orderBy,
-          status
-      });
-     
-      const signatures = await SignatureController.loadSignatures(query);
-      res.status(200).json(signatures);
-    }catch(error){
-      res.status(500).json({msg: error.message});
-    }
-  });
+    try {
+        // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&status=all
+        const page = req.query.page || 1;
+        const size = req.query.size || 20;
+        let sortBy = req.query.sortby || 'creation_time';
+        const orderBy = req.query.orderby || 'asc';
+        const status = req.query.status || 'all';
+        // *status => all / inProgress / inTest / inQa / published / suspended
+        query = Object.assign({}, {
+            page,
+            size,
+            sortBy,
+            orderBy,
+            status
+        });
 
-  //export signatures
-  router.get('/export', async (req, res, next) => {
-    try{
-      // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&exportto={“Git ” , “Testing” , “ QA” }
-      const page = req.query.page || 1;
-      const size = req.query.size || 20;
-      let sortBy = req.query.sortby || 'creation_time';
-      const orderBy = req.query.orderby || 'asc';
-      const exportTo = req.query.exportto;
-      // *status => all / inProgress / inTest / inQa / published / suspended
-      query = Object.assign({}, {
-          page,
-          size,
-          sortBy,
-          orderBy,
-          exportTo
-      });
-     
-      const signatures = await SignatureController.loadSignaturesToExport(query);
-      res.status(200).json(signatures);
-    }catch(error){
-      res.status(500).json({msg: error.message});
+        const signatures = await SignatureController.loadSignatures(query);
+        res.status(200).json(signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
     }
-  });
+});
+
+
+//export signatures
+router.get('/export', async (req, res, next) => {
+    try {
+        // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&exportto={“Git ” , “Testing” , “ QA” }
+        const page = req.query.page || 1;
+        const size = req.query.size || 20;
+        let sortBy = req.query.sortby || 'creation_time';
+        const orderBy = req.query.orderby || 'asc';
+        const exportTo = req.query.exportto;
+        // *status => all / inProgress / inTest / inQa / published / suspended
+        query = Object.assign({}, {
+            page,
+            size,
+            sortBy,
+            orderBy,
+            exportTo
+        });
+
+        const signatures = await SignatureController.loadSignaturesToExport(query);
+        res.status(200).json(signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
 
 router.get('/:id', async (req, res, next) => {
     try {

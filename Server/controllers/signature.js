@@ -3,14 +3,9 @@ const sequelize = require('../config/database');
 require('./sendEmail');
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
 
-
 const Op = require('Sequelize').Op;
 
-
 const findAll = async () => {
-
-    
-
     try {
         const signatureData = await signatures.findAll();
         sendMail('<h1>find all success </h1>');
@@ -23,35 +18,35 @@ const findAll = async () => {
 
 
 const loadSignaturesToExport = async (query) => {
-    try{
-        let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf,signatureDataToXML;
-           
+    try {
+        let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf, signatureDataToXML;
 
-        if(query.exportTo === 'Git'){
-            firstStatus='published';
-            secStatus='published';
-            checkDateOf='export_for_git';
+
+        if (query.exportTo === 'Git') {
+            firstStatus = 'published';
+            secStatus = 'published';
+            checkDateOf = 'export_for_git';
         }
         if (query.exportTo === 'Testing') {
             firstStatus = 'published';
             secStatus = 'in_test';
-            checkDateOf='export_for_testing';
+            checkDateOf = 'export_for_testing';
         }
         if (query.exportTo === 'QA') {
             firstStatus = 'published';
             secStatus = 'in_qa';
-            checkDateOf='export_for_qa';
+            checkDateOf = 'export_for_qa';
 
         }
         lastExportedSignatureDateByStatus = await historyUsersActions.findAll({
             attributes: ['date'],
             where: {
                 action_name: checkDateOf
-              },
-            order: 
-            [
-                ['date', 'desc']
-            ],
+            },
+            order:
+                [
+                    ['date', 'desc']
+                ],
             limit: 1,
         });
         let date=lastExportedSignatureDateByStatus[0].date;
@@ -61,7 +56,7 @@ const loadSignaturesToExport = async (query) => {
             where: {
                 status: {
                     [Op.or]: [firstStatus, secStatus]
-                  }
+                }
             },
             order:
                 [
@@ -70,62 +65,27 @@ const loadSignaturesToExport = async (query) => {
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
         });
-      
-     ////////// for xml 
-        
-     signatureDataToXML = await signatures.findAll({
-        where: {
-            status: {
-                [Op.or]: [firstStatus, secStatus]
-              }
-        },
-        include: [
-            { model: attack },
-            { model: param },
-            { model: externalReferences },
-            { model: vulnDataExtra },
-            { model: webServer }
-            ]
 
-    });
-    export_XML_Vuln_Signature(signatureDataToXML);
-    ///////
-            
-            let hasNext = true, hasPrev = false;
-            if(signatureData.length%(query.size*query.page) != 0){
-              hasNext = false;
-            }
-            if(query.page != 1){
-                hasPrev = true;
-            }
-            let status = [firstStatus]+", "+[secStatus];
-            if(firstStatus === secStatus)
-            {
-                secStatus = undefined;
-                status = [firstStatus];
-            }
 
-            signatureData.map((signature) => {
-                if(signature.test_data==("" || null)){
-                    signature.test_data = false;
-                }else{
-                    signature.test_data = true;
-                }
-            });
-            if(  secStatus === 'in_qa'){
-                secStatus = 'In QA';
-            }
-            if(secStatus === 'in_test'){
-                secStatus = 'In Test';
-            }
-            return {
-                signatureData,
-                date,
-                hasNext,
-                hasPrev,
-                status
-            };
-    }catch(error){
+        let hasNext = true, hasPrev = false;
+        if (signatureData.length % (query.size * query.page) != 0) {
+            hasNext = false;
+        }
+        if (query.page != 1) {
+            hasPrev = true;
+        }
+        if (firstStatus === secStatus) {
+            secStatus = undefined;
+        }
+        return {
+            signatureData,
+            lastExportedSignatureDateByStatus,
+            hasNext,
+            hasPrev,
+            firstStatus,
+            secStatus
+        };
+    } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
@@ -189,18 +149,17 @@ const loadSignatures = async (query) => {
 }
 
 const create = async (signatureData) => {
-
-    const result = await Joi.validate(signatureData, signatureCreation);
-    console.log(result);
-    if (!result) {
-        return result;
-    }
-
-    console.log(signatureData);
+    // console.log(signatureData);
+    signatures.addHook('afterCreate', (signatureDataCreate, options) => {
+        signatures.update({
+            pattern_id: signatureDataCreate.id
+        }, { where: { id: signatureDataCreate.id } })
+    });
     try {
         const signatureDataCreate = await signatures.create({
+
             // id: signatureData.id,
-            pattern_id: signatureData.pattern_id,
+            // pattern_id: signatureData.pattern_id,
             type: signatureData.type,
             creation_time: signatureData.creation_time,
             creation_date: signatureData.creation_date,
@@ -221,7 +180,7 @@ const create = async (signatureData) => {
             severity: signatureData.severity,
             description: signatureData.description,
             test_data: signatureData.test_data,
-            attack_id: signatureData.attackId,
+            attack_id: signatureData.attack_id,
             user_id: signatureData.userId,
         });
         //// feach file data 
@@ -231,9 +190,8 @@ const create = async (signatureData) => {
                 signatureId: signatureDataCreate.id,
                 file: FileData.file
             });
-
         })
-        /// attack data 
+        // /// attack data 
         attack.create({
             id: signatureData.attack.id,
             name: signatureData.attack.name
@@ -244,35 +202,40 @@ const create = async (signatureData) => {
                 // id: externalRef.id,
                 type: externalRef.type,
                 reference: externalRef.reference,
-                signatureId:  signatureDataCreate.id
+                signatureId: signatureDataCreate.id
             });
-            ///feach web server data
-            signatureData.web_servers.map(webServ => {
-                webServer.create({
-                    // id: webServ.id,
-                    web: webServ.web,
-                    signatureId:  signatureDataCreate.id
-                });
-            });
-            ///feach vuln_data_extras data 
-            signatureData.vuln_data_extras.map(vlunData => {
-                vulnDataExtra.create({
-                    // id: vlunData.id,
-                    signatureId:  signatureDataCreate.id,
-                    parameter: vlunData.description
-                });
-            });
-            /// feach parameters data 
-            signatureData.parameters.map(params => {
-                param.create({
-                    // id: params.id,
-                    parameter: params.parameter,
-                    signatureId: signatureDataCreate.id.id,
-                });
-            });
-
-
         })
+        ///feach web server data
+        signatureData.web_servers.map(webServ => {
+            console.log(webServ.web)
+            webServer.create({
+                // id: webServ.id,
+
+                web: webServ.web,
+                signatureId: signatureDataCreate.id
+            });
+        });
+        ///feach vuln_data_extras data 
+        signatureData.vuln_data_extras.map(vlunData => {
+            console.log(vlunData);
+            vulnDataExtra.create({
+                // id: vlunData.id,
+
+                signatureId: signatureDataCreate.id,
+                description: vlunData.description
+            });
+        });
+        // feach parameters data 
+        signatureData.parameters.map(params => {
+            param.create({
+                // id: params.id,
+                parameter: params.parameter,
+                signatureId: signatureDataCreate.id,
+            });
+        });
+
+
+
 
         return signatureDataCreate;
     } catch (error) {
@@ -313,12 +276,6 @@ const findById = async (id) => {
 }
 
 const update = async (DataToUpdate, id) => {
-    const result = await Joi.validate(DataToUpdate, signatureUpdate);
-    console.log(result);
-    if (!result) {
-        return result;
-    }
-
     console.log(DataToUpdate);
     try {
         const updatedSignature = signatures.update({
@@ -344,11 +301,11 @@ const update = async (DataToUpdate, id) => {
         }, { returning: true, where: { id: id } })
 
 
-        DataToUpdate.web_servers.map(webServ =>
-            webServer.update({
-                web: webServ.web,
-            }, { where: { signatureId: webServ.signatureId } })
-        );
+        // DataToUpdate.web_servers.map(webServ =>
+        //     webServer.update({
+        //         web: webServ.web,
+        //     }, { where: { signatureId: webServ.signatureId } })
+        // );
 
 
         console.log('updatedSignature');
@@ -379,5 +336,6 @@ module.exports = {
     Delete,
     searchSignature,
     loadSignatures,
-    loadSignaturesToExport
+    loadSignaturesToExport,
+    
 };
