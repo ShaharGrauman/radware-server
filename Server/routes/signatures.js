@@ -29,6 +29,21 @@ router.get('/search', async (req, res, next) => {
     }
 
 });
+
+router.get('/export/xml', async (req, res, next) => {
+    if (req.query.id) {
+        console.log(req.query.id)
+        try {
+            const result = await SignatureController.exportFile(req.query.id);
+            res.status(200).json(result);
+        } catch (error) {
+            res.status(500).json({ msg: error.message });
+        }
+    }
+
+})
+
+
 /* GET home page. */
 router.get('/', async (req, res, next) => {
     try {

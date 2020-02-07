@@ -1,6 +1,8 @@
 const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
+require('./XML/exportXML');
+
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
 
 const Op = require('Sequelize').Op;
@@ -15,6 +17,26 @@ const findAll = async () => {
     }
 }
 
+const exportFile = async id => {
+    try {
+        const signatureData = await signatures.findAll({
+            where: {
+                id
+            },
+            include: [
+                { model: attack },
+                { model: param },
+                { model: externalReferences },
+                { model: vulnDataExtra },
+                { model: webServer }
+            ]
+        });
+
+        routeByType(signatureData);
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
+    }
+}
 
 
 const loadSignaturesToExport = async (query) => {
@@ -151,6 +173,7 @@ const loadSignatures = async (query) => {
 const create = async (signatureData) => {
     // console.log(signatureData);
     signatures.addHook('afterCreate', (signatureDataCreate, options) => {
+        
         signatures.update({
             pattern_id: signatureDataCreate.id
         }, { where: { id: signatureDataCreate.id } })
@@ -207,11 +230,11 @@ const create = async (signatureData) => {
         })
         ///feach web server data
         signatureData.web_servers.map(webServ => {
-            console.log(webServ.web)
+            console.log(webServ.webserver)
             webServer.create({
                 // id: webServ.id,
 
-                web: webServ.web,
+                web: webServ.webserver,
                 signatureId: signatureDataCreate.id
             });
         });
@@ -234,7 +257,12 @@ const create = async (signatureData) => {
             });
         });
 
+/////////////// add to signture status history  + add to edit 
 
+
+
+
+///////////////////
 
 
         return signatureDataCreate;
@@ -337,5 +365,5 @@ module.exports = {
     searchSignature,
     loadSignatures,
     loadSignaturesToExport,
-    
+    exportFile
 };
