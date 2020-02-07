@@ -5,11 +5,11 @@ var builder = require('xmlbuilder');
 
 const { findById } = require('../../controllers/signature');
 var SignatureController = require('../../controllers/signature');
-var root = builder.create('Vulnerabilities_Date');
 
 routeByType = signatureData => {
+    var root = builder.create('Vulnerabilities_Date');
     signatureData.map(data => {
-        if(data.type=='vuln') export_XML_Vuln_Signature(data);
+        if(data.type=='vuln') export_XML_Vuln_Signature(data,root);
         if(data.type=='vuln_ex') export_XML_VulnEx_Signature(data);
         if(data.type=='reg_ex') export_XML_VulnRegEx_Signature(data);
     });
@@ -94,7 +94,7 @@ export_XML_VulnEx_Signature = signatureData => {
 
 }
 
-export_XML_Vuln_Signature = signatureData => {
+export_XML_Vuln_Signature = (signatureData,root) => {
 
     var obj = {};
 
