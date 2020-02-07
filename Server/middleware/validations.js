@@ -2,15 +2,15 @@ Joi = require('joi');
 
 module.exports = {
     userCreation: Joi.object().keys({
-        username: Joi.string().email().required().min(4).max(25),
-        password: Joi.required().min(6).max(18),
-        phone: Joi.number().required().min(6).max(12),
+        username: Joi.string().email().min(4).max(25).required(),
+        password: Joi.string().min(6).max(18).required(),
+        phone: Joi.string().min(6).max(12),
         status: Joi.string().valid('active', 'deleted')
     }),
     signatureCreation: Joi.object().keys({
         user_id: Joi.required(),
-        attack_id: number().required().min(1).max(12),
-        pattern_id: Joi.required(),
+        attack_id: Joi.string().min(1).max(12),
+        pattern_id: Joi. string().min(1).max(12).required(),
         type: Joi.string().valid('vuln', 'vuln_ex', 'vuln_reg_ex'),
         creation_time: Joi.required(),
         creation_date: Joi.required(),
@@ -18,11 +18,11 @@ module.exports = {
         in_qa_internal_status_manual: Joi.string().valid('init', 'passed', 'failed'),
         in_qa_internal_status_performance: Joi.string().valid('init', 'passed', 'failed'),
         in_qa_internal_status_automation: Joi.string().valid('init', 'passed', 'failed'),
-        vuln_data: Joi.allow('').optional().min(1).max(255),
+        vuln_data: Joi.allow('').optional(),
         keep_order: Joi.boolean(),
         start_break: Joi.string().min(1).max(255),
         end_break: Joi.string().min(1).max(255),
-        right_index: Joi.number().min(1).max(255),
+        right_index: Joi.string().min(1).max(255),
         scan_uri: Joi.boolean(),
         scan_header: Joi.boolean(),
         scan_body: Joi.boolean(),
@@ -62,8 +62,8 @@ module.exports = {
         attack_id: Joi.number()
     }),
     loginAttempt: Joi.object().keys({
-        username: Joi.string().email().required().min(4).max(25),
-        password: Joi.required().min(6).max(18),
+        username: Joi.string().email().min(4).max(25).required(),
+        password: Joi.string().min(6).max(18).required(),
     })
 
 };
