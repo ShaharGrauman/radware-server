@@ -30,11 +30,11 @@ router.get('/search', async (req, res, next) => {
 
 });
 
-router.get('/export/xml', async (req, res, next) => {
-    if (req.query.id) {
-        console.log(req.query.id)
+router.post('/export/xml', async (req, res, next) => {
+    if (req.body.id) {
+        console.log(req.body.id)
         try {
-            const result = await SignatureController.exportFile(req.query.id);
+            const result = await SignatureController.exportFile(req.body.id);
             res.status(200).json(result);
         } catch (error) {
             res.status(500).json({ msg: error.message });
