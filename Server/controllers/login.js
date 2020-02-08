@@ -31,7 +31,7 @@ const Login = async (user) => {
             try{
                   login.create({
                     user_id: userExist.id,
-                      time: new Date().toLocaleTimeString("he-IL"),
+                      time: new Date().getTime(),
                       date: new Date().toLocaleString("he-IL"),
                       success: 0
                   })

@@ -60,6 +60,9 @@ signatureStatusHistory.belongsTo(signatures);
 users.hasMany(signatureStatusHistory);
 signatureStatusHistory.belongsTo(users);
 
+users.hasMany(historyUsersActions);
+historyUsersActions.belongsTo(users);
+
 /// relationships one to many
 signatures.hasMany(webServer);
 webServer.belongsTo(signatures);
