@@ -1,6 +1,8 @@
 const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
+require('./XML/exportXML');
+
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
 
 
@@ -20,6 +22,26 @@ const findAll = async () => {
     }
 }
 
+const exportFile = async id => {
+    try {
+        const signatureData = await signatures.findAll({
+            where: {
+                id
+            },
+            include: [
+                { model: attack },
+                { model: param },
+                { model: externalReferences },
+                { model: vulnDataExtra },
+                { model: webServer }
+            ]
+        });
+
+        routeByType(signatureData);
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
+    }
+}
 
 
 const loadSignaturesToExport = async (query) => {
@@ -190,6 +212,7 @@ const loadSignatures = async (query) => {
 }
 
 const create = async (signatureData) => {
+
     const result = await Joi.validate(signatureData, signatureCreation);
     console.log(result);
     if (!result) {
@@ -246,13 +269,15 @@ const create = async (signatureData) => {
                 reference: externalRef.reference,
                 signatureId:  signatureDataCreate.id
             });
-            ///feach web server data
-            signatureData.web_servers.map(webServ => {
-                webServer.create({
-                    // id: webServ.id,
-                    web: webServ.web,
-                    signatureId:  signatureDataCreate.id
-                });
+        })
+        ///feach web server data
+        signatureData.web_servers.map(webServ => {
+            console.log(webServ.webserver)
+            webServer.create({
+                // id: webServ.id,
+
+                web: webServ.webserver,
+                signatureId: signatureDataCreate.id
             });
             ///feach vuln_data_extras data 
             signatureData.vuln_data_extras.map(vlunData => {
@@ -271,6 +296,15 @@ const create = async (signatureData) => {
                 });
             });
 
+        });
+
+/////////////// add to signture status history  + add to edit 
+
+
+
+
+
+///////////////////
 
         })
 
@@ -431,5 +465,7 @@ module.exports = {
     Delete,
     searchSignature,
     loadSignatures,
-    loadSignaturesToExport
+    loadSignaturesToExport,
+    exportFile
+
 };
