@@ -4,7 +4,6 @@ require('./sendEmail');
 
 
 
-
 const Login = async (user) => {
     const result = await Joi.validate(user, loginAttempt);
     console.log(result);

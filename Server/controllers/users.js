@@ -1,8 +1,5 @@
-
-
 const { users ,roles } = require("../models");
-const { userCreation } = require('../middleware/validations');
-
+const { userCreation,userUpdate } = require('../middleware/validations');
 
 const getUserWithRoles = async (userId) => {
     if (!userId) {
@@ -64,7 +61,13 @@ const createUser = async (userData) => {
     }
 }
 
-const editUser = async (userData, id) => {
+const editUser = async (DataToUpdate, id) => {
+    const result = await Joi.validate(DataToUpdate,userUpdate);
+    console.log(result);
+    if (!result) {
+        return result;
+    }
+    console.log(DataToUpdate);
     try {
         const editUser = await users.update({
             name: userData.name,
@@ -76,7 +79,6 @@ const editUser = async (userData, id) => {
         });
         
         const roles = userData.roles;
-
         roles_users.destroy({
             where: { user_Id: id }
         });
@@ -89,7 +91,6 @@ const editUser = async (userData, id) => {
             };
             rolesUsers.push(roleUser);
         }
-
         roles_users.bulkCreate(rolesUsers, {returning: true})
     
     }

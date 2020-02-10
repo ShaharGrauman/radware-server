@@ -5,7 +5,25 @@ module.exports = {
         username: Joi.string().email().required(),
         password: Joi.required(),
         phone: Joi.number().required(),
-        status: Joi.required()
+        status: Joi.required(),
+        roles : Joi.array(),
+    }),
+    userUpdate:Joi.object().keys({
+        username: Joi.string().email().required(),
+        password: Joi.required(),
+        phone: Joi.number().required(),
+        status: Joi.required(),
+        roles : Joi.array(),
+    }),
+    roleCreation :Joi.object().keys ({
+        name:Joi.string().require(),
+        deccription:string().require(),
+        permissions:Joi.array(),
+    }),
+    roleUpdate:Joi.object().keys({
+        name:Joi.string().require(),
+        deccription:string().require(),
+        permissions:Joi.array(),
     }),
     signatureCreation: Joi.object().keys({
         user_id: Joi.required(),
@@ -33,10 +51,10 @@ module.exports = {
         test_data: Joi.string(),
         files: Joi.array(),
         attack_id: Joi.number(),
-        parameters: Joi.array()
-        , external_references: Joi.array()
-        , vuln_data_extras: Joi.array()
-        , web_servers: Joi.array()
+        parameters: Joi.array(),
+        external_references: Joi.array(),
+        vuln_data_extras: Joi.array(),
+        web_servers: Joi.array()
 
     }),
     signatureUpdate: Joi.object().keys({
