@@ -16,12 +16,12 @@ module.exports = {
         roles : Joi.array(),
     }),
     roleCreation :Joi.object().keys ({
-        name:Joi.string().require(),
-        deccription:string().require(),
+        name:Joi.string().required(),
+        deccription:string().required(),
         permissions:Joi.array(),
     }),
     roleUpdate:Joi.object().keys({
-        name:Joi.string().require(),
+        name:Joi.string().required(),
         deccription:string().require(),
         permissions:Joi.array(),
     }),
