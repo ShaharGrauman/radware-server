@@ -176,8 +176,17 @@ const create = async (signatureData) => {
     if (!result) {
         return result;
     }
+    
 
     console.log(signatureData);
+
+    signatures.addHook('afterCreate', (signatureDataCreate, options) => {
+        
+        signatures.update({
+            pattern_id: signatureDataCreate.id
+        }, { where: { id: signatureDataCreate.id } })
+    });
+    
     try {
         const signatureDataCreate = await signatures.create({
             // id: signatureData.id,
