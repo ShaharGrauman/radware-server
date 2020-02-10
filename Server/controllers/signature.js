@@ -93,26 +93,7 @@ const loadSignaturesToExport = async (query) => {
             limit: parseInt(query.size),
         });
       
-     ////////// for xml 
-        
-     signatureDataToXML = await signatures.findAll({
-        where: {
-            status: {
-                [Op.or]: [firstStatus, secStatus]
-              }
-        },
-        include: [
-            { model: attack },
-            { model: param },
-            { model: externalReferences },
-            { model: vulnDataExtra },
-            { model: webServer }
-            ]
-
-    });
-    // export_XML_Vuln_Signature(signatureDataToXML);
-    ///////
-            
+ 
             let hasNext = true, hasPrev = false;
             if(signatureData.length%(query.size*query.page) != 0){
               hasNext = false;
@@ -218,8 +199,17 @@ const create = async (signatureData) => {
     if (!result) {
         return result;
     }
+    
 
     console.log(signatureData);
+
+    signatures.addHook('afterCreate', (signatureDataCreate, options) => {
+        
+        signatures.update({
+            pattern_id: signatureDataCreate.id
+        }, { where: { id: signatureDataCreate.id } })
+    });
+    
     try {
         const signatureDataCreate = await signatures.create({
             // id: signatureData.id,

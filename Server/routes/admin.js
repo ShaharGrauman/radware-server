@@ -7,8 +7,8 @@ router.get('/roles', async (req, res) => {
   try{
     const roles = await RolesController.getRoleWithPermissions();
     res.status(200).json(roles);
-  }catch(error){
-    res.status(500).json({msg: error.message});
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
   }
 });
 

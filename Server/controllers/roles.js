@@ -51,7 +51,7 @@ const getRoleWithPermissions = async (roleId) => {
     if (!roleId) {
         try {
             const rolesData = await roles.findAll({
-                attributes: ['id', 'name'],
+                // attributes: ['id', 'name'],
                 include: [{ model: permissions, attributes: ['name'] }]
             });
             return rolesData;
@@ -117,9 +117,10 @@ const editRole = async (roleData, id) => {
 }
 
 const getRoles = async () => {
+
     try {
         const rolesData = await roles.findAll({
-            attributes: ['id', 'name']
+            // attributes: ['id', 'name']
         })
         return rolesData;
     } catch (error) {

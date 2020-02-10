@@ -10,19 +10,12 @@ routeByType = signatureData => {
     var root = builder.create('Vulnerabilities_Date');
     signatureData.map(data => {
         if (data.type == 'vuln') export_XML_Vuln_Signature(data, root);
-        if (data.type == 'vuln_ex') export_XML_VulnEx_Signature(data, root);
-        if (data.type == 'vuln_reg_ex') export_XML_VulnRegEx_Signature(data, root);
+        if (data.type == 'vuln_ex') export_XML_VulnEx_Signature(data);
+        if (data.type == 'reg_ex') export_XML_VulnRegEx_Signature(data);
     });
-    var xml = root.end({ pretty: true });
-    path = '../../../Server';
-    if (fs.existsSync(path)) {
-        fs.appendFileSync('xml.xml', xml);
-    } else {
-        fs.writeFileSync('xml.xml', xml);
-    }
 }
 
-export_XML_VulnRegEx_Signature = (signatureData, root) => {
+export_XML_VulnRegEx_Signature = signatureData => {
 
     var obj = {};
 
@@ -46,12 +39,18 @@ export_XML_VulnRegEx_Signature = (signatureData, root) => {
     Vuln.ele('Description', signatureData.description)
 
 
-
+    var xml = root.end({ pretty: true });
+    path = '../../../Server';
+    if (fs.existsSync(path)) {
+        fs.appendFileSync('xml.xml', xml);
+    } else {
+        fs.writeFileSync('xml.xml', xml);
+    }
 
 
 }
 
-export_XML_VulnEx_Signature = (signatureData, root) => {
+export_XML_VulnEx_Signature = signatureData => {
 
     var obj = {};
 
@@ -85,7 +84,13 @@ export_XML_VulnEx_Signature = (signatureData, root) => {
 
 
 
-
+    var xml = root.end({ pretty: true });
+    path = '../../../Server';
+    if (fs.existsSync(path)) {
+        fs.appendFileSync('xml.xml', xml);
+    } else {
+        fs.writeFileSync('xml.xml', xml);
+    }
 
 }
 
@@ -121,7 +126,13 @@ export_XML_Vuln_Signature = (signatureData, root) => {
 
 
 
-
+    var xml = root.end({ pretty: true });
+    path = '../../../Server';
+    if (fs.existsSync(path)) {
+        fs.appendFileSync('xml.xml', xml);
+    } else {
+        fs.writeFileSync('xml.xml', xml);
+    }
 
 }
 
