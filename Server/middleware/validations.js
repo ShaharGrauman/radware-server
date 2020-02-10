@@ -2,29 +2,31 @@ Joi = require('joi');
 
 module.exports = {
     userCreation: Joi.object().keys({
-        username: Joi.string().email().required(),
-        password: Joi.required(),
-        phone: Joi.number().required(),
-        status: Joi.required(),
-        roles : Joi.array(),
-    }),
-    userUpdate:Joi.object().keys({
-        username: Joi.string().email().required(),
-        password: Joi.required(),
-        phone: Joi.number().required(),
-        status: Joi.required(),
-        roles : Joi.array(),
-    }),
-    roleCreation :Joi.object().keys ({
-        name:Joi.string().required(),
-        deccription:string().required(),
-        permissions:Joi.array(),
-    }),
-    roleUpdate:Joi.object().keys({
-        name:Joi.string().required(),
-        deccription:string().require(),
-        permissions:Joi.array(),
-    }),
+    username: Joi.string().email().min(4).max(25).required(),
+    password: Joi.string().min(6).max(18).required(),
+    phone: Joi.string().min(6).max(12),
+    status: Joi.string().valid('active', 'deleted'),
+    roles: Joi.array()
+}),
+// userUpdate: Joi.object().keys({
+//     username: Joi.string().email().min(4).max(25).required(),
+//     password: Joi.string().min(6).max(18).required(),
+//     phone: Joi.string().min(6).max(12),
+//     status: Joi.string().valid('active', 'deleted'),
+//     roles: Joi.array()
+// }),
+// roleCreation:Joi.object().keys({
+//     name:Joi.string().min(4).max(25).required(),
+//     description:string().required(),
+//     permissions :Joi.array()
+// }),
+
+// roleUpdate:Joi.object().keys({
+//     name:Joi.string().min(4).max(25).required(),
+//     description:string().required(),
+//     permissions :Joi.array()
+// }),
+
     signatureCreation: Joi.object().keys({
         user_id: Joi.required(),
         attack_id: Joi.required(),

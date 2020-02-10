@@ -40,11 +40,11 @@ const deleteUser = async (username) => {
 }
 
 const createUser = async (userData) => {
-    const result = await Joi.validate(userData, userCreation);
-    console.log(result);
-    if (!result) {
-        return result;
-    }
+    // const result = await Joi.validate(userData, userCreation);
+    // console.log(result);
+    // if (!result) {
+    //     return result;
+    // }
 
     try {
         const newUser = await users.create({
@@ -62,12 +62,12 @@ const createUser = async (userData) => {
 }
 
 const editUser = async (DataToUpdate, id) => {
-    const result = await Joi.validate(DataToUpdate,userUpdate);
-    console.log(result);
-    if (!result) {
-        return result;
-    }
-    console.log(DataToUpdate);
+    // const result = await Joi.validate(DataToUpdate,userUpdate);
+    // console.log(result);
+    // if (!result) {
+    //     return result;
+    // }
+    // console.log(DataToUpdate);
     try {
         const editUser = await users.update({
             name: userData.name,
