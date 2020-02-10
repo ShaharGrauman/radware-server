@@ -1,6 +1,8 @@
 const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
+require('./XML/exportXML');
+
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
 
 
@@ -20,6 +22,26 @@ const findAll = async () => {
     }
 }
 
+const exportFile = async id => {
+    try {
+        const signatureData = await signatures.findAll({
+            where: {
+                id
+            },
+            include: [
+                { model: attack },
+                { model: param },
+                { model: externalReferences },
+                { model: vulnDataExtra },
+                { model: webServer }
+            ]
+        });
+
+        routeByType(signatureData);
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
+    }
+}
 
 
 const loadSignaturesToExport = async (query) => {
@@ -171,6 +193,7 @@ const loadSignatures = async (query) => {
 }
 
 const create = async (signatureData) => {
+
     const result = await Joi.validate(signatureData, signatureCreation);
     console.log(result);
     if (!result) {
@@ -236,13 +259,15 @@ const create = async (signatureData) => {
                 reference: externalRef.reference,
                 signatureId:  signatureDataCreate.id
             });
-            ///feach web server data
-            signatureData.web_servers.map(webServ => {
-                webServer.create({
-                    // id: webServ.id,
-                    web: webServ.web,
-                    signatureId:  signatureDataCreate.id
-                });
+        })
+        ///feach web server data
+        signatureData.web_servers.map(webServ => {
+            console.log(webServ.webserver)
+            webServer.create({
+                // id: webServ.id,
+
+                web: webServ.webserver,
+                signatureId: signatureDataCreate.id
             });
             ///feach vuln_data_extras data 
             signatureData.vuln_data_extras.map(vlunData => {
@@ -257,17 +282,30 @@ const create = async (signatureData) => {
                 param.create({
                     // id: params.id,
                     parameter: params.parameter,
-                    signatureId: signatureDataCreate.id.id,
+                    signatureId: signatureDataCreate.id,
                 });
             });
 
-
+            historyUsersActions.create({ userId: DataToUpdate.user_id, action_name: "created signature" +signatureDataCreate.id, 
+            time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+               hour: "numeric", 
+               minute: "numeric"}), date: new Date(),system_name: 'system 1', screen_name: 'system 1'
+       })
         })
 
+       
+
+        historyUsersActions.create({ userId: '1', action_name: "add",
+        description: "created signature ",
+        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+           hour: "numeric", 
+           minute: "numeric"}), date: new Date()
+   });
         return signatureDataCreate;
     } catch (error) {
         throw new Error(`Cant create signatures: ${error.message}`);
     }
+    
 }
 
 const searchSignature = async (search) => {
@@ -281,8 +319,6 @@ const searchSignature = async (search) => {
 }
 
 const findById = async (id) => {
-
-
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -296,6 +332,12 @@ const findById = async (id) => {
             ]
             // include: [{ all: true }]
         });
+        historyUsersActions.create({ userId: '1', action_name: "search",
+        description: "search signature "+id,
+        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+           hour: "numeric", 
+           minute: "numeric"}), date: new Date()
+   });
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -303,10 +345,10 @@ const findById = async (id) => {
 }
 
 const update = async (DataToUpdate, id) => {
-    // const result = await Joi.validate(DataToUpdate, signatureUpdate);
-    // if (!result) {
-    //     return result;
-    // }
+    const result = await Joi.validate(DataToUpdate, signatureUpdate);
+    if (!result) {
+        return result;
+    }
 
     console.log(DataToUpdate);
     try {
@@ -381,17 +423,18 @@ const update = async (DataToUpdate, id) => {
                  signatureId: id, reference: ref.reference, type: ref.type})
         );
 
-        signatureStatusHistory.create({signatureId: id, userId: DataToUpdate.user_id, status: DataToUpdate.status, 
-             time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-                hour: "numeric", 
-                minute: "numeric"}), date: new Date()
-        })
+        // signatureStatusHistory.create({signatureId: id, userId: DataToUpdate.user_id, status: DataToUpdate.status, 
+        //      time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+        //         hour: "numeric", 
+        //         minute: "numeric"}), date: new Date()
+        // })
 
-        historyUsersActions.create({ userId: DataToUpdate.user_id, action_name: "edit", 
-             time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-                hour: "numeric", 
-                minute: "numeric"}), date: new Date(),system_name: 'system 1', screen_name: 'system 1'
-        })
+        historyUsersActions.create({ userId: '1', action_name: "edit",
+        description: "edit signature "+id,
+        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+           hour: "numeric", 
+           minute: "numeric"}), date: new Date()
+   });
 
         console.log('updatedSignature');
         console.log(updatedSignature);
@@ -406,6 +449,12 @@ const Delete = async id => {
         const result = signatures.destroy({
             where: { id: id }
         })
+        historyUsersActions.create({ userId: '1', action_name: "delete",
+        description: "delete signature "+id,
+        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+           hour: "numeric", 
+           minute: "numeric"}), date: new Date()
+   });
         return result;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -421,5 +470,7 @@ module.exports = {
     Delete,
     searchSignature,
     loadSignatures,
-    loadSignaturesToExport
+    loadSignaturesToExport,
+    exportFile
+
 };
