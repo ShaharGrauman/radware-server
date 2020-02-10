@@ -1,14 +1,14 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <Vulnerabilities_Date>
   <VulnEx>
     <PatternID>68362</PatternID>
     <Fragments>
       <Fragment>
-        <VulnDataEx />
+        <VulnDataEx/>
         <KeepOrder>false</KeepOrder>
-        <VulnData />
+        <VulnData/>
         <params>PARAM</params>
-        <Leftindex />
+        <Leftindex/>
         <RightIndex>3</RightIndex>
       </Fragment>
     </Fragments>
@@ -30,9 +30,9 @@
     <PatternID>68363</PatternID>
     <Fragments>
       <Fragment>
-        <VulnData />
+        <VulnData/>
         <params>PARAM</params>
-        <Leftindex />
+        <Leftindex/>
         <RightIndex>3</RightIndex>
       </Fragment>
     </Fragments>
@@ -54,9 +54,9 @@
     <PatternID>68364</PatternID>
     <Fragments>
       <Fragment>
-        <VulnData />
-        <VulnData />
-        <Leftindex />
+        <VulnData/>
+        <VulnData/>
+        <Leftindex/>
         <RightIndex>3</RightIndex>
       </Fragment>
     </Fragments>
