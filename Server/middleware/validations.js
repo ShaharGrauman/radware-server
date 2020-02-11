@@ -5,7 +5,26 @@ module.exports = {
         username: Joi.string().email().min(4).max(25).required(),
         password: Joi.string().min(6).max(18).required(),
         phone: Joi.string().min(6).max(12),
-        status: Joi.string().valid('active', 'deleted')
+        status: Joi.string().valid('active', 'deleted'),
+        roles: Joi.array()
+    }),
+    userUpdate: Joi.object().keys({
+        username: Joi.string().email().min(4).max(25).required(),
+        password: Joi.string().min(6).max(18).required(),
+        phone: Joi.string().min(6).max(12),
+        status: Joi.string().valid('active', 'deleted'),
+        roles: Joi.array()
+    }),
+    roleCreation:Joi.object().keys({
+        name:Joi.string().min(4).max(25).required(),
+        description:string().require(),
+        permissions :Joi.array()
+    }),
+    
+    roleUpdate:Joi.object().keys({
+        name:Joi.string().min(4).max(25).required(),
+        description:string().require(),
+        permissions :Joi.array()
     }),
     signatureCreation: Joi.object().keys({
         user_id: Joi.required(),

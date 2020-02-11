@@ -192,6 +192,7 @@ const loadSignatures = async (query) => {
     }
 }
 
+
 const create = async (signatureData) => {
 
     const result = await Joi.validate(signatureData, signatureCreation);
@@ -239,6 +240,7 @@ const create = async (signatureData) => {
         });
         //// feach file data 
         signatureData.files.map(FileData => {
+
             file.create({
                 // id: FileData.id,
                 signatureId: signatureDataCreate.id,

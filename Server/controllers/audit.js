@@ -29,7 +29,6 @@ const getData = async (query) => {
         }
     };
     if (query.event != 'all') {
-        console.log(query.event);
         let event = query.event.split(',');
         Object.assign(where, {
             action_name:
@@ -61,7 +60,7 @@ const getData = async (query) => {
             limit: parseInt(query.size),
         });
         let hasNext = true, hasPrev = false;
-        if(history.length%(query.size*query.page) != 0){
+        if(history.length%(query.size*query.page) != 0 || history.length ===0){
           hasNext = false;
         }
         if(query.page != 1){
