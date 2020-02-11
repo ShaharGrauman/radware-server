@@ -1,7 +1,8 @@
 const { users, roles, login, file, permissions } = require('../models');
 const { loginAttempt } = require('../middleware/validations');
 const { sendEmail } = require('./sendEmail');
-const crypto = require('crypto');
+const { encrypt } = require("./encrypt")
+
 
 
 
@@ -119,7 +120,7 @@ const reset = async (username) => {
         });
         if (user) {
             var tempPwd = Math.random().toString(36).slice(-8);
-            await users.update({ password: tempPwd },
+            await users.update({ password: encrypt(tempPwd) },
                 {
                     returning: true, where: { id: user.id }
                 }
