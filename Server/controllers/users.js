@@ -1,8 +1,9 @@
 
 
-const { users, roles  } = require("../models/");
+const { users, roles } = require("../models/");
 const { roles_users, historyUsersActions } = require("../models/index")
-const { userCreation } = require('../middleware/validations');
+const { userCreation } = require("../middleware/validations");
+const { encrypt } = require("./encrypt")
 
 
 const getUserWithRoles = async (userId) => {
@@ -38,12 +39,15 @@ const deleteUser = async (username) => {
         { where: { username: username } }
     )
         .then(function () {
-            historyUsersActions.create({ userId: '1', action_name: "delete",
-            description: "deleted user",
-            time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-               hour: "numeric", 
-               minute: "numeric"}), date: new Date()
-       })
+            historyUsersActions.create({
+                userId: '1', action_name: "delete",
+                description: "deleted user",
+                time: new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric"
+                }), date: new Date()
+            })
             return 'deleted successfully'
         }).catch(function (error) {
             return (error);
@@ -62,16 +66,19 @@ const createUser = async (userData) => {
             name: userData.name,
             username: userData.username,
             phone: userData.phone,
-            password: userData.password,
+            password: encrypt(userData.password)
         });
 
         updateRolesUsers(userData.roles, newUser.id);
-        historyUsersActions.create({ userId: '1', action_name: "add",
-        description: "created user "+newUser.id,
-        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-           hour: "numeric", 
-           minute: "numeric"}), date: new Date()
-   });
+        historyUsersActions.create({
+            userId: '1', action_name: "add",
+            description: "created user " + newUser.id,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
         return newUser;
     }
     catch (error) {
@@ -90,15 +97,18 @@ const editUser = async (DataToUpdate, id) => {
         const editUser = await users.update({
             name: userData.name,
             username: userData.username,
-            password: userData.password,
+            password: encrypt(userData.password),
             phone: userData.phone
         },
-        historyUsersActions.create({ userId: '1', action_name: "edit",
-        description: "edited user "+userData.name,
-        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-           hour: "numeric", 
-           minute: "numeric"}), date: new Date()
-   }),
+            // historyUsersActions.create({
+            //     userId: '1', action_name: "edit",
+            //     description: "edited user " + userData.name,
+            //     time: new Date().toLocaleTimeString('en-US', {
+            //         hour12: false,
+            //         hour: "numeric",
+            //         minute: "numeric"
+            //     }), date: new Date()
+            // }),
             {
                 returning: true, where: { id: id }
             });
@@ -129,12 +139,15 @@ const updateRolesUsers = async (roles, userId) => {
         }
 
         await roles_users.bulkCreate(rolesUsers, { returning: true });
-        historyUsersActions.create({ userId: '1', action_name: "edit",
-        description: "created user "+newUser.id,
-        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-           hour: "numeric", 
-           minute: "numeric"}), date: new Date()
-   });
+        historyUsersActions.create({
+            userId: '1', action_name: "edit",
+            description: "created user " + newUser.id,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
 
     }
     catch (error) {

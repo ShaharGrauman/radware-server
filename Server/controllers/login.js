@@ -1,6 +1,7 @@
 const { users, roles, login, file, permissions } = require('../models');
 const { loginAttempt } = require('../middleware/validations');
-require('./sendEmail');
+const { sendEmail } = require('./sendEmail');
+const { encrypt } = require("./encrypt")
 
 
 
@@ -110,4 +111,29 @@ const Login = async (user) => {
     }
 }
 
-module.exports = { Login };
+
+
+const reset = async (username) => {
+    try {
+        const user = await users.findOne({
+            where: { username: username } //checking if the email address sent by client is present in the db(valid)
+        });
+        if (user) {
+            var tempPwd = Math.random().toString(36).slice(-8);
+            await users.update({ password: encrypt(tempPwd) },
+                {
+                    returning: true, where: { id: user.id }
+                }
+            );
+            sendEmail(user.username, `<h1>Reset Password => temp password: ${tempPwd}</h1>`);
+            return user.username;
+        }
+        else {
+            throw new Error('No user found with that email address.')
+        }
+    } catch (error) {
+        throw new Error(`${error.message}`);
+    }
+}
+
+module.exports = { Login, reset };

@@ -11,7 +11,7 @@ const Op = require('Sequelize').Op;
 
 const findAll = async () => {
 
-    
+
 
     try {
         const signatureData = await signatures.findAll();
@@ -45,45 +45,45 @@ const exportFile = async id => {
 
 
 const loadSignaturesToExport = async (query) => {
-    try{
-        let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf,signatureDataToXML;
-           
+    try {
+        let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf, signatureDataToXML;
 
-        if(query.exportTo === 'Git'){
-            firstStatus='published';
-            secStatus='published';
-            checkDateOf='export_for_git';
+
+        if (query.exportTo === 'Git') {
+            firstStatus = 'published';
+            secStatus = 'published';
+            checkDateOf = 'export_for_git';
         }
         if (query.exportTo === 'Testing') {
             firstStatus = 'published';
             secStatus = 'in_test';
-            checkDateOf='export_for_testing';
+            checkDateOf = 'export_for_testing';
         }
         if (query.exportTo === 'QA') {
             firstStatus = 'published';
             secStatus = 'in_qa';
-            checkDateOf='export_for_qa';
+            checkDateOf = 'export_for_qa';
 
         }
         lastExportedSignatureDateByStatus = await historyUsersActions.findAll({
             attributes: ['date'],
             where: {
                 action_name: checkDateOf
-              },
-            order: 
-            [
-                ['date', 'desc']
-            ],
+            },
+            order:
+                [
+                    ['date', 'desc']
+                ],
             limit: 1,
         });
-        let date=lastExportedSignatureDateByStatus[0].date;
+        let date = lastExportedSignatureDateByStatus[0].date;
 
         signatureData = await signatures.findAll({
             attributes: ['id', 'pattern_id', 'description', 'test_data'],
             where: {
                 status: {
                     [Op.or]: [firstStatus, secStatus]
-                  }
+                }
             },
             order:
                 [
@@ -92,44 +92,43 @@ const loadSignaturesToExport = async (query) => {
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
         });
-      
- 
-            let hasNext = true, hasPrev = false;
-            if(signatureData.length%(query.size*query.page) != 0){
-              hasNext = false;
-            }
-            if(query.page != 1){
-                hasPrev = true;
-            }
-           
 
-            signatureData.map((signature) => {
-                if(signature.test_data==("" || null)){
-                    signature.test_data = false;
-                }else{
-                    signature.test_data = true;
-                }
-            });
-            if(  secStatus === 'in_qa'){
-                secStatus = 'In QA';
+
+        let hasNext = true, hasPrev = false;
+        if (signatureData.length % (query.size * query.page) != 0) {
+            hasNext = false;
+        }
+        if (query.page != 1) {
+            hasPrev = true;
+        }
+
+
+        signatureData.map((signature) => {
+            if (signature.test_data == ("" || null)) {
+                signature.test_data = false;
+            } else {
+                signature.test_data = true;
             }
-            if(secStatus === 'in_test'){
-                secStatus = 'In Test';
-            }
-            let status = [firstStatus]+", "+[secStatus];
-            if(firstStatus === secStatus)
-            {
-                secStatus = undefined;
-                status = [firstStatus];
-            }
-            return {
-                signatureData,
-                date,
-                hasNext,
-                hasPrev,
-                status
-            };
-    }catch(error){
+        });
+        if (secStatus === 'in_qa') {
+            secStatus = 'In QA';
+        }
+        if (secStatus === 'in_test') {
+            secStatus = 'In Test';
+        }
+        let status = [firstStatus] + ", " + [secStatus];
+        if (firstStatus === secStatus) {
+            secStatus = undefined;
+            status = [firstStatus];
+        }
+        return {
+            signatureData,
+            date,
+            hasNext,
+            hasPrev,
+            status
+        };
+    } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
@@ -195,26 +194,27 @@ const loadSignatures = async (query) => {
 
 const create = async (signatureData) => {
 
-    const result = await Joi.validate(signatureData, signatureCreation);
-    console.log(result);
-    if (!result) {
-        return result;
-    }
-    
+    // const result = await Joi.validate(signatureData, signatureCreation);
+    // console.log(result);
+    // if (!result) {
+    //     return result;
+    // }
+
 
     console.log(signatureData);
 
     signatures.addHook('afterCreate', (signatureDataCreate, options) => {
-        
+
         signatures.update({
             pattern_id: signatureDataCreate.id
         }, { where: { id: signatureDataCreate.id } })
     });
-    
+
     try {
         const signatureDataCreate = await signatures.create({
             // id: signatureData.id,
             pattern_id: signatureData.pattern_id,
+            attack_id: signatureData.attack_id,
             type: signatureData.type,
             creation_time: signatureData.creation_time,
             creation_date: signatureData.creation_date,
@@ -259,7 +259,7 @@ const create = async (signatureData) => {
                 // id: externalRef.id,
                 type: externalRef.type,
                 reference: externalRef.reference,
-                signatureId:  signatureDataCreate.id
+                signatureId: signatureDataCreate.id
             });
         })
         ///feach web server data
@@ -271,43 +271,46 @@ const create = async (signatureData) => {
                 web: webServ.webserver,
                 signatureId: signatureDataCreate.id
             });
-            ///feach vuln_data_extras data 
-            signatureData.vuln_data_extras.map(vlunData => {
-                vulnDataExtra.create({
-                    // id: vlunData.id,
-                    signatureId:  signatureDataCreate.id,
-                    parameter: vlunData.description
-                });
-            });
-            /// feach parameters data 
-            signatureData.parameters.map(params => {
-                param.create({
-                    // id: params.id,
-                    parameter: params.parameter,
-                    signatureId: signatureDataCreate.id,
-                });
-            });
-
-            historyUsersActions.create({ userId: DataToUpdate.user_id, action_name: "created signature" +signatureDataCreate.id, 
-            time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-               hour: "numeric", 
-               minute: "numeric"}), date: new Date(),system_name: 'system 1', screen_name: 'system 1'
-       })
         })
 
-       
+        ///feach vuln_data_extras data 
+        signatureData.vuln_data_extras.map(vlunData => {
+            vulnDataExtra.create({
+                // id: vlunData.id,
+                signatureId: signatureDataCreate.id,
+                parameter: vlunData.description
+            });
+        });
+        /// feach parameters data 
+        signatureData.parameters.map(params => {
+            param.create({
+                // id: params.id,
+                parameter: params.parameter,
+                signatureId: signatureDataCreate.id,
+            });
+        });
 
-        historyUsersActions.create({ userId: '1', action_name: "add",
-        description: "created signature ",
-        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-           hour: "numeric", 
-           minute: "numeric"}), date: new Date()
-   });
+        //         historyUsersActions.create({ userId:'1', action_name: "created signature" +signatureDataCreate.id, 
+        //         time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+        //            hour: "numeric", 
+        //            minute: "numeric"}), date: new Date(),system_name: 'system 1', screen_name: 'system 1'
+        //    })
+
+
+
+
+
+        //         historyUsersActions.create({ userId: '1', action_name: "add",
+        //         description: "created signature ",
+        //         time:new Date().toLocaleTimeString('en-US', { hour12: false, 
+        //            hour: "numeric", 
+        //            minute: "numeric"}), date: new Date()
+        //    });
         return signatureDataCreate;
     } catch (error) {
         throw new Error(`Cant create signatures: ${error.message}`);
     }
-    
+
 }
 
 const searchSignature = async (search) => {
@@ -334,12 +337,15 @@ const findById = async (id) => {
             ]
             // include: [{ all: true }]
         });
-        historyUsersActions.create({ userId: '1', action_name: "search",
-        description: "search signature "+id,
-        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-           hour: "numeric", 
-           minute: "numeric"}), date: new Date()
-   });
+        historyUsersActions.create({
+            userId: '1', action_name: "search",
+            description: "search signature " + id,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -375,54 +381,60 @@ const update = async (DataToUpdate, id) => {
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
         }, { returning: true, where: { id: id } });
-        
+
         DataToUpdate.web_servers.map(() =>
             webServer.destroy(
-             { where: { signatureId: id } })
+                { where: { signatureId: id } })
         );
 
         DataToUpdate.web_servers.map(webServ =>
-            webServer.create({signatureId: id,
-                web: webServ.webserver})
+            webServer.create({
+                signatureId: id,
+                web: webServ.webserver
+            })
         );
 
-        DataToUpdate.vuln_data_extras.map( () =>
+        DataToUpdate.vuln_data_extras.map(() =>
             vulnDataExtra.destroy(
                 { where: { signatureId: id } })
         );
 
         DataToUpdate.vuln_data_extras.map((vuln) =>
             vulnDataExtra.create({
-                 signatureId: id, description: vuln.description})
+                signatureId: id, description: vuln.description
+            })
         );
         DataToUpdate.parameters.map(() =>
             param.destroy(
-                {  where: { signatureId: id } })
+                { where: { signatureId: id } })
         );
 
         DataToUpdate.parameters.map(paramNode =>
             param.create({
-                 signatureId: id, parameter: paramNode.parameter})
+                signatureId: id, parameter: paramNode.parameter
+            })
         );
-        
+
         DataToUpdate.files.map(() =>
             file.destroy(
-                {  where: { signatureId: id } })
+                { where: { signatureId: id } })
         );
 
         DataToUpdate.files.map(fileNode =>
             file.create({
-                 signatureId: id, file: fileNode.file})
+                signatureId: id, file: fileNode.file
+            })
         );
 
         DataToUpdate.external_references.map(() =>
             externalReferences.destroy(
-                {  where: { signatureId: id } })
+                { where: { signatureId: id } })
         );
 
         DataToUpdate.external_references.map(ref =>
             externalReferences.create({
-                 signatureId: id, reference: ref.reference, type: ref.type})
+                signatureId: id, reference: ref.reference, type: ref.type
+            })
         );
 
         // signatureStatusHistory.create({signatureId: id, userId: DataToUpdate.user_id, status: DataToUpdate.status, 
@@ -431,12 +443,15 @@ const update = async (DataToUpdate, id) => {
         //         minute: "numeric"}), date: new Date()
         // })
 
-        historyUsersActions.create({ userId: '1', action_name: "edit",
-        description: "edit signature "+id,
-        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-           hour: "numeric", 
-           minute: "numeric"}), date: new Date()
-   });
+        historyUsersActions.create({
+            userId: '1', action_name: "edit",
+            description: "edit signature " + id,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
 
         console.log('updatedSignature');
         console.log(updatedSignature);
@@ -451,12 +466,15 @@ const Delete = async id => {
         const result = signatures.destroy({
             where: { id: id }
         })
-        historyUsersActions.create({ userId: '1', action_name: "delete",
-        description: "delete signature "+id,
-        time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-           hour: "numeric", 
-           minute: "numeric"}), date: new Date()
-   });
+        historyUsersActions.create({
+            userId: '1', action_name: "delete",
+            description: "delete signature " + id,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
         return result;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
