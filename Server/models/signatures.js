@@ -13,7 +13,7 @@ module.exports = (db, type) => {
             type: type.INTEGER
         },
         pattern_id: {
-            type: type.INTEGER
+            type: type.INTEGER,
         },
         type: {
             type: type.ENUM('vuln', 'vuln_ex', 'vuln_reg_ex')
