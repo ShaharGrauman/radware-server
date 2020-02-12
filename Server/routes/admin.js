@@ -5,6 +5,8 @@ var auditController = require('../controllers/audit');
 
 router.get('/roles', async (req, res) => {
   try{
+    console.log('ssssss')
+    console.log(req.cookies.radware)
     const roles = await RolesController.getRoleWithPermissions();
     res.status(200).json(roles);
   } catch (error) {

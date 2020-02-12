@@ -11,17 +11,17 @@ var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
 var attackRouter = require('./routes/attack');
 var signatureRouter = require('./routes/signatures');
-var roleRouter=require('./routes/roles');
+var roleRouter = require('./routes/roles');
 var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
 
 var app = express();
 
-// view engine setup
+// view engine setups
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
-app.use(cors({origin: 'http://localhost:3001', credentials: true}));
+app.set('view engine', 'jade');
+app.use(cors({ origin: 'http://localhost:3001', credentials: true }));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -40,7 +40,7 @@ db
     console.error('Unable to connect to the database:', err);
   });
 
-app.use('/role',roleRouter);
+app.use('/role', roleRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
 app.use('/attack', attackRouter);
