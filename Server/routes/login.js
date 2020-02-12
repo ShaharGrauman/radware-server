@@ -1,6 +1,6 @@
 var express = require('express');
 var loginController = require('../controllers/login');
-var cookie = require('js-cookie');
+
 var router = express.Router();
 
 router.post('/', async (req, res) => {
@@ -11,6 +11,17 @@ router.post('/', async (req, res) => {
         res.cookie('radware', logedin, { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true });
         console.log(req.cookies.radware)
         res.json(logedin);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+})
+
+
+
+router.post('/resetPassword', async (req, res) => {
+    try {
+        const resetPwd = await loginController.reset(req.body.username);
+        res.status(200).json('reset email was sent to ' + resetPwd);
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
