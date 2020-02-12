@@ -1,4 +1,5 @@
 var express = require('express');
+const fs = require('fs');
 var SignatureController = require('../controllers/signature');
 const { signatures, files } = require('../models');
 const SearchBuilder = require('../controllers/builders/SearchBuilder');
@@ -35,7 +36,7 @@ router.post('/export/xml', async (req, res, next) => {
         console.log(req.body.id)
         try {
             const result = await SignatureController.exportFile(req.body.id);
-            res.status(200).json(result);
+            res.download('xml.xml')
         } catch (error) {
             res.status(500).json({ msg: error.message });
         }
