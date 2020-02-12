@@ -6,7 +6,9 @@ module.exports = (db, type) => {
             autoIncrement: true,
             primaryKey: true
         },
-      
+        SignatureId: {
+            type: type.INTEGER
+        },
         type:{
             type:type.ENUM('cevid', 'bugtraqid') 
         },
