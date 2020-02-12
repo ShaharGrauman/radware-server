@@ -20,6 +20,8 @@ const Login = async (user) => {
 
                 //create login
             try{
+                const time = new Date()
+                console.log(time.toTimeString())
                   login.create({
                     user_id: userExist.id,
                       time: new Date().toLocaleTimeString("he-IL"),
