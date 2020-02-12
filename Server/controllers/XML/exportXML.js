@@ -16,7 +16,7 @@ routeByType = signatureData => {
     var xml = root.end({ pretty: true });
     path = '../../../Server';
     if (fs.existsSync(path)) {
-        fs.appendFileSync('xml.xml', xml);
+      fs.writeFileSync('xml.xml', xml);
     } else {
         fs.writeFileSync('xml.xml', xml);
     }
