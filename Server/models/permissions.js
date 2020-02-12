@@ -6,6 +6,9 @@ module.exports = (db, type) => {
             autoIncrement: true,
             primaryKey: true
         },
+        SignatureId: {
+            type: type.INTEGER
+        },
         name: {
             type: type.STRING(50)
         }

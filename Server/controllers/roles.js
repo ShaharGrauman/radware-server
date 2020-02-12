@@ -55,7 +55,7 @@ const getRoleWithPermissions = async (roleId) => {
     if (!roleId) {
         try {
             const rolesData = await roles.findAll({
-                attributes: ['id', 'name'],
+                // attributes: ['id', 'name'],
                 include: [{ model: permissions, attributes: ['name'] }]
             });
             return rolesData;
@@ -78,16 +78,16 @@ const getRoleWithPermissions = async (roleId) => {
 }
 
 
-const gitRoles = async () => {
-    try {
-        const rolesData = await roles.findAll({
-            attributes: ['id', 'name']
-        })
-        return rolesData;
-    } catch (error) {
-        throw new Error(`Cant get roles: ${error.message}`);
-    }
-}
+// const getRoles = async () => {
+//     try {
+//         const rolesData = await roles.findAll({
+//             attributes: ['id', 'name']
+//         })
+//         return rolesData;
+//     } catch (error) {
+//         throw new Error(`Cant get roles: ${error.message}`);
+//     }
+// }
 
 const editRole = async (DataToUpdate, id) => {
     // const result = await Joi.validate(DataToUpdate, roleUpdate);
@@ -130,8 +130,9 @@ const editRole = async (DataToUpdate, id) => {
 const getRoles = async () => {
     try {
         const rolesData = await roles.findAll({
-            attributes: ['id', 'name']
+            //  attributes: ['id', 'name']
         })
+        console.log(rolesData);
         return rolesData;
     } catch (error) {
         throw new Error(`Cant get roles: ${error.message}`);

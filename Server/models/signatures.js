@@ -9,11 +9,11 @@ module.exports = (db, type) => {
         user_id: {
             type: type.INTEGER
         },
-        // attack_id: {
-        //     type: type.INTEGER
-        // },
-        pattern_id: {
+        attack_id: {
             type: type.INTEGER
+        },
+        pattern_id: {
+            type: type.INTEGER,
         },
         type: {
             type: type.ENUM('vuln', 'vuln_ex', 'vuln_reg_ex')
