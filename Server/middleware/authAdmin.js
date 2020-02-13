@@ -1,13 +1,15 @@
- const admin = (req, res, next) => {
-     console.log('req.cookies.name')
-    const cookie = req.cookies['radware-auth'];
-    console.log(cookie)
-    if (!cookie || cookie.roles.indexOf(role => role.id == 1) == -1) {
-        res.status(401).json({ msg: 'Not Authorized' });
-        return;
+const admin = (req, res, next) => {
+    console.log('req.headers.name')
+    console.log(req.headers)
+    const cookie = req.headers['radware-auth'];
+    if (cookie) {
+        const user = JSON.parse(cookie);
+        if (user.roles.some(role => role.id == 1)) {
+            next();
+            return;
+        }
     }
-
-    next();
+    res.status(401).json({ msg: 'Not Authorized' });
 }
 
-module.exports = {admin};
+module.exports = { admin };

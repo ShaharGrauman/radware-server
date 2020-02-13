@@ -3,6 +3,7 @@ const fs = require('fs');
 var SignatureController = require('../controllers/signature');
 const { signatures, files } = require('../models');
 const SearchBuilder = require('../controllers/builders/SearchBuilder');
+const {admin} = require('../middleware/authAdmin');
 
 var router = express.Router();
 
@@ -31,7 +32,7 @@ router.get('/search', async (req, res, next) => {
 
 });
 
-router.post('/export/xml', async (req, res, next) => {
+router.post('/export/xml',admin, async (req, res, next) => {
     if (req.body.id) {
         console.log(req.body.id)
         try {
@@ -41,9 +42,25 @@ router.post('/export/xml', async (req, res, next) => {
             res.status(500).json({ msg: error.message });
         }
     }
+    else{
 
+    }
 })
 
+router.get('/export/xml', async (req, res, next) => {
+    if (req.query.exportTo) {
+        console.log(req.query.exportTo)
+        try {
+            const result = await SignatureController.exportAllFile(req.query.exportTo);
+         //   res.download('xml.xml')
+        } catch (error) {
+            res.status(500).json({ msg: error.message });
+        }
+    }
+    else{
+
+    }
+})
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
@@ -101,6 +118,9 @@ router.get('/export', async (req, res, next) => {
         });
 
         const signatures = await SignatureController.loadSignaturesToExport(query);
+
+        console.log(signatures)
+
         res.status(200).json(signatures);
     } catch (error) {
         res.status(500).json({ msg: error.message });

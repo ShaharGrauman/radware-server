@@ -1,12 +1,14 @@
 var express = require('express');
 var router = express.Router();
+
+const {admin} = require('../middleware/authAdmin');
 var RolesController = require('../controllers/roles');
 var auditController = require('../controllers/audit');
 
-router.get('/roles', async (req, res) => {
+router.get('/roles',admin, async (req, res) => {
   try{
     console.log('ssssss')
-    console.log(req.cookies.radware)
+    console.log('admin/roles headers', req.headers)
     const roles = await RolesController.getRoleWithPermissions();
     res.status(200).json(roles);
   } catch (error) {
