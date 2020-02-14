@@ -76,7 +76,7 @@ const exportAllFile = async (query) => {
             ]
         });
         console.log(signatureData)
-       routeByType(signatureData);
+        routeByType(signatureData);
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
     }
@@ -266,6 +266,7 @@ const create = async (signatureData) => {
             start_break: signatureData.start_break,
             end_break: signatureData.end_break,
             right_index: signatureData.right_index,
+            left_index: signatureData.left_index,
             scan_uri: signatureData.scan_uri,
             scan_header: signatureData.scan_header,
             scan_body: signatureData.scan_body,
