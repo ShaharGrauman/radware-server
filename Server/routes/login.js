@@ -17,7 +17,6 @@ router.post('/', async (req, res) => {
 });
 
 
-
 router.post('/resetPassword', async (req, res) => {
     try {
         const resetPwd = await loginController.reset(req.body.username);
