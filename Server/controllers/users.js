@@ -85,7 +85,7 @@ const createUser = async (userData) => {
         throw new Error(`Cant create user: ${error.message}`);
     }
 }
-
+/*
 const editUser = async (userData, id) => {
     try {
 
@@ -152,7 +152,7 @@ const editUser = async (userData, id) => {
         throw new Error(`Cant create user: ${error.message}`);
     }
 }
-
+*/
 const updateRolesUsers = async (roles, userId) => {
     try {
         var rolesUsers = [];
