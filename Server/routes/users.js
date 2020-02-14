@@ -5,7 +5,8 @@ var router = express.Router();
 var roleController = require('../controllers/roles');
 const {admin} = require('../middleware/authAdmin');
 
-/* GET users listing. */
+
+/// to use this route should to be the user role is 1  (admin) 
 router.get('/',admin, async (req, res) => {
   try {
     const users = await userController.getUserWithRoles();
@@ -14,7 +15,7 @@ router.get('/',admin, async (req, res) => {
     res.status(500).json({ msg: error.message });
   }
 });
-
+/// to use this route should to be the user role is 1  (admin) 
 router.post('/new_user',admin, async (req, res, next) => {
   try {
     const result = await userController.createUser(req.body);
@@ -24,7 +25,7 @@ router.post('/new_user',admin, async (req, res, next) => {
     console.log("create user doesn't work from routes");
   }
 });
-
+/// to use this route should to be the user role is 1  (admin) 
 router.put('/delete_user',admin, async (req, res, next) => {
   if (!req.body.username) {
     res.status(400).json({ msg: "username is not valid" });
@@ -37,7 +38,7 @@ router.put('/delete_user',admin, async (req, res, next) => {
   }
 });
 
-
+/// to use this route should to be the user role is 1  (admin) 
 router.get('/:id',admin, async (req, res) => {
   try {
     const user = await userController.getUserWithRoles(req.params.id);
@@ -47,7 +48,7 @@ router.get('/:id',admin, async (req, res) => {
   }
 });
 
-
+/// to use this route should to be the user role is 1  (admin) 
 router.put('/:id',admin, async (req, res, next) => {
   try {
     const result = await userController.editUser(req.body, req.params.id);
