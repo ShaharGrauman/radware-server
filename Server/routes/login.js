@@ -12,7 +12,6 @@ router.post('/', async (req, res) => {
         // const user = { id: 1, name: 'Saeed', roles: [{ id: 1, name: 'admin' }] };
         // Cookies.set('radware', logedin, { expires: 1000 * 60 * 60 * 24 * 7 })
         res.cookie('radware', JSON.stringify(logedin), { maxAge: 1000 * 60 * 60 * 24 * 7 });
-        console.log(req.cookies.radware)
         res.json(logedin);
     } catch (error) {
         res.status(500).json({ msg: error.message });

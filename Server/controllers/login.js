@@ -1,4 +1,4 @@
-const { users, roles, login, file, permissions } = require('../models');
+const { users, roles, login, file, permissions, permissions_roles, roles_users } = require('../models');
 const { loginAttempt } = require('../middleware/validations');
 const { sendEmail } = require('./sendEmail');
 const { encrypt } = require("./encrypt")
@@ -16,11 +16,14 @@ const Login = async (user) => {
             attributes: ['id', 'username'],
             include: [{
                 model: roles, attributes: ['id', 'name'],
-                through: { attributes: [] }
+                through: { attributes: [] },
+                include: [{
+                    model: permissions,
+                    through: { attributes: [] }
+                }]
             }],
             where: { username: user.username, password: encrypt(user.password) }
         })
-
         if (userExist) {
 
             let userStatus = await users.findOne({ attributes: ['status'], where: { username: user.username, password: encrypt(user.password) } })
@@ -30,26 +33,17 @@ const Login = async (user) => {
             else if (userStatus.status === 'deleted')
                 return "Your account is already deleted"
 
-<<<<<<< HEAD
-                //create login
-            try{
-                const time = new Date()
-                console.log(time.toTimeString())
-                  login.create({
-=======
             //create login
             try {
                 login.create({
->>>>>>> master
                     user_id: userExist.id,
-                    time: new Date().toLocaleTimeString('en-US', { hour12: false,hour: "numeric",minute: "numeric"}),
+                    time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
                     date: new Date().toLocaleString("he-IL"),
                     success: 0
                 })
             } catch (error) {
                 throw new Error(`Cant create login: ${error.message}`);
             }
-
             return userExist
         }
 
@@ -76,7 +70,7 @@ const Login = async (user) => {
                     try {
                         login.create({
                             user_id: exist.id,
-                            time: new Date().toLocaleTimeString('en-US', { hour12: false,hour: "numeric",minute: "numeric"}),
+                            time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
                             date: new Date().toLocaleString("he-IL"),
                             success: 1
                         })
@@ -154,7 +148,7 @@ const updatePassword = async (user) => {
             where: { username: user.username }
         });
 
-        if(!username){
+        if (!username) {
             throw new Error('incorrect username');
         }
 
@@ -165,7 +159,7 @@ const updatePassword = async (user) => {
                 },
                     {
                         returning: true, where: { username: user.username }
-                    });    
+                    });
             }
             catch (error) {
                 throw new Error(`Cant edit user: ${error.message}`);
@@ -175,7 +169,7 @@ const updatePassword = async (user) => {
             throw new Error('incorrect temp password');
         }
 
- 
+
     } catch (error) {
         throw new Error(`${error.message}`);
     }
