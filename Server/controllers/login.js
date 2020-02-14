@@ -4,8 +4,6 @@ const { sendEmail } = require('./sendEmail');
 const { encrypt } = require("./encrypt")
 
 
-
-
 const Login = async (user) => {
     // const result = await Joi.validate(user, loginAttempt);
     // console.log(result);
@@ -20,12 +18,12 @@ const Login = async (user) => {
                 model: roles, attributes: ['id', 'name'],
                 through: { attributes: [] }
             }],
-            where: { username: user.username, password: user.password }
+            where: { username: user.username, password: encrypt(user.password) }
         })
 
         if (userExist) {
 
-            let userStatus = await users.findOne({ attributes: ['status'], where: { username: user.username, password: user.password } })
+            let userStatus = await users.findOne({ attributes: ['status'], where: { username: user.username, password: encrypt(user.password) } })
 
             if (userStatus.status === 'locked')
                 return "Your account is already locked"
@@ -44,7 +42,7 @@ const Login = async (user) => {
                 login.create({
 >>>>>>> master
                     user_id: userExist.id,
-                    time: new Date().toLocaleTimeString("he-IL"),
+                    time: new Date().toLocaleTimeString('en-US', { hour12: false,hour: "numeric",minute: "numeric"}),
                     date: new Date().toLocaleString("he-IL"),
                     success: 0
                 })
@@ -78,7 +76,7 @@ const Login = async (user) => {
                     try {
                         login.create({
                             user_id: exist.id,
-                            time: new Date().toLocaleTimeString("he-IL"),
+                            time: new Date().toLocaleTimeString('en-US', { hour12: false,hour: "numeric",minute: "numeric"}),
                             date: new Date().toLocaleString("he-IL"),
                             success: 1
                         })
