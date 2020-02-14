@@ -4,6 +4,7 @@ var SignatureController = require('../controllers/signature');
 const { signatures, files } = require('../models');
 const SearchBuilder = require('../controllers/builders/SearchBuilder');
 const {researcher} = require('../middleware/authResearcher');
+const authRoles = require('../middleware/authRoles');
 
 
 var router = express.Router();
@@ -64,7 +65,7 @@ router.get('/export/xml',researcher, async (req, res, next) => {
 })
 
 /* GET home page. */
-router.get('/',researcher, async (req, res, next) => {
+router.get('/',authRoles(1, 2), async (req, res, next) => {
     try {
         const Signatures = await SignatureController.findAll();
         res.json(Signatures);

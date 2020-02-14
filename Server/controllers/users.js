@@ -10,7 +10,7 @@ const getUserWithRoles = async (userId) => {
     if (!userId) {
         try {
             const data = await users.findAll({
-                attributes: ['id', 'username', 'phone', 'status'],
+                attributes: ['id','name','username', 'phone', 'status'],
                 include: { model: roles, attributes: ['description'], through: { attributes: [] } }
             });
             return data;
