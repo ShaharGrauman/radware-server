@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<Vulnerabilities_Date>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Vulnerabilities Version="4.5.1.1" Date="2020-2-13">
   <Vuln>
     <PatternID>68372</PatternID>
     <Fragments>
@@ -48,4 +48,4 @@
       <webserver>dsvsdvsdv</webserver>
     </WebServers>
   </Vuln>
-</Vulnerabilities_Date>
+</Vulnerabilities>

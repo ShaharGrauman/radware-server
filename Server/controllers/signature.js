@@ -43,6 +43,46 @@ const exportFile = async id => {
     }
 }
 
+const exportAllFile = async (query) => {
+
+    let firstStatus, secStatus;
+
+    if (query === 'Git') {
+        firstStatus = 'published';
+        secStatus = 'published';
+    }
+    if (query === 'Testing') {
+        firstStatus = 'published';
+        secStatus = 'in_test';
+    }
+    if (query === 'QA') {
+        firstStatus = 'published';
+        secStatus = 'in_qa';
+    }
+
+    try {
+        const signatureData = await signatures.findAll({
+            where: {
+                status: {
+                    [Op.or]: [firstStatus, secStatus]
+                }
+            },
+            include: [
+                { model: attack },
+                { model: param },
+                { model: externalReferences },
+                { model: vulnDataExtra },
+                { model: webServer }
+            ]
+        });
+        console.log(signatureData)
+       routeByType(signatureData);
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
+    }
+}
+
+
 
 const loadSignaturesToExport = async (query) => {
     try {
@@ -489,6 +529,7 @@ module.exports = {
     searchSignature,
     loadSignatures,
     loadSignaturesToExport,
-    exportFile
+    exportFile,
+    exportAllFile
 
 };
