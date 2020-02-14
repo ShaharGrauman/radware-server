@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
-})
+});
 
 
 router.post('/resetPassword', async (req, res) => {
@@ -24,6 +24,15 @@ router.post('/resetPassword', async (req, res) => {
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
-})
+});
+
+router.put('/resetPassword', async (req, res) => {
+    try {
+        const resetPwd = await loginController.updatePassword(req.body);
+        res.status(200).json('New password was updated successfuly');
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
 
 module.exports = router;

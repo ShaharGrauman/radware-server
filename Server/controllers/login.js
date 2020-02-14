@@ -142,4 +142,43 @@ const reset = async (username) => {
     }
 }
 
-module.exports = { Login, reset };
+
+const updatePassword = async (user) => {
+    try {
+
+        const tempPwd = await users.findOne({
+            where: { password: encrypt(user.tempPwd) }
+        });
+
+        const username = await users.findOne({
+            where: { username: user.username }
+        });
+
+        if(!username){
+            throw new Error('incorrect username');
+        }
+
+        if (tempPwd) {
+            try {
+                const editPwd = await users.update({
+                    password: encrypt(user.newPwd)
+                },
+                    {
+                        returning: true, where: { username: user.username }
+                    });    
+            }
+            catch (error) {
+                throw new Error(`Cant edit user: ${error.message}`);
+            }
+        }
+        else {
+            throw new Error('incorrect temp password');
+        }
+
+ 
+    } catch (error) {
+        throw new Error(`${error.message}`);
+    }
+}
+
+module.exports = { Login, reset, updatePassword };
