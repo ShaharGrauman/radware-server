@@ -83,6 +83,7 @@ const exportAllFile = async (query) => {
 }
 
 
+
 const loadSignaturesToExport = async (query) => {
     try {
         let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf, signatureDataToXML;
@@ -116,6 +117,7 @@ const loadSignaturesToExport = async (query) => {
             limit: 1,
         });
         let date = lastExportedSignatureDateByStatus[0].date;
+
         signatureData = await signatures.findAll({
             attributes: ['id', 'pattern_id', 'description', 'test_data'],
             where: {

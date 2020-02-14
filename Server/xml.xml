@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Vulnerabilities Version="4.5.1.1" Date="2020-2-13">
+  <Vuln>
+    <PatternID>68372</PatternID>
+    <Fragments>
+      <Fragment>
+        <VulnData/>
+        <params>PARAM</params>
+        <Leftindex/>
+        <RightIndex>3</RightIndex>
+      </Fragment>
+    </Fragments>
+    <Severity>high</Severity>
+    <AttackName>attack3</AttackName>
+    <Description>ergerge</Description>
+    <RelatedInfo>
+      <ExternalReference>http://www.BOOS.com/55</ExternalReference>
+      <ExternalReference>http://www.cve.com/bid/24</ExternalReference>
+      <ExternalReference>http://www.security.com/</ExternalReference>
+    </RelatedInfo>
+    <WebServers>
+      <webserver>Web Server 1</webserver>
+      <webserver>Web Server 2</webserver>
+      <webserver>dsvsdvsdv</webserver>
+    </WebServers>
+  </Vuln>
+  <Vuln>
+    <PatternID>68373</PatternID>
+    <Fragments>
+      <Fragment>
+        <VulnData/>
+        <params>PARAM</params>
+        <Leftindex/>
+        <RightIndex>3</RightIndex>
+      </Fragment>
+    </Fragments>
+    <Severity>high</Severity>
+    <AttackName>attack4</AttackName>
+    <Description>ergerge</Description>
+    <RelatedInfo>
+      <ExternalReference>http://www.BOOS.com/55</ExternalReference>
+      <ExternalReference>http://www.cve.com/bid/24</ExternalReference>
+      <ExternalReference>http://www.security.com/</ExternalReference>
+    </RelatedInfo>
+    <WebServers>
+      <webserver>Web Server 1</webserver>
+      <webserver>Web Server 2</webserver>
+      <webserver>dsvsdvsdv</webserver>
+    </WebServers>
+  </Vuln>
+</Vulnerabilities>

@@ -7,7 +7,6 @@ var auditController = require('../controllers/audit');
 
 router.get('/roles',admin, async (req, res) => {
   try{
-    console.log('ssssss')
     console.log('admin/roles headers', req.headers)
     const roles = await RolesController.getRoleWithPermissions();
     res.status(200).json(roles);
@@ -16,7 +15,7 @@ router.get('/roles',admin, async (req, res) => {
   }
 });
 
-router.get('/audit', async (req, res) => {
+router.get('/audit',admin, async (req, res) => {
   try{
     // ?event=edit&user_id=20&sortby=timeanddate&orderby=asc&startDate,endDate,startTime,EndTime
     const page = req.query.page || 1;
