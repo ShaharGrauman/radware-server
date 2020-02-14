@@ -1,10 +1,9 @@
-const admin = (req, res, next) => {
-    console.log('req.headers.name')
-    console.log(req.headers)
+const researcher = (req, res, next) => {
+
     const cookie = req.headers['radware-auth'];
     if (cookie) {
         const user = JSON.parse(cookie);
-        if (user.roles.some(role => role.id == 1)) {
+        if (user.roles.some(role => role.id == 2)) {
             next();
             return;
         }
@@ -12,4 +11,6 @@ const admin = (req, res, next) => {
     res.status(401).json({ msg: 'Not Authorized' });
 }
 
-module.exports = { admin };
+module.exports = { researcher };
+
+

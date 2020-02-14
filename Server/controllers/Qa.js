@@ -10,6 +10,7 @@ const findAll = async () => {
             ['pattern_id', 'PatternID'],
             ['scan_uri', 'URI'],
             ['scan_header', 'Headers'],
+            ['scan_body', 'body'],
             ['scan_parameters', 'parameters'],
             ['scan_file_name', 'file'],
             ['in_qa_internal_status_manual', 'manual'],

@@ -36,7 +36,6 @@ sendMail = body => {
 }
 
 
-
 sendEmail = (to, body) => {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -70,4 +69,4 @@ sendEmail = (to, body) => {
     });
 }
 
-module.exports = sendMail;
+module.exports = { sendMail, sendEmail };
