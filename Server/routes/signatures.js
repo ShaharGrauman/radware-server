@@ -139,7 +139,7 @@ router.get('/:id',researcher,async (req, res, next) => {
 });
 
 
-router.post('/',researcher,async (req, res, next) => {
+router.post('/',async (req, res, next) => {
     try {
         const result = await SignatureController.create(req.body);
         res.json(result);

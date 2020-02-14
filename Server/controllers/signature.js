@@ -277,6 +277,7 @@ const create = async (signatureData) => {
             test_data: signatureData.test_data,
             attack_id: signatureData.attackId,
             user_id: signatureData.userId,
+            limit:signatureData.limit
         });
         //// feach file data 
         signatureData.files.map(FileData => {
