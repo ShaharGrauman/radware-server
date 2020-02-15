@@ -1,10 +1,13 @@
 var express = require('express');
 var router = express.Router();
+
+const {admin} = require('../middleware/authAdmin');
 var RolesController = require('../controllers/roles');
 var auditController = require('../controllers/audit');
 
-router.get('/roles', async (req, res) => {
+router.get('/roles',admin, async (req, res) => {
   try{
+    console.log('admin/roles headers', req.headers)
     const roles = await RolesController.getRoleWithPermissions();
     res.status(200).json(roles);
   } catch (error) {
@@ -12,7 +15,7 @@ router.get('/roles', async (req, res) => {
   }
 });
 
-router.get('/audit', async (req, res) => {
+router.get('/audit',admin, async (req, res) => {
   try{
     // ?event=edit&user_id=20&sortby=timeanddate&orderby=asc&startDate,endDate,startTime,EndTime
     const page = req.query.page || 1;

@@ -1,51 +1,39 @@
-<?xml version="1.0"?>
-<Vulnerabilities_Date>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Vulnerabilities Version="4.5.1.1" Date="2020-2-14">
   <Vuln>
-    <PatternID>68372</PatternID>
+    <PatternID>123451</PatternID>
     <Fragments>
       <Fragment>
-        <VulnData/>
+        <VulnData>vuln data for this signature is: </VulnData>
         <params>PARAM</params>
-        <Leftindex/>
-        <RightIndex>3</RightIndex>
       </Fragment>
     </Fragments>
-    <Severity>high</Severity>
-    <AttackName>attack3</AttackName>
-    <Description>ergerge</Description>
+    <Severity>low</Severity>
+    <AttackName>URL Access Violation</AttackName>
+    <Description>this is FAKE signature</Description>
     <RelatedInfo>
+      <ExternalReference>http://www.security.com/bid/214</ExternalReference>
       <ExternalReference>http://www.BOOS.com/55</ExternalReference>
       <ExternalReference>http://www.cve.com/bid/24</ExternalReference>
       <ExternalReference>http://www.security.com/</ExternalReference>
     </RelatedInfo>
-    <WebServers>
-      <webserver>Web Server 1</webserver>
-      <webserver>Web Server 2</webserver>
-      <webserver>dsvsdvsdv</webserver>
-    </WebServers>
+    <WebServers/>
   </Vuln>
   <Vuln>
-    <PatternID>68373</PatternID>
+    <PatternID>123452</PatternID>
     <Fragments>
       <Fragment>
-        <VulnData/>
+        <VulnData>vuln data for this signature is: </VulnData>
         <params>PARAM</params>
-        <Leftindex/>
-        <RightIndex>3</RightIndex>
       </Fragment>
     </Fragments>
-    <Severity>high</Severity>
-    <AttackName>attack4</AttackName>
-    <Description>ergerge</Description>
-    <RelatedInfo>
-      <ExternalReference>http://www.BOOS.com/55</ExternalReference>
-      <ExternalReference>http://www.cve.com/bid/24</ExternalReference>
-      <ExternalReference>http://www.security.com/</ExternalReference>
-    </RelatedInfo>
+    <Severity>low</Severity>
+    <AttackName>Brute Force</AttackName>
+    <Description>this is FAKE signature</Description>
+    <RelatedInfo/>
     <WebServers>
-      <webserver>Web Server 1</webserver>
-      <webserver>Web Server 2</webserver>
-      <webserver>dsvsdvsdv</webserver>
+      <webserver>this is sample WEB</webserver>
+      <webserver>this</webserver>
     </WebServers>
   </Vuln>
-</Vulnerabilities_Date>
+</Vulnerabilities>
