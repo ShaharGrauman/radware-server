@@ -17,13 +17,13 @@ module.exports = {
     }),
     roleCreation:Joi.object().keys({
         name:Joi.string().min(4).max(25).required(),
-        description:string().require(),
+        description:Joi.string().required(),
         permissions :Joi.array()
     }),
     
     roleUpdate:Joi.object().keys({
         name:Joi.string().min(4).max(25).required(),
-        description:string().require(),
+        description:Joi.string().required(),
         permissions :Joi.array()
     }),
     signatureCreation: Joi.object().keys({

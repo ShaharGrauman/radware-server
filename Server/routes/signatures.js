@@ -2,7 +2,7 @@ var express = require('express');
 var SignatureController = require('../controllers/signature');
 const { signatures, files } = require('../models');
 const SearchBuilder = require('../controllers/builders/SearchBuilder');
-
+// const { importXml }= require('XML/');
 var router = express.Router();
 
 router.get('/search', async (req, res, next) => {
@@ -82,7 +82,7 @@ router.get('/researcher', async (req, res, next) => {
 
 
 //export signatures
-router.get('/export', async (req, res, next) => {
+router.post('/export', async (req, res, next) => {
     try {
         // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&exportto={“Git ” , “Testing” , “ QA” }
         const page = req.query.page || 1;
@@ -110,6 +110,16 @@ router.get('/:id', async (req, res, next) => {
     try {
         const Signatures = await SignatureController.findById(req.params.id);
         res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
+
+router.put('/importXml', async (req, res, next) => {
+    try {
+        const result = await SignatureController.importFile();
+        console.log(result);
+        res.json(result);
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }

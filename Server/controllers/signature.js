@@ -2,6 +2,7 @@ const { signatures, historyUsersActions, attack, file, param, externalReferences
 const sequelize = require('../config/database');
 require('./sendEmail');
 require('./XML/exportXML');
+require('./XML/importXml');
 
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
 
@@ -19,6 +20,15 @@ const findAll = async () => {
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
+const importFile = async () => {
+    try {
+     const result = await routeByType();
+     return 'imported';
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
     }
 }
 
@@ -491,6 +501,7 @@ module.exports = {
     searchSignature,
     loadSignatures,
     loadSignaturesToExport,
-    exportFile
+    exportFile,
+    importFile
 
 };

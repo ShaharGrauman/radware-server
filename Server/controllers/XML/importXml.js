@@ -1,34 +1,38 @@
 var fs = require('fs');
-var xml2js = require('xml2js');
 
-// const { signatures, } = require('../../models');
 
 const { findById } = require('../../controllers/signature');
 var SignatureController = require('../../controllers/signature');
-
-dirname = '../../vuln-example-signatures'
+var convert = require('xml-js');
 
 // With parser
-var parser = new xml2js.Parser();
-fs.readFile(dirname, function(err, data) {
-parser.parseStringPromise(data).then(function (result) {
-  console.dir(result);
-  console.log('Done');
-})
-.catch(function (err) {
-  // Failed
-});
-});
-
-routeByType = signatureData => {
-    signatureData.map(data => {
-        if (data.type == 'vuln') import_XML_Vuln_Signature(data, root);
-        if (data.type == 'vuln_ex') import_XML_VulnEx_Signature(data);
-        if (data.type == 'reg_ex') import_XML_VulnRegEx_Signature(data);
+import_XML_Vuln_Signature = async () => {
+  dirname = '../Server/vuln-example-signatures.xml';
+  let colElement= {};
+  fs.readFile(dirname, function(err, data) {
+    const result = JSON.parse(convert.xml2json(data, {compact: false, spaces: 4}));
+    console.log(result.elements[1].elements[1].elements[0].elements[0].text);
+    name = result.elements[1].elements[1].name;
+    result.elements[1].elements[1].elements.map((element) => {
+      Object.assign(colElement, {
+        [element.name]: element.elements
     });
+    console.log(element.elements);
+    });
+    console.log(colElement);
+    // propertyName = result.elements[1].elements[1].elements[0].name;
+    // propertyValue = result.elements[1].elements[1].elements[0].elements[0].text;
+    
+  });
 }
 
 
+
+routeByType = async () => {
+   const result = await import_XML_Vuln_Signature();
+}
+
+module.exports = {routeByType}
 
 
 
