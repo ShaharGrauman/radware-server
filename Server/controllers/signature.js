@@ -33,10 +33,10 @@ const exportFile = async id => {
                 { model: param },
                 { model: externalReferences },
                 { model: vulnDataExtra },
-                { model: webServer }
+                { model: webServer },
+                { model: param }
             ]
         });
-
         routeByType(signatureData);
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
@@ -277,7 +277,7 @@ const create = async (signatureData) => {
             test_data: signatureData.test_data,
             attack_id: signatureData.attackId,
             user_id: signatureData.userId,
-            limit:signatureData.limit
+            limit: signatureData.limit
         });
         //// feach file data 
         signatureData.files.map(FileData => {
@@ -318,7 +318,7 @@ const create = async (signatureData) => {
             vulnDataExtra.create({
                 // id: vlunData.id,
                 signatureId: signatureDataCreate.id,
-                parameter: vlunData.description
+                description: vlunData.description
             });
         });
         /// feach parameters data 
