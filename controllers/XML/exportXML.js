@@ -3,8 +3,8 @@ var builder = require('xmlbuilder');
 
 // const { signatures, } = require('../../models');
 
-const { findById } = require('../../controllers/signature');
-var SignatureController = require('../../controllers/signature');
+const { findById } = require('../signature');
+var SignatureController = require('../signature');
 
 routeByType = signatureData => {
 
