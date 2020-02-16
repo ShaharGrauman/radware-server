@@ -9,7 +9,15 @@ const authPermissions = require('../middleware/authPermissions');
 
 var router = express.Router();
 
-
+router.get('/severity', async (req, res, next) => {
+    try {
+        const Signatures = await SignatureController.sigBySeverity();
+        console.log(signatures);
+        res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 3 (search  signature )
 router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next) => {
     const search = new SearchBuilder();

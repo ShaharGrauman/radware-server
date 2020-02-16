@@ -185,10 +185,8 @@ const updateRolesUsers = async (roles, userId) => {
             };
             rolesUsers.push(roleUser);
         }
-//<<<<<<< HEAD
         roles_users.bulkCreate(rolesUsers, {returning: true})
     
-//=======
 
         await roles_users.bulkCreate(rolesUsers, { returning: true });
         historyUsersActions.create({
@@ -201,7 +199,6 @@ const updateRolesUsers = async (roles, userId) => {
             }), date: new Date()
         });
 
-//>>>>>>> master
     }
     catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
