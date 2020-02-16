@@ -37,7 +37,7 @@ router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next)
 });
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, next) => {
-    if (req.body.id) {
+    // if (req.body.id) {
         console.log(req.body.id)
         try {
             const result = await SignatureController.exportFile(req.body.id);
@@ -45,10 +45,10 @@ router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, 
         } catch (error) {
             res.status(500).json({ msg: error.message });
         }
-    }
-    else{
+    // }
+    // else{
 
-    }
+    // }
 })
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.get('/export/xml',[authRoles(1, 2),authPermissions(4)], async (req, res, next) => {
@@ -141,7 +141,7 @@ router.get('/:id',[authRoles(1, 2),authPermissions(1)],async (req, res, next) =>
     }
 });
 
-
+// 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
 router.post('/',[authRoles(1, 2),authPermissions(2)],async (req, res, next) => {
     try {
