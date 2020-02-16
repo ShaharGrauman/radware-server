@@ -60,8 +60,17 @@ const createUser = async (userData) => {
     // if (!result) {
     //     return result;
     // }
-
+ 
     try {
+        const userAlreadyExist = await users.findOne({
+            where:{username:userData.username}
+        })
+
+        if(userAlreadyExist){
+            return `User is already exists with id: ${userAlreadyExist.id}`
+        }
+            
+        else{
         const newUser = await users.create({
             name: userData.name,
             username: userData.username,
@@ -71,17 +80,17 @@ const createUser = async (userData) => {
 
         updateRolesUsers(userData.roles, newUser.id);
         historyUsersActions.create({
-            userId: '1', action_name: "add",
-            description: "created user " + newUser.id,
+            userId: newUser.id, action_name: "add",
+            description: `created user: ${newUser.id}`,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: "numeric",
                 minute: "numeric"
             }), date: new Date()
         });
-        return newUser;
-    }
-    catch (error) {
+        return newUser.id;
+    }}
+        catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
     }
 }
@@ -176,10 +185,8 @@ const updateRolesUsers = async (roles, userId) => {
             };
             rolesUsers.push(roleUser);
         }
-//<<<<<<< HEAD
         roles_users.bulkCreate(rolesUsers, {returning: true})
     
-//=======
 
         await roles_users.bulkCreate(rolesUsers, { returning: true });
         historyUsersActions.create({
@@ -192,7 +199,6 @@ const updateRolesUsers = async (roles, userId) => {
             }), date: new Date()
         });
 
-//>>>>>>> master
     }
     catch (error) {
         throw new Error(`Cant create user: ${error.message}`);

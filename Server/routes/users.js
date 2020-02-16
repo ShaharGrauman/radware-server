@@ -7,7 +7,6 @@ const {admin} = require('../middleware/authAdmin');
 
 
 router.get('/roles', async (req , res) => {
-  console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
   try {
     const roles = await roleController.getRoles();
     res.status(200).json(roles);
@@ -28,10 +27,9 @@ router.get('/',admin, async (req, res) => {
 router.post('/new_user',admin, async (req, res, next) => {
   try {
     const result = await userController.createUser(req.body);
-    res.status(201).json({ userId: result.id });
+    res.status(201).json( result );
   } catch (error) {
     res.status(500).json({ msg: error.message });
-    console.log("create user doesn't work from routes");
   }
 });
 /// to use this route should to be the user role is 1  (admin) 
