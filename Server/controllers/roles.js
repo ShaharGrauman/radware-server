@@ -26,7 +26,6 @@ const createRole = async (roleData) => {
     //     return result;
     // }
     // console.log(roleData);
-
     try {
         const newRole = await roles.create({
             id: roleData.id,
@@ -43,14 +42,13 @@ const createRole = async (roleData) => {
             rolesPermissions.push(rolePermission);
         }
         permissions_roles.bulkCreate(rolesPermissions, { returning: true })
-
         return newRole;
-
     }
     catch (error) {
         throw new Error(`Cant Create role: ${error.message}`);
     }
 }
+
 const getRoleWithPermissions = async (roleId) => {
     if (!roleId) {
         try {

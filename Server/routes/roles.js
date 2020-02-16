@@ -3,6 +3,15 @@ var router = express.Router();
 var roleController = require('../controllers/roles');
 var permissionController = require('../controllers/permissions');
 
+router.get('/permissions', async (req, res) => {
+  try{
+    const permissions = await permissionController.getPermissions( );
+    res.status(200).json(permissions);
+  }catch(error){
+    res.status(500).json({msg: error.message});
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const roles = await roleController.getRoleWithPermissions();
@@ -49,13 +58,5 @@ router.get('/:id', async (req, res) => {
     }
   });
 
-  router.get('/permissions', async (req, res) => {
-    try{
-      const permissions = await permissionController.getPermissions( );
-      res.status(200).json(permissions);
-    }catch(error){
-      res.status(500).json({msg: error.message});
-    }
-  });
   
 module.exports = router;

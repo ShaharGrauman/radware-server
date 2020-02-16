@@ -5,10 +5,13 @@ module.exports= (db,type) =>{
             autoIncrement: true,
             primaryKey: true,
             allowNull:false
-        },name:{
+        },
+        name:{
             type:type.STRING(50),
-            allowNull:false
-        },description:{
+            allowNull:false,
+            unique:true
+        },
+        description:{
             type:type.STRING(255),
             defaultValue:null
         }

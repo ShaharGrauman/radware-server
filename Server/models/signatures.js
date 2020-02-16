@@ -1,4 +1,3 @@
-
 module.exports = (db, type) => {
     return db.define('signatures', {
         id: {
@@ -25,7 +24,7 @@ module.exports = (db, type) => {
             type: type.TIME
         },
         status: {
-            type: type.ENUM('in_progress', 'in_test', 'in_qa', 'published', 'deleted')
+            type: type.ENUM('in_progress', 'in_test', 'in_QA', 'published', 'deleted', 'suspended')
         },
         in_qa_internal_status_manual: {
             type: type.ENUM('init', 'passed', 'failed')
@@ -55,7 +54,10 @@ module.exports = (db, type) => {
             type: type.BOOLEAN
         },
         scan_header: {
-            type: type.BOOLEAN
+            type:type.ENUM  ('User-Agent', 'Referer', 'Content-Language', 'Range', 'Cookie', 'Origin',
+        'Last-Modified', 'Keep-Alive', 'Content-Disposition', 'Content-Encoding',
+        'Content-Length', 'Content-Location', 'Content-Type')
+          
         },
         scan_body: {
             type: type.BOOLEAN

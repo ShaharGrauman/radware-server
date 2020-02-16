@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 
-
+var constantRouter=require('./routes/constant');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
@@ -39,7 +39,7 @@ db
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-
+app.use('/constant',constantRouter);
 app.use('/role', roleRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);

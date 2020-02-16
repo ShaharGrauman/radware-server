@@ -1,9 +1,6 @@
 var express = require('express');
 var attackController = require('../controllers/attack');
-
 var router = express.Router();
-
-
 /* GET home page. */
 router.get('/', async (req, res, next) => {
     try {
