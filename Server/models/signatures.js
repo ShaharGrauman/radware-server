@@ -50,6 +50,9 @@ module.exports = (db, type) => {
         right_index: {
             type: type.INTEGER
         },
+        left_index:{
+            type: type.INTEGER
+        },
         scan_uri: {
             type: type.BOOLEAN
         },
@@ -77,6 +80,9 @@ module.exports = (db, type) => {
         test_data: {
             type: type.TEXT
         },
+        limit:{
+            type:type.ENUM('user_agent','referer','range','cookie','origin','last_modified','keep_alive','content_disposition','content_encoding','content_language','content_length','content_location','content_type')
+        }
 
     }, { timestamps: false, underscored: true })
 } 

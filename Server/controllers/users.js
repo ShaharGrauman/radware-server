@@ -10,6 +10,7 @@ const getUserWithRoles = async (userId) => {
         try {
             const data = await users.findAll({
                 attributes: ['id','name', 'username', 'phone', 'status'],
+
                 include: { model: roles, attributes: ['description'], through: { attributes: [] } }
             });
             return data;
@@ -93,32 +94,72 @@ const editUser = async (DataToUpdate, id) => {
     // }
     // console.log(DataToUpdate);
     try {
-        const editUser = await users.update({
-            name: userData.name,
-            username: userData.username,
-            password: encrypt(userData.password),
-            phone: userData.phone
-        },
-            // historyUsersActions.create({
-            //     userId: '1', action_name: "edit",
-            //     description: "edited user " + userData.name,
-            //     time: new Date().toLocaleTimeString('en-US', {
-            //         hour12: false,
-            //         hour: "numeric",
-            //         minute: "numeric"
-            //     }), date: new Date()
-            // }),
-            {
-                returning: true, where: { id: id }
-            });
+
+
+        if (userData.name != undefined || userData.name.length != 0) {
+            await users.update({
+                name: userData.name
+            },
+                {
+                    returning: true, where: { id: id }
+                });
+        }
+
+
+        if (userData.username != undefined || userData.username.length != 0 ) {
+            await users.update({
+                username: userData.username
+            },
+                {
+                    returning: true, where: { id: id }
+                });
+        }
 
         const roles = userData.roles;
         roles_users.destroy({
             where: { user_Id: id }
         });
 
-        //Updating roles_users table
-        updateRolesUsers(roles, id);
+
+        if (userData.password != undefined || userData.password.length != 0) {
+            await users.update({
+                password: encrypt(userData.password)
+            },
+                {
+                    returning: true, where: { id: id }
+                });
+        }
+
+
+        if (userData.phone != undefined || userData.phone.length != 0) {
+            await users.update({
+                phone: userData.phone
+            },
+                {
+                    returning: true, where: { id: id }
+                });
+        }
+
+        // historyUsersActions.create({
+        //     userId: '1', action_name: "edit",
+        //     description: "edited user " + userData.name,
+        //     time: new Date().toLocaleTimeString('en-US', {
+        //         hour12: false,
+        //         hour: "numeric",
+        //         minute: "numeric"
+        //     }), date: new Date()
+        // }),
+
+        if (userData.roles != undefined || userData.roles.length != 0) {
+            const roles = userData.roles;
+
+            roles_users.destroy({
+                where: { user_Id: id }
+            });
+
+            //Updating roles_users table
+            updateRolesUsers(roles, id);
+        }
     }
     catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
