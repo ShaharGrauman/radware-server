@@ -3,13 +3,22 @@ const fs = require('fs');
 var SignatureController = require('../controllers/signature');
 const { signatures, files } = require('../models');
 const SearchBuilder = require('../controllers/builders/SearchBuilder');
+// const { importXml }= require('XML/');
 const {researcher} = require('../middleware/authResearcher');
 const authRoles = require('../middleware/authRoles');
 const authPermissions = require('../middleware/authPermissions');
 
 var router = express.Router();
 
-
+router.get('/severity', async (req, res, next) => {
+    try {
+        const Signatures = await SignatureController.sigBySeverity();
+        console.log(signatures);
+        res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 3 (search  signature )
 router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next) => {
     const search = new SearchBuilder();
@@ -23,8 +32,6 @@ router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next)
     if (req.query.scanBody) search.setScanBody(req.query.scanBody);
     if (req.query.scanParameters) search.setScanParameters(req.query.scanParameters);
     if (req.query.scanFile) search.setScanFile(req.query.scanFile);
-
-
     if (req.query.reference) search.setReference(req.query.reference);
 
     try {
@@ -37,7 +44,7 @@ router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next)
 });
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, next) => {
-    if (req.body.id) {
+    // if (req.body.id) {
         console.log(req.body.id)
         try {
             const result = await SignatureController.exportFile(req.body.id);
@@ -45,10 +52,10 @@ router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, 
         } catch (error) {
             res.status(500).json({ msg: error.message });
         }
-    }
-    else{
+    // }
+    // else{
 
-    }
+    // }
 })
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.get('/export/xml',[authRoles(1, 2),authPermissions(4)], async (req, res, next) => {
@@ -154,6 +161,16 @@ router.get('/:id',[authRoles(1, 2),authPermissions(1)],async (req, res, next) =>
     try {
         const Signatures = await SignatureController.findById(req.params.id);
         res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
+
+router.put('/importXml', async (req, res, next) => {
+    try {
+        const result = await SignatureController.importFile();
+        console.log(result);
+        res.json(result);
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }

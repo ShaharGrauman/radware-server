@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><!--Don't change this header, it will be changed automatically by the builder-->
+<Vulnerabilities Version="4.5.1.1" Date="2012/03/26">  <!-- Vuln-FalsePositives exist for future reference -->
+  <VulnEx>
+    <PatternID>6901</PatternID>
+    <Fragments>
+      <Fragment>
+        <VulnDataEx>htnl</VulnDataEx>
+        <VulnDataEx>)</VulnDataEx>
+        <VulnDataEx>}</VulnDataEx>
+        <VulnDataEx>{</VulnDataEx>
+        <KeepOrder>1</KeepOrder>
+        <VulnData></VulnData>
+        <LeftIndex>-1</LeftIndex>
+        <RightIndex>-1</RightIndex>
+        <Params />
+        <ScanUri>1</ScanUri>
+        <ScanHeaders>0</ScanHeaders>
+        <ScanBody>0</ScanBody>
+        <ScanParameters>0</ScanParameters>
+      </Fragment>
+    </Fragments>
+    <Severity>Medium</Severity>
+    <AttackName>Cross Site Scripting</AttackName>
+    <Description>VulnEx example 1</Description>
+    <RelatedInfo />
+    <WebServers />
+  </VulnEx>
+  
+  <VulnEx>
+    <PatternID>6902</PatternID>
+    <Fragments>
+      <Fragment>
+        <VulnDataEx>php</VulnDataEx>
+        <VulnDataEx>?aaa=bbb</VulnDataEx>
+        <KeepOrder>1</KeepOrder>
+        <VulnData></VulnData>
+        <LeftIndex>-1</LeftIndex>
+        <RightIndex>-1</RightIndex>
+        <Params />
+        <ScanUri>1</ScanUri>
+        <ScanHeaders>0</ScanHeaders>
+        <ScanBody>0</ScanBody>
+        <ScanParameters>0</ScanParameters>
+      </Fragment>
+    </Fragments>
+    <Severity>Medium</Severity>
+    <AttackName>Null byte Injection</AttackName>
+    <Description>VulnEx example 2</Description>
+    <RelatedInfo>
+      <ExternalReference>CveId = http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1234</ExternalReference>
+      <ExternalReference>Other = http://example.com</ExternalReference>
+    </RelatedInfo>
+    <WebServers />
+  </VulnEx>
+ 
+  <Vuln>
+    <PatternID>7703</PatternID>
+    <Fragments>
+      <Fragment>
+        <VulnData>/path/url/example/</VulnData>
+        <Params />
+        <LeftIndex>0</LeftIndex>
+        <RightIndex>0</RightIndex>
+        <ScanUri>1</ScanUri>
+		<ScanHeaders Limit="User-Agent">1</ScanHeaders>
+        <ScanBody>0</ScanBody>
+        <ScanParameters>0</ScanParameters>
+      </Fragment>
+    </Fragments>
+    <Severity>Medium</Severity>
+    <AttackName>Cross Site Scripting</AttackName>
+    <Description>Vuln example 1</Description>
+    <RelatedInfo>
+      <ExternalReference>CveId = http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2000-39211</ExternalReference>
+    </RelatedInfo>
+    <WebServers />
+  </Vuln>
+  
+  <Vuln>
+    <PatternID>7707</PatternID>
+    <Fragments>
+      <Fragment>
+        <VulnData EndBreak="FileName">.php</VulnData>
+        <Params>admin=1&amp;</Params>
+        <LeftIndex>1</LeftIndex>
+        <RightIndex>1</RightIndex>
+        <ScanUri>1</ScanUri>
+        <ScanHeaders>0</ScanHeaders>
+        <ScanBody>0</ScanBody>
+        <ScanParameters>0</ScanParameters>
+      </Fragment>
+    </Fragments>
+    <Severity>Medium</Severity>
+    <AttackName>Remote File Inclusion</AttackName>
+    <Description>Vuln example 2</Description>
+    <RelatedInfo>
+      <ExternalReference>BugTraqId = http://www.securityfocus.com/bid/12345</ExternalReference>
+    </RelatedInfo>
+    <WebServers />
+  </Vuln>
+ 	<VulnRegEx>
+		<PatternID>112345</PatternID>
+		<Fragments>
+		  <Fragment>
+			<VulnData>sleep\(\d*\)</VulnData>
+			<ScanUri>1</ScanUri>
+			<ScanHeaders>0</ScanHeaders>
+			<ScanBody>0</ScanBody>
+			<ScanParameters>1</ScanParameters>
+			<LeftIndex>-1</LeftIndex>
+			<RightIndex>-1</RightIndex>
+		  </Fragment>
+		</Fragments>
+		<Severity>Medium</Severity>
+		<AttackName>SQL Injection</AttackName>
+		<Description>VulnREGEX example 1</Description>
+	</VulnRegEx>
+	
+</Vulnerabilities>

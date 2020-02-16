@@ -12,15 +12,9 @@ module.exports = (db, type) => {
         action_name: {
             type: type.ENUM('add', 'edit', 'delete', 'search', 'delete','report','export_for_git', 'export_for_qa','export_for_testing')
         },
-        system_name: {
-            type: type.ENUM('in_progress', 'in_test', 'in_qa', 'published', 'deleted')
+        description: {
+            type: type.STRING
         },
-        screen_name: {
-            type: type.ENUM('in_progress', 'in_test', 'in_qa', 'published', 'deleted')
-        },
-        // description: {
-
-        // },
         time: {
             type: type.TIME      
         },

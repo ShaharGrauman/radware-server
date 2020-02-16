@@ -1,24 +1,23 @@
-const { historyUsersActions } = require('../models');
+
+const { historyUsersActions, users } = require('../models');
 const { Op } = require("sequelize");
 
 
 const getData = async (query) => {
     // event,user_id,startDate,endDate,startTime,endTime,sortBy,orderBy
 
-    let startDate = '1970-01-01', endDate = new Date();
-    let startTime = '00:00:00', endTime = '23:59:59'
-    if (query.startDate != 'all') {
-        startDate = query.startDate;
-    }
-    if (query.endDate != 'all') {
-        endDate = query.endDate;
-    }
-    if (query.startTime != 'all') {
-        startTime = query.startTime;
-    }
-    if (query.endTime != 'all') {
-        endTime = query.endTime;
-    }
+
+
+    startDate = query.startDate;
+
+
+    endDate = query.endDate;
+
+    startTime = query.startTime;
+
+
+    endTime = query.endTime;
+
     where = {
         'date': {
             [Op.between]: [startDate, endDate]
@@ -28,7 +27,6 @@ const getData = async (query) => {
         }
     };
     if (query.event != 'all') {
-        console.log(query.event);
         let event = query.event.split(',');
         Object.assign(where, {
             action_name:
@@ -39,7 +37,7 @@ const getData = async (query) => {
     }
 
     if (query.user_id != 'all') {
-        let user_id = query.user_id.split(',');
+        let user_id = query.user_id.split(','), id;
         Object.assign(where, {
             user_id: {
                 [Op.in]: user_id
@@ -60,13 +58,13 @@ const getData = async (query) => {
             limit: parseInt(query.size),
         });
         let hasNext = true, hasPrev = false;
-        if(history.length%(query.size*query.page) != 0){
-          hasNext = false;
+        if (history.length % (query.size * query.page) != 0 || history.length === 0) {
+            hasNext = false;
         }
-        if(query.page != 1){
+        if (query.page != 1) {
             hasPrev = true;
         }
-        return {history, hasNext, hasPrev};
+        return { history, hasNext, hasPrev };
     } catch (error) {
         throw new Error(`Can't get the audit: ${error.message}`);
     }
