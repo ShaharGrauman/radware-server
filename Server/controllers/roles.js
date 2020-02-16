@@ -1,7 +1,6 @@
 const { roles, permissions } = require('../models');
 const { permissions_roles } = require('../models/index');
-
-
+//const { roleCreation, roleUpdate } = require('../middleware/validations');
 // const getRoles = async (roleId) => {
 //     if (userId) {
 //         try {
@@ -21,7 +20,12 @@ const { permissions_roles } = require('../models/index');
 //     }
 // }
 const createRole = async (roleData) => {
-    console.log(roleData);
+    // const result = await Joi.validate(roleData,roleCreation);
+    // console.log(result);
+    // if (!result) {
+    //     return result;
+    // }
+    // console.log(roleData);
 
     try {
         const newRole = await roles.create({
@@ -74,7 +78,7 @@ const getRoleWithPermissions = async (roleId) => {
 }
 
 
-// const gitRoles = async () => {
+// const getRoles = async () => {
 //     try {
 //         const rolesData = await roles.findAll({
 //             attributes: ['id', 'name']
@@ -85,7 +89,14 @@ const getRoleWithPermissions = async (roleId) => {
 //     }
 // }
 
-const editRole = async (roleData, id) => {
+const editRole = async (DataToUpdate, id) => {
+    // const result = await Joi.validate(DataToUpdate, roleUpdate);
+    // console.log(result);
+    // if (!result) {
+    //     return result;
+    // }
+
+    console.log(DataToUpdate);
     try {
         const editRole = await roles.update({
             name: roleData.name,
@@ -117,11 +128,11 @@ const editRole = async (roleData, id) => {
 }
 
 const getRoles = async () => {
-
     try {
         const rolesData = await roles.findAll({
-            // attributes: ['id', 'name']
+            //  attributes: ['id', 'name']
         })
+        console.log(rolesData);
         return rolesData;
     } catch (error) {
         throw new Error(`Cant get roles: ${error.message}`);

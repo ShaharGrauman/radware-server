@@ -2,11 +2,34 @@ Joi = require('joi');
 
 module.exports = {
     userCreation: Joi.object().keys({
-        username: Joi.string().email().min(4).max(25).required(),
-        password: Joi.string().min(6).max(18).required(),
-        phone: Joi.string().min(6).max(12),
-        status: Joi.string().valid('active', 'deleted')
-    }),
+//<<<<<<< HEAD
+    username: Joi.string().email().min(4).max(25).required(),
+    password: Joi.string().min(6).max(18).required(),
+    phone: Joi.string().min(6).max(12),
+    status: Joi.string().valid('active', 'deleted'),
+    roles: Joi.array()
+}),
+// userUpdate: Joi.object().keys({
+//     username: Joi.string().email().min(4).max(25).required(),
+//     password: Joi.string().min(6).max(18).required(),
+//     phone: Joi.string().min(6).max(12),
+//     status: Joi.string().valid('active', 'deleted'),
+//     roles: Joi.array()
+// }),
+// roleCreation:Joi.object().keys({
+//     name:Joi.string().min(4).max(25).required(),
+//     description:string().required(),
+//     permissions :Joi.array()
+// }),
+
+// roleUpdate:Joi.object().keys({
+//     name:Joi.string().min(4).max(25).required(),
+//     description:string().required(),
+//     permissions :Joi.array()
+// }),
+
+//=======
+//>>>>>>> master
     signatureCreation: Joi.object().keys({
         user_id: Joi.required(),
         attack_id: Joi.number().required(),
@@ -32,11 +55,20 @@ module.exports = {
         description: Joi.string().min(1).max(255),
         test_data: Joi.string().min(1).max(255),
         files: Joi.array(),
-        attack: Joi.object(),
-        parameters: Joi.array()
-        , external_references: Joi.array()
-        , vuln_data_extras: Joi.array()
-        , web_servers: Joi.array()
+//<<<<<<< HEAD
+        attack_id: Joi.number(),
+        parameters: Joi.array(),
+        external_references: Joi.array(),
+        vuln_data_extras: Joi.array(),
+        web_servers: Joi.array()
+    }),
+//=======
+        attack : Joi.object().keys({
+        parameters: Joi.array(),
+        external_references: Joi.array(),
+        vuln_data_extras: Joi.array(),
+        web_servers: Joi.array()
+//>>>>>>> master
     }),
     signatureUpdate: Joi.object().keys({
         user_id: Joi.required(),
