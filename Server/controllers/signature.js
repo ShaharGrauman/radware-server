@@ -216,6 +216,33 @@ const loadSignaturesToExport = async (query) => {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
+const sigByAttack = async () => {
+    try {
+        const signaturesByAttack = await signatures.findAll({
+            
+            include:[{model:attack, attributes:['name']}],
+            group: ['attack_id'],
+            attributes: ['attack_id', [sequelize.fn('COUNT', 'attack_id'), 'SigCount']],
+        }) 
+        console.log(signaturesByAttack);
+        return signaturesByAttack;
+    } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
+const sigPerSeverity = async () => {
+    try {
+        const sigPerSeverity = await signatures.findAll({
+            group: ['severity'],
+            attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'SigSevCount']],
+        }) 
+        console.log(sigPerSeverity);
+        return sigPerSeverity;
+    } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
 
 const loadSignatures = async (query) => {
     try {
@@ -563,6 +590,9 @@ module.exports = {
     loadSignatures,
     loadSignaturesToExport,
     exportFile,
+    exportAllFile,
+    sigByAttack,
+    sigPerSeverity,
     importFile,
     sigBySeverity,
     //findStatus

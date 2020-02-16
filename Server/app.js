@@ -17,12 +17,11 @@ var QaRouter = require('./routes/Qa');
 var pwdRouter = require('./routes/pwd');
 
 var app = express();
-
+app.use(cors({origin: 'http://localhost:3000', credentials: true}));
 // view engine setups
 app.set('views', path.join(__dirname, 'views'));
 
 app.set('view engine', 'jade');
-app.use(cors({origin: 'http://localhost:3001', credentials: true}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

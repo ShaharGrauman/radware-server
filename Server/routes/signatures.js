@@ -82,10 +82,28 @@ router.get('/',[authRoles(1, 2),authPermissions(1)], async (req, res, next) => {
         res.status(500).json({ msg: error.message });
     }
 });
+// ************
+router.get('/attacks', async (req, res, next) => {
+    try {
+        const Signatures = await SignatureController.sigByAttack();
+        res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
+
+router.get('/SignaturePerSeverity', async (req, res, next) => {
+    try {
+        const Signatures = await SignatureController.sigPerSeverity();
+        res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (researcher dashboard)
-router.get('/researcher',[authRoles(1, 2),authPermissions(1)], async (req, res, next) => {
+router.get('/researcher', async (req, res, next) => {
     try {
         // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&status=all
         const page = req.query.page || 1;
