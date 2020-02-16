@@ -12,10 +12,9 @@ module.exports = (db, type) => {
         action_name: {
             type: type.ENUM('add', 'edit', 'delete', 'search', 'delete','report','export_for_git', 'export_for_qa','export_for_testing')
         },
-        
-        // description: {
-
-        // },
+        description: {
+            type: type.STRING
+        },
         time: {
             type: type.TIME      
         },

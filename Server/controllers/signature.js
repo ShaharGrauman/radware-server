@@ -19,6 +19,35 @@ const Op = require('Sequelize').Op;
 //         }
 //       })
 // }
+
+
+// const sigByAttack = async () => {
+//     try {
+//         const signaturesByAttack = await signatures.findAll({
+            
+//             include:[{model:attack, attributes:['name']}],
+//             group: ['attack_id'],
+//             attributes: ['attack_id', [sequelize.fn('COUNT', 'attack_id'), 'SigCount']],
+//         }) 
+//         console.log(signaturesByAttack);
+//         return signaturesByAttack;
+//     } catch (error) {
+//         throw new Error(`Cant get signatures: ${error.message}`);
+//     }
+// }
+const sigBySeverity = async () => {
+    try {
+        const signaturesBySeverity = await signatures.findAll({
+            include:[{model:attack, attributes:['name']}],
+            group: ['attack_id','severity'],
+            attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'attackSev']],
+        }) 
+        console.log(signaturesBySeverity);
+        return signaturesBySeverity;
+    } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+} 
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -49,10 +78,10 @@ const exportFile = async id => {
                 { model: param },
                 { model: externalReferences },
                 { model: vulnDataExtra },
-                { model: webServer }
+                { model: webServer },
+                { model: param }
             ]
         });
-
         routeByType(signatureData);
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
@@ -332,7 +361,7 @@ const create = async (signatureData) => {
             vulnDataExtra.create({
                 // id: vlunData.id,
                 signatureId: signatureDataCreate.id,
-                parameter: vlunData.description
+                description: vlunData.description
             });
         });
         /// feach parameters data 
@@ -535,6 +564,7 @@ module.exports = {
     loadSignaturesToExport,
     exportFile,
     importFile,
+    sigBySeverity,
     //findStatus
     exportAllFile
 

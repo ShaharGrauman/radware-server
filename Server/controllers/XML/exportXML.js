@@ -7,7 +7,7 @@ const { findById } = require('../../controllers/signature');
 var SignatureController = require('../../controllers/signature');
 
 routeByType = signatureData => {
- 
+
     var root = builder.create('Vulnerabilities', { encoding: 'utf-8' }, { standalone: "yes" });
     root.att({ Version: "4.5.1.1", Date: new Date().toLocaleDateString() })
     signatureData.map(data => {
@@ -30,17 +30,15 @@ export_XML_VulnRegEx_Signature = (signatureData, root) => {
     var obj = {};
 
 
-    console.log(signatureData);
     Vuln = root.ele('VulnRegEx');
     Vuln.ele('PatternID', signatureData.pattern_id)
     Fragments = Vuln.ele('Fragments');
     Fragment = Fragments.ele('Fragment');
-    VulnData = Fragment.ele('VulnData', signatureData.vuln_data);
     Fragment.ele('VulnData', signatureData.vuln_data)
-    Fragment.ele('ScanUri', signatureData.scan_uri);
-    Fragment.ele('ScanHeaders', signatureData.scan_header);
-    Fragment.ele('ScanBody', signatureData.scan_body);
-    Fragment.ele('ScanParameters', signatureData.scan_parameters);
+    Fragment.ele('ScanUri', signatureData.scan_uri ? '1' : '0');
+    Fragment.ele('ScanHeaders', signatureData.scan_header ? '1' : '0');
+    Fragment.ele('ScanBody', signatureData.scan_body ? '1' : '0');
+    Fragment.ele('ScanParameters', signatureData.scan_parameters ? '1' : '0');
     Fragment.ele('Leftindex', signatureData.left_index);
     Fragment.ele('RightIndex', signatureData.right_index);
 
@@ -57,28 +55,33 @@ export_XML_VulnRegEx_Signature = (signatureData, root) => {
 export_XML_VulnEx_Signature = (signatureData, root) => {
 
     var obj = {};
-
-    console.log(signatureData);
+    console.log(signatureData.vuln_data_extras.map(vulnEx=>vulnEx.description));
     Vuln = root.ele('VulnEx');
     Vuln.ele('PatternID', signatureData.pattern_id)
     Fragments = Vuln.ele('Fragments');
     Fragment = Fragments.ele('Fragment');
-    VulnDataEx = Fragment.ele('VulnDataEx', signatureData.vuln_data);
-    Fragment.ele('KeepOrder', signatureData.keep_order)
+    signatureData.vuln_data_extras.map(vulnEx=>{
+        VulnDataEx = Fragment.ele('VulnDataEx', vulnEx.description);
+    })
+    Fragment.ele('KeepOrder', signatureData.keep_order ? '1' : '0')
     Fragment.ele('VulnData', signatureData.vuln_data)
-    Fragment.ele('params', 'PARAM');
+    let paramString = signatureData.parameters
+        .map(param => param.parameter)
+        .join(`&`)
+        .concat('&');
+    Fragment.ele('params', paramString);
     Fragment.ele('Leftindex', signatureData.left_index);
     Fragment.ele('RightIndex', signatureData.right_index);
-    Fragment.ele('ScanUri', signatureData.scan_uri);
-    Fragment.ele('ScanHeaders', signatureData.scan_header);
-    Fragment.ele('ScanBody', signatureData.scan_body);
-    Fragment.ele('ScanParameters', signatureData.scan_parameters);
+    Fragment.ele('ScanUri', signatureData.scan_uri ? '1' : '0');
+    Fragment.ele('ScanHeaders', signatureData.scan_header ? '1' : '0');
+    Fragment.ele('ScanBody', signatureData.scan_body ? '1' : '0');
+    Fragment.ele('ScanParameters', signatureData.scan_parameters ? '1' : '0');
     Vuln.ele('Severity', signatureData.severity);
     Vuln.ele('AttackName', signatureData.attack.dataValues.name)
     Vuln.ele('Description', signatureData.description)
     RelatedInfo = Vuln.ele('RelatedInfo');
     signatureData.external_references.map(ref => {
-        RelatedInfo.ele('ExternalReference', ref.reference);
+        RelatedInfo.ele('ExternalReference', ref.type + '=' + ref.reference);
 
     });
     webServer = Vuln.ele('WebServers')
@@ -96,25 +99,28 @@ export_XML_Vuln_Signature = (signatureData, root) => {
 
     var obj = {};
 
-
     Vuln = root.ele('Vuln');
     Vuln.ele('PatternID', signatureData.pattern_id)
     Fragments = Vuln.ele('Fragments');
     Fragment = Fragments.ele('Fragment');
     VulnData = Fragment.ele('VulnData', signatureData.vuln_data);
-    Fragment.ele('params', 'PARAM');
+    let paramString = signatureData.parameters
+        .map(param => param.parameter)
+        .join(`&`)
+        .concat('&');
+    Fragment.ele('params', paramString);
     Fragment.ele('Leftindex', signatureData.left_index);
     Fragment.ele('RightIndex', signatureData.right_index);
-    Fragment.ele('ScanUri', signatureData.scan_uri);
-    Fragment.ele('ScanHeaders', signatureData.scan_header);
-    Fragment.ele('ScanBody', signatureData.scan_body);
-    Fragment.ele('ScanParameters', signatureData.scan_parameters);
+    Fragment.ele('ScanUri', signatureData.scan_uri ? '1' : '0');
+    Fragment.ele('ScanHeaders', signatureData.scan_header ? '1' : '0');
+    Fragment.ele('ScanBody', signatureData.scan_body ? '1' : '0');
+    Fragment.ele('ScanParameters', signatureData.scan_parameters ? '1' : '0');
     Vuln.ele('Severity', signatureData.severity);
     Vuln.ele('AttackName', signatureData.attack.dataValues.name)
     Vuln.ele('Description', signatureData.description)
     RelatedInfo = Vuln.ele('RelatedInfo');
     signatureData.external_references.map(ref => {
-        RelatedInfo.ele('ExternalReference', ref.reference);
+        RelatedInfo.ele('ExternalReference', ref.type + '=' + ref.reference);
 
     });
     webServer = Vuln.ele('WebServers')

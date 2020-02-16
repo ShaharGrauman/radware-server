@@ -10,9 +10,6 @@ const authPermissions = (...permissions) => (req, res, next) => {
         const user = JSON.parse(cookie);
         console.log(user);
         console.log('permissions',user.roles[0].permissions)
-        // if(user.roles.map(role=>{
-        //     role.permissions.some(per=>per.includes(permissions.id))
-        // }));
         if (user.roles[0].permissions.some(per => permissions.includes(per.id))) {
             next();
             return;

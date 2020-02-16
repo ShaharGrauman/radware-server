@@ -10,7 +10,15 @@ const authPermissions = require('../middleware/authPermissions');
 
 var router = express.Router();
 
-
+router.get('/severity', async (req, res, next) => {
+    try {
+        const Signatures = await SignatureController.sigBySeverity();
+        console.log(signatures);
+        res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 3 (search  signature )
 router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next) => {
     const search = new SearchBuilder();
@@ -36,7 +44,7 @@ router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next)
 });
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, next) => {
-    if (req.body.id) {
+    // if (req.body.id) {
         console.log(req.body.id)
         try {
             const result = await SignatureController.exportFile(req.body.id);
@@ -44,10 +52,10 @@ router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, 
         } catch (error) {
             res.status(500).json({ msg: error.message });
         }
-    }
-    else{
+    // }
+    // else{
 
-    }
+    // }
 })
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.get('/export/xml',[authRoles(1, 2),authPermissions(4)], async (req, res, next) => {

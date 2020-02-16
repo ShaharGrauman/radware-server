@@ -8,4 +8,3 @@ const sequelize=new Sequelize('radware','root','1234',{
 
 console.log(sequelize.config);
 module.exports=sequelize;
-

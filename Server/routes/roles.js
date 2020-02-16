@@ -31,10 +31,7 @@ router.post('/new_role', async (req, res, next) => {
   if (!req.body.name || !req.body.description) {
     res.status(400).json({ msg: "body is not valid" });
    }
-  // else
-  // if(req.body.id){
-  //   res.status(400).json({ msg: "role already exists" });
-  // }
+
   try {
     const result = await roleController.createRole(req.body);
     res.status(201).json(result);
