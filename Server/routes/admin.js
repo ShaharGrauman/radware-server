@@ -15,17 +15,17 @@ router.get('/roles',admin, async (req, res) => {
   }
 });
 
-router.get('/audit',admin, async (req, res) => {
+router.get('/audit', async (req, res) => {
   try{
     // ?event=edit&user_id=20&sortby=timeanddate&orderby=asc&startDate,endDate,startTime,EndTime
     const page = req.query.page || 1;
     const size = req.query.size || 20;
     const event = req.query.event || 'all';
     const user_id = req.query.user_id || 'all';
-    const startDate = req.query.startdate || 'all';
-    const endDate = req.query.enddate || 'all';
-    const startTime = req.query.starttime || 'all';
-    const endTime = req.query.endtime || 'all';
+    const startDate = req.query.startdate || '1970-01-01';
+    const endDate = req.query.enddate || new Date();
+    const startTime = req.query.starttime || '00:00:00';
+    const endTime = req.query.endtime || '23:59:59';
     let sortBy = req.query.sortby || 'time';
     const orderBy = req.query.orderby || 'desc';
     query = Object.assign({}, {

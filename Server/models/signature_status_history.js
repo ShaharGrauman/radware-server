@@ -5,6 +5,12 @@ module.exports = (db, type) => {
             type: type.INTEGER,
             autoIncrement: true,
             primaryKey: true
+        },
+        user_id: {
+            type: type.INTEGER
+        },
+        signature_id: {
+            type: type.INTEGER
         }, 
         status: {
             type: type.ENUM('in_progress', 'in_test', 'in_qa', 'published', 'deleted')

@@ -24,8 +24,6 @@ router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next)
     if (req.query.scanBody) search.setScanBody(req.query.scanBody);
     if (req.query.scanParameters) search.setScanParameters(req.query.scanParameters);
     if (req.query.scanFile) search.setScanFile(req.query.scanFile);
-
-
     if (req.query.reference) search.setReference(req.query.reference);
 
     try {

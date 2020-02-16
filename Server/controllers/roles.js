@@ -1,5 +1,6 @@
 const { roles, permissions } = require('../models');
 const { permissions_roles } = require('../models/index');
+const { roleValidation } = require("../middleware/validations");
 
 
 // const getRoles = async (roleId) => {
@@ -22,7 +23,10 @@ const { permissions_roles } = require('../models/index');
 // }
 const createRole = async (roleData) => {
     console.log(roleData);
-
+    const result = await Joi.validate(roleData, roleValidation);
+    if (!result) {
+        return result;
+    }
     try {
         const newRole = await roles.create({
             id: roleData.id,
@@ -86,6 +90,10 @@ const getRoleWithPermissions = async (roleId) => {
 // }
 
 const editRole = async (roleData, id) => {
+    const result = await Joi.validate(roleData, roleValidation);
+    if (!result) {
+        return result;
+    }
     try {
         const editRole = await roles.update({
             name: roleData.name,

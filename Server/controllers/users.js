@@ -2,7 +2,7 @@
 
 const { users, roles } = require("../models/");
 const { roles_users, historyUsersActions } = require("../models/index")
-const { userCreation } = require("../middleware/validations");
+const { userValidation } = require("../middleware/validations");
 const { encrypt } = require("./encrypt")
 
 
@@ -55,7 +55,7 @@ const deleteUser = async (username) => {
 }
 
 const createUser = async (userData) => {
-    const result = await Joi.validate(userData, userCreation);
+    const result = await Joi.validate(userData, userValidation);
     console.log(result);
     if (!result) {
         return result;
@@ -87,7 +87,7 @@ const createUser = async (userData) => {
 }
 
 const editUser = async (DataToUpdate, id) => {
-    const result = await Joi.validate(DataToUpdate, userUpdate);
+    const result = await Joi.validate(DataToUpdate, userValidation);
     if (!result) {
         return result;
     }
@@ -133,15 +133,15 @@ const editUser = async (DataToUpdate, id) => {
                 });
         }
 
-        // historyUsersActions.create({
-        //     userId: '1', action_name: "edit",
-        //     description: "edited user " + userData.name,
-        //     time: new Date().toLocaleTimeString('en-US', {
-        //         hour12: false,
-        //         hour: "numeric",
-        //         minute: "numeric"
-        //     }), date: new Date()
-        // }),
+        historyUsersActions.create({
+            userId: '1', action_name: "edit",
+            description: "edited user 1" ,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        })
 
         if (userData.roles != undefined || userData.roles.length != 0) {
             const roles = userData.roles;
