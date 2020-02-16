@@ -1,8 +1,7 @@
-
-
-const { users, roles } = require("../models/");
+const { users, roles  } = require("../models/");
 const { roles_users, historyUsersActions } = require("../models/index")
-const { userCreation } = require("../middleware/validations");
+const { userCreation,userUpdate } = require('../middleware/validations');
+//>>>>>>> master
 const { encrypt } = require("./encrypt")
 
 
@@ -10,7 +9,8 @@ const getUserWithRoles = async (userId) => {
     if (!userId) {
         try {
             const data = await users.findAll({
-                attributes: ['id', 'username', 'phone', 'status'],
+                attributes: ['id','name', 'username', 'phone', 'status'],
+
                 include: { model: roles, attributes: ['description'], through: { attributes: [] } }
             });
             return data;
@@ -22,7 +22,7 @@ const getUserWithRoles = async (userId) => {
         try {
             const user = await users.findByPk(userId,
                 {
-                    attributes: ['name', 'username', 'password', 'phone'],
+                    attributes: ['id','name', 'username', 'password', 'phone'],
                     include: { model: roles, attributes: ['id', 'name'], through: { attributes: [] } }
                 });
             return user;
@@ -86,35 +86,80 @@ const createUser = async (userData) => {
     }
 }
 
-const editUser = async (userData, id) => {
+const editUser = async (DataToUpdate, id) => {
+    // const result = await Joi.validate(DataToUpdate,userUpdate);
+    // console.log(result);
+    // if (!result) {
+    //     return result;
+    // }
+    // console.log(DataToUpdate);
     try {
-        const editUser = await users.update({
-            name: userData.name,
-            username: userData.username,
-            password: encrypt(userData.password),
-            phone: userData.phone
-        },
-            // historyUsersActions.create({
-            //     userId: '1', action_name: "edit",
-            //     description: "edited user " + userData.name,
-            //     time: new Date().toLocaleTimeString('en-US', {
-            //         hour12: false,
-            //         hour: "numeric",
-            //         minute: "numeric"
-            //     }), date: new Date()
-            // }),
-            {
-                returning: true, where: { id: id }
-            });
+
+
+        if (userData.name != undefined || userData.name.length != 0) {
+            await users.update({
+                name: userData.name
+            },
+                {
+                    returning: true, where: { id: id }
+                });
+        }
+
+
+        if (userData.username != undefined || userData.username.length != 0 ) {
+            await users.update({
+                username: userData.username
+            },
+                {
+                    returning: true, where: { id: id }
+                });
+        }
 
         const roles = userData.roles;
-
         roles_users.destroy({
             where: { user_Id: id }
         });
 
-        //Updating roles_users table
-        updateRolesUsers(roles, id);
+
+        if (userData.password != undefined || userData.password.length != 0) {
+            await users.update({
+                password: encrypt(userData.password)
+            },
+                {
+                    returning: true, where: { id: id }
+                });
+        }
+
+
+        if (userData.phone != undefined || userData.phone.length != 0) {
+            await users.update({
+                phone: userData.phone
+            },
+                {
+                    returning: true, where: { id: id }
+                });
+        }
+
+        // historyUsersActions.create({
+        //     userId: '1', action_name: "edit",
+        //     description: "edited user " + userData.name,
+        //     time: new Date().toLocaleTimeString('en-US', {
+        //         hour12: false,
+        //         hour: "numeric",
+        //         minute: "numeric"
+        //     }), date: new Date()
+        // }),
+
+        if (userData.roles != undefined || userData.roles.length != 0) {
+            const roles = userData.roles;
+
+            roles_users.destroy({
+                where: { user_Id: id }
+            });
+
+            //Updating roles_users table
+            updateRolesUsers(roles, id);
+        }
     }
     catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
@@ -131,6 +176,10 @@ const updateRolesUsers = async (roles, userId) => {
             };
             rolesUsers.push(roleUser);
         }
+//<<<<<<< HEAD
+        roles_users.bulkCreate(rolesUsers, {returning: true})
+    
+//=======
 
         await roles_users.bulkCreate(rolesUsers, { returning: true });
         historyUsersActions.create({
@@ -143,6 +192,7 @@ const updateRolesUsers = async (roles, userId) => {
             }), date: new Date()
         });
 
+//>>>>>>> master
     }
     catch (error) {
         throw new Error(`Cant create user: ${error.message}`);

@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 
-
+var constantRouter=require('./routes/constant');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
@@ -14,6 +14,7 @@ var signatureRouter = require('./routes/signatures');
 var roleRouter = require('./routes/roles');
 var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
+var pwdRouter = require('./routes/pwd');
 
 var app = express();
 app.use(cors({origin: 'http://localhost:3000', credentials: true}));
@@ -21,11 +22,11 @@ app.use(cors({origin: 'http://localhost:3000', credentials: true}));
 app.set('views', path.join(__dirname, 'views'));
 
 app.set('view engine', 'jade');
-app.use(cors());
+app.use(cors({origin: 'http://localhost:3001', credentials: true}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // app.use((req.res,next)=>{
@@ -57,7 +58,7 @@ db
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-
+app.use('/constant',constantRouter);
 app.use('/role', roleRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
@@ -65,6 +66,7 @@ app.use('/attack', attackRouter);
 app.use('/signature', signatureRouter);
 app.use('/login', loginRouter);
 app.use('/Qa', QaRouter);
+app.use('/pwd', pwdRouter);
 
 
 // catch 404 and forward to error handler

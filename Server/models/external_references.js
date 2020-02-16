@@ -1,4 +1,3 @@
-
 module.exports = (db, type) => {
     return db.define('external_references', {
         id: {
@@ -9,11 +8,14 @@ module.exports = (db, type) => {
         SignatureId: {
             type: type.INTEGER
         },
-        type:{
-            type:type.ENUM('cevid', 'bugtraqid') 
+        type:
+        {
+            type: type.ENUM('CveId', 'BugTraqId')
+        
         },
+        
         reference: {
             type: type.STRING(2048),
         }
-    },{timestamps: false})
+    }, { timestamps: false })
 } 

@@ -1,7 +1,10 @@
-const { users, roles, login, file, permissions } = require('../models');
+const { users, roles, login, file, permissions, permissions_roles, roles_users } = require('../models');
 const { loginAttempt } = require('../middleware/validations');
 const { sendEmail } = require('./sendEmail');
 const { encrypt } = require("./encrypt")
+
+
+
 
 
 const Login = async (user) => {
@@ -16,11 +19,14 @@ const Login = async (user) => {
             attributes: ['id', 'username'],
             include: [{
                 model: roles, attributes: ['id', 'name'],
-                through: { attributes: [] }
+                through: { attributes: [] },
+                include: [{
+                    model: permissions,
+                    through: { attributes: [] }
+                }]
             }],
             where: { username: user.username, password: encrypt(user.password) }
         })
-
         if (userExist) {
 
             let userStatus = await users.findOne({ attributes: ['status'], where: { username: user.username, password: encrypt(user.password) } })
@@ -34,14 +40,13 @@ const Login = async (user) => {
             try {
                 login.create({
                     user_id: userExist.id,
-                    time: new Date().toLocaleTimeString('en-US', { hour12: false,hour: "numeric",minute: "numeric"}),
+                    time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
                     date: new Date().toLocaleString("he-IL"),
                     success: 0
                 })
             } catch (error) {
                 throw new Error(`Cant create login: ${error.message}`);
             }
-
             return userExist
         }
 
@@ -68,7 +73,7 @@ const Login = async (user) => {
                     try {
                         login.create({
                             user_id: exist.id,
-                            time: new Date().toLocaleTimeString('en-US', { hour12: false,hour: "numeric",minute: "numeric"}),
+                            time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
                             date: new Date().toLocaleString("he-IL"),
                             success: 1
                         })
@@ -134,4 +139,43 @@ const reset = async (username) => {
     }
 }
 
-module.exports = { Login, reset };
+
+const updatePassword = async (user) => {
+    try {
+
+        const tempPwd = await users.findOne({
+            where: { password: encrypt(user.tempPwd) }
+        });
+
+        const username = await users.findOne({
+            where: { username: user.username }
+        });
+
+        if (!username) {
+            throw new Error('incorrect username');
+        }
+
+        if (tempPwd) {
+            try {
+                const editPwd = await users.update({
+                    password: encrypt(user.newPwd)
+                },
+                    {
+                        returning: true, where: { username: user.username }
+                    });
+            }
+            catch (error) {
+                throw new Error(`Cant edit user: ${error.message}`);
+            }
+        }
+        else {
+            throw new Error('incorrect temp password');
+        }
+
+
+    } catch (error) {
+        throw new Error(`${error.message}`);
+    }
+}
+
+module.exports = { Login, reset, updatePassword };

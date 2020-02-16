@@ -1,10 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var QaController = require('../controllers/Qa');
-const { Qa } = require('../middleware/authQa');
+const authRoles = require('../middleware/authRoles');
 
 
-router.get('/dashboard', Qa, async (req, res) => {
+/// to use this route should to be the user role is 4 or 5 or 6  QA (Manual,performance,automation) 
+router.get('/dashboard', authRoles(4, 5, 6), async (req, res) => {
   try {
     const inQa = await QaController.findAll();
     res.status(200).json(inQa);
@@ -13,7 +14,9 @@ router.get('/dashboard', Qa, async (req, res) => {
   }
 });
 
-router.put('/dashboard', async (req, res) => {
+
+/// to use this route should to be the user role is 4 or 5 or 6  QA (Manual,performance,automation) ***need to add permissions***
+router.put('/dashboard', authRoles(4, 5, 6), async (req, res) => {
   try {
     const result = await QaController.Update(req.body);
     res.json(result);

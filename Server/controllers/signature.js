@@ -4,11 +4,16 @@ require('./sendEmail');
 require('./XML/exportXML');
 
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
-
-
 const Op = require('Sequelize').Op;
 
-
+// const findStatus = async() =>{
+//     sequelize.define('model', {
+//         status: {
+//           type:   Sequelize.ENUM,
+//           values: ['in progress','in test','in QA','published','suspended','deleted']
+//         }
+//       })
+// }
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -73,7 +78,7 @@ const exportAllFile = async (query) => {
             ]
         });
         console.log(signatureData)
-       routeByType(signatureData);
+        routeByType(signatureData);
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
     }
@@ -184,6 +189,19 @@ const sigByAttack = async () => {
     }
 }
 
+const sigPerSeverity = async () => {
+    try {
+        const sigPerSeverity = await signatures.findAll({
+            group: ['severity'],
+            attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'SigSevCount']],
+        }) 
+        console.log(sigPerSeverity);
+        return sigPerSeverity;
+    } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
 const loadSignatures = async (query) => {
     try {
         let signatureData, signaturesCountByStatus;
@@ -277,6 +295,7 @@ const create = async (signatureData) => {
             start_break: signatureData.start_break,
             end_break: signatureData.end_break,
             right_index: signatureData.right_index,
+            left_index: signatureData.left_index,
             scan_uri: signatureData.scan_uri,
             scan_header: signatureData.scan_header,
             scan_body: signatureData.scan_body,
@@ -287,6 +306,7 @@ const create = async (signatureData) => {
             test_data: signatureData.test_data,
             attack_id: signatureData.attackId,
             user_id: signatureData.userId,
+            limit:signatureData.limit
         });
         //// feach file data 
         signatureData.files.map(FileData => {
@@ -542,6 +562,8 @@ module.exports = {
     loadSignaturesToExport,
     exportFile,
     exportAllFile,
-    sigByAttack
+    sigByAttack,
+    sigPerSeverity
+
 
 };
