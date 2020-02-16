@@ -8,7 +8,7 @@ const {researcher} = require('../middleware/authResearcher');
 
 var router = express.Router();
 
-router.get('/search',researcher,async (req, res, next) => {
+router.get('/search',async (req, res, next) => {
     const search = new SearchBuilder();
     if (req.query.attackName) search.setAttackName(req.query.attackName);
     if (req.query.description) search.setDescription(req.query.description);
@@ -33,7 +33,7 @@ router.get('/search',researcher,async (req, res, next) => {
 
 });
 
-router.post('/export/xml',researcher,async (req, res, next) => {
+router.post('/export/xml',async (req, res, next) => {
     if (req.body.id) {
         console.log(req.body.id)
         try {
@@ -72,10 +72,19 @@ router.get('/',researcher, async (req, res, next) => {
         res.status(500).json({ msg: error.message });
     }
 });
+// ************
+router.get('/attacks', async (req, res, next) => {
+    try {
+        const Signatures = await SignatureController.sigByAttack();
+        res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
 
 
 /* GET signatures listing. */
-router.get('/researcher',researcher, async (req, res, next) => {
+router.get('/researcher', async (req, res, next) => {
     try {
         // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&status=all
         const page = req.query.page || 1;

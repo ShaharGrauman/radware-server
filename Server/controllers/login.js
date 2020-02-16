@@ -30,17 +30,9 @@ const Login = async (user) => {
             else if (userStatus.status === 'deleted')
                 return "Your account is already deleted"
 
-<<<<<<< HEAD
-                //create login
-            try{
-                const time = new Date()
-                console.log(time.toTimeString())
-                  login.create({
-=======
             //create login
             try {
                 login.create({
->>>>>>> master
                     user_id: userExist.id,
                     time: new Date().toLocaleTimeString('en-US', { hour12: false,hour: "numeric",minute: "numeric"}),
                     date: new Date().toLocaleString("he-IL"),
