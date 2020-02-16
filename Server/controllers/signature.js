@@ -4,15 +4,46 @@ require('./sendEmail');
 require('./XML/exportXML');
 
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
-
-
 const Op = require('Sequelize').Op;
 
+// const findStatus = async() =>{
+//     sequelize.define('model', {
+//         status: {
+//           type:   Sequelize.ENUM,
+//           values: ['in progress','in test','in QA','published','suspended','deleted']
+//         }
+//       })
+// }
 
+
+// const sigByAttack = async () => {
+//     try {
+//         const signaturesByAttack = await signatures.findAll({
+            
+//             include:[{model:attack, attributes:['name']}],
+//             group: ['attack_id'],
+//             attributes: ['attack_id', [sequelize.fn('COUNT', 'attack_id'), 'SigCount']],
+//         }) 
+//         console.log(signaturesByAttack);
+//         return signaturesByAttack;
+//     } catch (error) {
+//         throw new Error(`Cant get signatures: ${error.message}`);
+//     }
+// }
+const sigBySeverity = async () => {
+    try {
+        const signaturesBySeverity = await signatures.findAll({
+            include:[{model:attack, attributes:['name']}],
+            group: ['attack_id','severity'],
+            attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'attackSev']],
+        }) 
+        console.log(signaturesBySeverity);
+        return signaturesBySeverity;
+    } catch (error) {
+        throw new Error(`Cant get signatures: ${error.message}`);
+    }
+} 
 const findAll = async () => {
-
-
-
     try {
         const signatureData = await signatures.findAll();
         sendMail('<h1>find all success </h1>');
@@ -33,15 +64,55 @@ const exportFile = async id => {
                 { model: param },
                 { model: externalReferences },
                 { model: vulnDataExtra },
-                { model: webServer }
+                { model: webServer },
+                { model: param }
             ]
         });
-
         routeByType(signatureData);
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
     }
 }
+
+const exportAllFile = async (query) => {
+
+    let firstStatus, secStatus;
+
+    if (query === 'Git') {
+        firstStatus = 'published';
+        secStatus = 'published';
+    }
+    if (query === 'Testing') {
+        firstStatus = 'published';
+        secStatus = 'in_test';
+    }
+    if (query === 'QA') {
+        firstStatus = 'published';
+        secStatus = 'in_qa';
+    }
+
+    try {
+        const signatureData = await signatures.findAll({
+            where: {
+                status: {
+                    [Op.or]: [firstStatus, secStatus]
+                }
+            },
+            include: [
+                { model: attack },
+                { model: param },
+                { model: externalReferences },
+                { model: vulnDataExtra },
+                { model: webServer }
+            ]
+        });
+        console.log(signatureData)
+        routeByType(signatureData);
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
+    }
+}
+
 
 
 const loadSignaturesToExport = async (query) => {
@@ -226,6 +297,7 @@ const create = async (signatureData) => {
             start_break: signatureData.start_break,
             end_break: signatureData.end_break,
             right_index: signatureData.right_index,
+            left_index: signatureData.left_index,
             scan_uri: signatureData.scan_uri,
             scan_header: signatureData.scan_header,
             scan_body: signatureData.scan_body,
@@ -236,6 +308,7 @@ const create = async (signatureData) => {
             test_data: signatureData.test_data,
             attack_id: signatureData.attackId,
             user_id: signatureData.userId,
+            limit: signatureData.limit
         });
         //// feach file data 
         signatureData.files.map(FileData => {
@@ -276,7 +349,7 @@ const create = async (signatureData) => {
             vulnDataExtra.create({
                 // id: vlunData.id,
                 signatureId: signatureDataCreate.id,
-                parameter: vlunData.description
+                description: vlunData.description
             });
         });
         /// feach parameters data 
@@ -489,6 +562,10 @@ module.exports = {
     searchSignature,
     loadSignatures,
     loadSignaturesToExport,
-    exportFile
+    exportFile,
+    sigBySeverity,
+    //findStatus
+    exportAllFile
+
 
 };

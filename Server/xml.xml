@@ -1,51 +1,79 @@
-<?xml version="1.0"?>
-<Vulnerabilities_Date>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Vulnerabilities Version="4.5.1.1" Date="2020-2-16">
   <Vuln>
-    <PatternID>68372</PatternID>
+    <PatternID>68366</PatternID>
     <Fragments>
       <Fragment>
         <VulnData/>
-        <params>PARAM</params>
-        <Leftindex/>
+        <params>user&amp;user=admin&amp;user&amp;user=admin&amp;</params>
+        <Leftindex>1</Leftindex>
         <RightIndex>3</RightIndex>
+        <ScanUri>1</ScanUri>
+        <ScanHeaders>1</ScanHeaders>
+        <ScanBody>0</ScanBody>
+        <ScanParameters>0</ScanParameters>
       </Fragment>
     </Fragments>
-    <Severity>high</Severity>
-    <AttackName>attack3</AttackName>
+    <Severity>Hight</Severity>
+    <AttackName>Cross Site Scripting</AttackName>
     <Description>ergerge</Description>
     <RelatedInfo>
-      <ExternalReference>http://www.BOOS.com/55</ExternalReference>
-      <ExternalReference>http://www.cve.com/bid/24</ExternalReference>
-      <ExternalReference>http://www.security.com/</ExternalReference>
+      <ExternalReference>bugtraqid=http://www.BOOS.com/55</ExternalReference>
+      <ExternalReference>bugtraqid=http://www.cve.com/bid/24</ExternalReference>
+      <ExternalReference>cveid=http://www.security.com/</ExternalReference>
     </RelatedInfo>
     <WebServers>
       <webserver>Web Server 1</webserver>
       <webserver>Web Server 2</webserver>
-      <webserver>dsvsdvsdv</webserver>
+      <webserver>web server 3</webserver>
     </WebServers>
   </Vuln>
-  <Vuln>
-    <PatternID>68373</PatternID>
+  <VulnEx>
+    <PatternID>68367</PatternID>
     <Fragments>
       <Fragment>
+        <VulnDataEx>sample desc</VulnDataEx>
+        <VulnDataEx>sample desc2</VulnDataEx>
+        <KeepOrder>0</KeepOrder>
         <VulnData/>
-        <params>PARAM</params>
-        <Leftindex/>
+        <params>user&amp;user=admin&amp;user&amp;user=admin&amp;</params>
+        <Leftindex>1</Leftindex>
         <RightIndex>3</RightIndex>
+        <ScanUri>1</ScanUri>
+        <ScanHeaders>1</ScanHeaders>
+        <ScanBody>0</ScanBody>
+        <ScanParameters>0</ScanParameters>
       </Fragment>
     </Fragments>
-    <Severity>high</Severity>
-    <AttackName>attack4</AttackName>
+    <Severity>Hight</Severity>
+    <AttackName>Cross Site Scripting</AttackName>
     <Description>ergerge</Description>
     <RelatedInfo>
-      <ExternalReference>http://www.BOOS.com/55</ExternalReference>
-      <ExternalReference>http://www.cve.com/bid/24</ExternalReference>
-      <ExternalReference>http://www.security.com/</ExternalReference>
+      <ExternalReference>bugtraqid=http://www.BOOS.com/55</ExternalReference>
+      <ExternalReference>bugtraqid=http://www.cve.com/bid/24</ExternalReference>
+      <ExternalReference>cveid=http://www.security.com/</ExternalReference>
     </RelatedInfo>
     <WebServers>
       <webserver>Web Server 1</webserver>
       <webserver>Web Server 2</webserver>
-      <webserver>dsvsdvsdv</webserver>
+      <webserver>web server 3</webserver>
     </WebServers>
-  </Vuln>
-</Vulnerabilities_Date>
+  </VulnEx>
+  <VulnRegEx>
+    <PatternID>68369</PatternID>
+    <Fragments>
+      <Fragment>
+        <VulnData>sample vuln data</VulnData>
+        <ScanUri>1</ScanUri>
+        <ScanHeaders>1</ScanHeaders>
+        <ScanBody>0</ScanBody>
+        <ScanParameters>0</ScanParameters>
+        <Leftindex>1</Leftindex>
+        <RightIndex>3</RightIndex>
+      </Fragment>
+    </Fragments>
+    <Severity>Hight</Severity>
+    <AttackName>Cross Site Scripting</AttackName>
+    <Description>ergerge</Description>
+  </VulnRegEx>
+</Vulnerabilities>
