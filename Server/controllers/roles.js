@@ -43,14 +43,13 @@ const createRole = async (roleData) => {
             rolesPermissions.push(rolePermission);
         }
         permissions_roles.bulkCreate(rolesPermissions, { returning: true })
-
         return newRole;
-
     }
     catch (error) {
         throw new Error(`Cant Create role: ${error.message}`);
     }
 }
+
 const getRoleWithPermissions = async (roleId) => {
     if (!roleId) {
         try {
@@ -78,7 +77,7 @@ const getRoleWithPermissions = async (roleId) => {
 }
 
 
-// const gitRoles = async () => {
+// const getRoles = async () => {
 //     try {
 //         const rolesData = await roles.findAll({
 //             attributes: ['id', 'name']
@@ -125,11 +124,11 @@ const editRole = async (roleData, id) => {
 }
 
 const getRoles = async () => {
-
     try {
         const rolesData = await roles.findAll({
-            // attributes: ['id', 'name']
+            //  attributes: ['id', 'name']
         })
+        console.log(rolesData);
         return rolesData;
     } catch (error) {
         throw new Error(`Cant get roles: ${error.message}`);

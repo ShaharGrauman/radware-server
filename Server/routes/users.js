@@ -1,12 +1,21 @@
 var express = require('express');
-var userController = require('../controllers/users');
-
 var router = express.Router();
+var userController = require('../controllers/users');
 var roleController = require('../controllers/roles');
 const {admin} = require('../middleware/authAdmin');
 
 
-/// to use this route should to be the user role is 1  (admin) 
+
+router.get('/roles', async (req , res) => {
+  console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+  try {
+    const roles = await roleController.getRoles();
+    res.status(200).json(roles);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+});
+/* GET users listing. */
 router.get('/',admin, async (req, res) => {
   try {
     const users = await userController.getUserWithRoles();

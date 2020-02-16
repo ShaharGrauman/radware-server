@@ -1,7 +1,29 @@
 var express = require('express');
 var router = express.Router();
 var roleController = require('../controllers/roles');
+
 const {admin} = require('../middleware/authAdmin');
+
+var permissionController = require('../controllers/permissions');
+
+router.get('/permissions', async (req, res) => {
+  try{
+    const permissions = await permissionController.getPermissions( );
+    res.status(200).json(permissions);
+  }catch(error){
+    res.status(500).json({msg: error.message});
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const roles = await roleController.getRoleWithPermissions();
+    res.status(200).json(roles);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+});
+
 
 
 router.post('/new_role', async (req, res, next) => {
@@ -40,4 +62,6 @@ router.get('/:id',admin, async (req, res) => {
       res.status(500).json({ msg: error.message });
     }
   });
+
+  
 module.exports = router;

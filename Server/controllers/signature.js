@@ -8,13 +8,18 @@ const { signatureValidation, external_referenceValidation, fileValidation, web_s
     , attackValidation, permessionValidation, parameterValidation, vuln_data_extraValidation } = require('../middleware/validations');
 
 
+const { signatureCreation, signatureUpdate } = require('../middleware/validations');
 const Op = require('Sequelize').Op;
 
-
+// const findStatus = async() =>{
+//     sequelize.define('model', {
+//         status: {
+//           type:   Sequelize.ENUM,
+//           values: ['in progress','in test','in QA','published','suspended','deleted']
+//         }
+//       })
+// }
 const findAll = async () => {
-
-
-
     try {
         const signatureData = await signatures.findAll();
         sendMail('<h1>find all success </h1>');
@@ -530,6 +535,8 @@ module.exports = {
     loadSignaturesToExport,
     exportFile,
     importFile,
+    //findStatus
     exportAllFile
+
 
 };

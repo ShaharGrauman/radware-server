@@ -1,8 +1,8 @@
-
-
-const { users, roles } = require("../models/");
+const { users, roles  } = require("../models/");
 const { roles_users, historyUsersActions } = require("../models/index")
 const { userValidation } = require("../middleware/validations");
+const { userCreation,userUpdate } = require('../middleware/validations');
+//>>>>>>> master
 const { encrypt } = require("./encrypt")
 
 
@@ -10,7 +10,8 @@ const getUserWithRoles = async (userId) => {
     if (!userId) {
         try {
             const data = await users.findAll({
-                attributes: ['id','name','username', 'phone', 'status'],
+                attributes: ['id','name', 'username', 'phone', 'status'],
+
                 include: { model: roles, attributes: ['description'], through: { attributes: [] } }
             });
             return data;
@@ -22,7 +23,7 @@ const getUserWithRoles = async (userId) => {
         try {
             const user = await users.findByPk(userId,
                 {
-                    attributes: ['name', 'username', 'password', 'phone'],
+                    attributes: ['id','name', 'username', 'password', 'phone'],
                     include: { model: roles, attributes: ['id', 'name'], through: { attributes: [] } }
                 });
             return user;
@@ -87,13 +88,14 @@ const createUser = async (userData) => {
 }
 
 const editUser = async (DataToUpdate, id) => {
-    const result = await Joi.validate(DataToUpdate, userValidation);
-    if (!result) {
-        return result;
-    }
-    console.log(DataToUpdate);
-
+    // const result = await Joi.validate(DataToUpdate,userUpdate);
+    // console.log(result);
+    // if (!result) {
+    //     return result;
+    // }
+    // console.log(DataToUpdate);
     try {
+
 
         if (userData.name != undefined || userData.name.length != 0) {
             await users.update({
@@ -113,6 +115,12 @@ const editUser = async (DataToUpdate, id) => {
                     returning: true, where: { id: id }
                 });
         }
+
+        const roles = userData.roles;
+        roles_users.destroy({
+            where: { user_Id: id }
+        });
+
 
         if (userData.password != undefined || userData.password.length != 0) {
             await users.update({
@@ -169,6 +177,10 @@ const updateRolesUsers = async (roles, userId) => {
             };
             rolesUsers.push(roleUser);
         }
+//<<<<<<< HEAD
+        roles_users.bulkCreate(rolesUsers, {returning: true})
+    
+//=======
 
         await roles_users.bulkCreate(rolesUsers, { returning: true });
         historyUsersActions.create({
@@ -181,6 +193,7 @@ const updateRolesUsers = async (roles, userId) => {
             }), date: new Date()
         });
 
+//>>>>>>> master
     }
     catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
