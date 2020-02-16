@@ -74,7 +74,7 @@ router.get('/export/xml',[authRoles(1, 2),authPermissions(4)], async (req, res, 
 })
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (researcher dashboard)
-router.get('/',[authRoles(1, 2),authPermissions(1)], async (req, res, next) => {
+router.get('/', async (req, res, next) => {
     try {
         const Signatures = await SignatureController.findAll();
         res.json(Signatures);
