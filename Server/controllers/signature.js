@@ -74,6 +74,46 @@ const exportFile = async id => {
     }
 }
 
+const exportAllFile = async (query) => {
+
+    let firstStatus, secStatus;
+
+    if (query === 'Git') {
+        firstStatus = 'published';
+        secStatus = 'published';
+    }
+    if (query === 'Testing') {
+        firstStatus = 'published';
+        secStatus = 'in_test';
+    }
+    if (query === 'QA') {
+        firstStatus = 'published';
+        secStatus = 'in_qa';
+    }
+
+    try {
+        const signatureData = await signatures.findAll({
+            where: {
+                status: {
+                    [Op.or]: [firstStatus, secStatus]
+                }
+            },
+            include: [
+                { model: attack },
+                { model: param },
+                { model: externalReferences },
+                { model: vulnDataExtra },
+                { model: webServer }
+            ]
+        });
+        console.log(signatureData)
+        routeByType(signatureData);
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
+    }
+}
+
+
 
 const loadSignaturesToExport = async (query) => {
     try {
@@ -257,6 +297,7 @@ const create = async (signatureData) => {
             start_break: signatureData.start_break,
             end_break: signatureData.end_break,
             right_index: signatureData.right_index,
+            left_index: signatureData.left_index,
             scan_uri: signatureData.scan_uri,
             scan_header: signatureData.scan_header,
             scan_body: signatureData.scan_body,
@@ -267,6 +308,7 @@ const create = async (signatureData) => {
             test_data: signatureData.test_data,
             attack_id: signatureData.attackId,
             user_id: signatureData.userId,
+            limit:signatureData.limit
         });
         //// feach file data 
         signatureData.files.map(FileData => {
@@ -521,8 +563,9 @@ module.exports = {
     loadSignatures,
     loadSignaturesToExport,
     exportFile,
-    sigBySeverity
+    sigBySeverity,
     //findStatus
-    //sigByAttack,
-    
+    exportAllFile
+
+
 };

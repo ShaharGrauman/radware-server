@@ -7,16 +7,19 @@ const { findById } = require('../../controllers/signature');
 var SignatureController = require('../../controllers/signature');
 
 routeByType = signatureData => {
-    var root = builder.create('Vulnerabilities_Date');
+ 
+    var root = builder.create('Vulnerabilities', { encoding: 'utf-8' }, { standalone: "yes" });
+    root.att({ Version: "4.5.1.1", Date: new Date().toLocaleDateString() })
     signatureData.map(data => {
         if (data.type == 'vuln') export_XML_Vuln_Signature(data, root);
         if (data.type == 'vuln_ex') export_XML_VulnEx_Signature(data, root);
         if (data.type == 'vuln_reg_ex') export_XML_VulnRegEx_Signature(data, root);
     });
     var xml = root.end({ pretty: true });
+
     path = '../../../Server';
     if (fs.existsSync(path)) {
-      fs.writeFileSync('xml.xml', xml);
+        fs.writeFileSync('xml.xml', xml);
     } else {
         fs.writeFileSync('xml.xml', xml);
     }

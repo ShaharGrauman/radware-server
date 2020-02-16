@@ -3,6 +3,9 @@ const fs = require('fs');
 var SignatureController = require('../controllers/signature');
 const { signatures, files } = require('../models');
 const SearchBuilder = require('../controllers/builders/SearchBuilder');
+const {researcher} = require('../middleware/authResearcher');
+const authRoles = require('../middleware/authRoles');
+const authPermissions = require('../middleware/authPermissions');
 
 var router = express.Router();
 
@@ -15,7 +18,8 @@ router.get('/severity', async (req, res, next) => {
         res.status(500).json({ msg: error.message });
     }
 });
-router.get('/search', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 3 (search  signature )
+router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next) => {
     const search = new SearchBuilder();
     if (req.query.attackName) search.setAttackName(req.query.attackName);
     if (req.query.description) search.setDescription(req.query.description);
@@ -39,8 +43,8 @@ router.get('/search', async (req, res, next) => {
     }
 
 });
-
-router.post('/export/xml', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
+router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, next) => {
     if (req.body.id) {
         console.log(req.body.id)
         try {
@@ -50,12 +54,28 @@ router.post('/export/xml', async (req, res, next) => {
             res.status(500).json({ msg: error.message });
         }
     }
+    else{
 
+    }
+})
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
+router.get('/export/xml',[authRoles(1, 2),authPermissions(4)], async (req, res, next) => {
+    if (req.query.exportTo) {
+        console.log(req.query.exportTo)
+        try {
+            const result = await SignatureController.exportAllFile(req.query.exportTo);
+         //   res.download('xml.xml')
+        } catch (error) {
+            res.status(500).json({ msg: error.message });
+        }
+    }
+    else{
+
+    }
 })
 
-
-/* GET home page. */
-router.get('/', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (researcher dashboard)
+router.get('/',[authRoles(1, 2),authPermissions(1)], async (req, res, next) => {
     try {
         const Signatures = await SignatureController.findAll();
         res.json(Signatures);
@@ -65,8 +85,8 @@ router.get('/', async (req, res, next) => {
 });
 
 
-/* GET signatures listing. */
-router.get('/researcher', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (researcher dashboard)
+router.get('/researcher',[authRoles(1, 2),authPermissions(1)], async (req, res, next) => {
     try {
         // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&status=all
         const page = req.query.page || 1;
@@ -91,8 +111,8 @@ router.get('/researcher', async (req, res, next) => {
 });
 
 
-//export signatures
-router.get('/export', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
+router.get('/export',[authRoles(1, 2),authPermissions(4)], async (req, res, next) => {
     try {
         // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&exportto={“Git ” , “Testing” , “ QA” }
         const page = req.query.page || 1;
@@ -110,13 +130,17 @@ router.get('/export', async (req, res, next) => {
         });
 
         const signatures = await SignatureController.loadSignaturesToExport(query);
+
+        console.log(signatures)
+
         res.status(200).json(signatures);
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
 });
 
-router.get('/:id', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (researcher dashboard)
+router.get('/:id',[authRoles(1, 2),authPermissions(1)],async (req, res, next) => {
     try {
         const Signatures = await SignatureController.findById(req.params.id);
         res.json(Signatures);
@@ -126,8 +150,8 @@ router.get('/:id', async (req, res, next) => {
 });
 
 
-
-router.post('/', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
+router.post('/',[authRoles(1, 2),authPermissions(2)],async (req, res, next) => {
     try {
         const result = await SignatureController.create(req.body);
         res.json(result);
@@ -137,7 +161,8 @@ router.post('/', async (req, res, next) => {
     }
 })
 
-router.put('/:id', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
+router.put('/:id',[authRoles(1, 2),authPermissions(2)], async (req, res, next) => {
     try {
         const result = await SignatureController.update(req.body, req.params.id);
         res.json({ result, id: req.params.id });
@@ -147,8 +172,8 @@ router.put('/:id', async (req, res, next) => {
 })
 
 
-
-router.delete('/:id', async (req, res, next) => {
+/// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
+router.delete('/:id',[authRoles(1, 2),authPermissions(2)], async (req, res, next) => {
     try {
         const result = await SignatureController.Delete(req.params.id);
         res.json({ result, id: req.params.id });

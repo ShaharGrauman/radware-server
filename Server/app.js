@@ -14,6 +14,7 @@ var signatureRouter = require('./routes/signatures');
 var roleRouter = require('./routes/roles');
 var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
+var pwdRouter = require('./routes/pwd');
 
 var app = express();
 
@@ -21,12 +22,30 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 
 app.set('view engine', 'jade');
-app.use(cors({ origin: 'http://localhost:3001', credentials: true }));
+app.use(cors({origin: 'http://localhost:3001', credentials: true}));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// app.use((req.res,next)=>{
+//   res.header()
+// })
+
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   if (req.method === 'OPTIONS') {
+//     res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+//     return res.status(200).json({});
+//   }
+//   next();
+// });
+
 
 //// check connection with sequelize 
 const db = require('./config/database');
@@ -47,6 +66,7 @@ app.use('/attack', attackRouter);
 app.use('/signature', signatureRouter);
 app.use('/login', loginRouter);
 app.use('/Qa', QaRouter);
+app.use('/pwd', pwdRouter);
 
 
 // catch 404 and forward to error handler
