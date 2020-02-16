@@ -1,5 +1,6 @@
 const { users, roles  } = require("../models/");
 const { roles_users, historyUsersActions } = require("../models/index")
+const { userValidation } = require("../middleware/validations");
 const { userCreation,userUpdate } = require('../middleware/validations');
 //>>>>>>> master
 const { encrypt } = require("./encrypt")
@@ -149,15 +150,15 @@ const editUser = async (DataToUpdate, id) => {
                 });
         }
 
-        // historyUsersActions.create({
-        //     userId: '1', action_name: "edit",
-        //     description: "edited user " + userData.name,
-        //     time: new Date().toLocaleTimeString('en-US', {
-        //         hour12: false,
-        //         hour: "numeric",
-        //         minute: "numeric"
-        //     }), date: new Date()
-        // }),
+        historyUsersActions.create({
+            userId: '1', action_name: "edit",
+            description: "edited user 1" ,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        })
 
         if (userData.roles != undefined || userData.roles.length != 0) {
             const roles = userData.roles;

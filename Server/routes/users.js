@@ -68,5 +68,13 @@ router.put('/:id',admin, async (req, res, next) => {
 
 //constant
 
+router.get('/roles', async (req, res) => {
+  try {
+    const roles = await roleController.getRoles();
+    res.status(200).json(roles);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+});
 
 module.exports = router;

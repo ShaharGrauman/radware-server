@@ -2,6 +2,11 @@ const { signatures, historyUsersActions, attack, file, param, externalReferences
 const sequelize = require('../config/database');
 require('./sendEmail');
 require('./XML/exportXML');
+require('./XML/importXml');
+
+const { signatureValidation, external_referenceValidation, fileValidation, web_serverValidation
+    , attackValidation, permessionValidation, parameterValidation, vuln_data_extraValidation } = require('../middleware/validations');
+
 
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
 const Op = require('Sequelize').Op;
@@ -50,6 +55,15 @@ const findAll = async () => {
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
+    }
+}
+
+const importFile = async () => {
+    try {
+        const result = await routeByType();
+        return 'imported';
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
     }
 }
 
@@ -118,7 +132,6 @@ const exportAllFile = async (query) => {
 const loadSignaturesToExport = async (query) => {
     try {
         let signatureData, lastExportedSignatureDateByStatus, firstStatus, secStatus, checkDateOf, signatureDataToXML;
-
 
         if (query.exportTo === 'Git') {
             firstStatus = 'published';
@@ -262,16 +275,14 @@ const loadSignatures = async (query) => {
     }
 }
 
-const create = async (signatureData) => {
 
-    // const result = await Joi.validate(signatureData, signatureCreation);
-    // console.log(result);
+const create = async (signatureData) => {
+    // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
     // }
-
-
-    console.log(signatureData);
+    
+    
 
     signatures.addHook('afterCreate', (signatureDataCreate, options) => {
 
@@ -312,6 +323,7 @@ const create = async (signatureData) => {
         });
         //// feach file data 
         signatureData.files.map(FileData => {
+
             file.create({
                 // id: FileData.id,
                 signatureId: signatureDataCreate.id,
@@ -361,22 +373,18 @@ const create = async (signatureData) => {
             });
         });
 
-        //         historyUsersActions.create({ userId:'1', action_name: "created signature" +signatureDataCreate.id, 
-        //         time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-        //            hour: "numeric", 
-        //            minute: "numeric"}), date: new Date(),system_name: 'system 1', screen_name: 'system 1'
-        //    })
+        historyUsersActions.create({
+            userId: '1', action_name: "created signature 1",
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
+
+        
 
 
-
-
-
-        //         historyUsersActions.create({ userId: '1', action_name: "add",
-        //         description: "created signature ",
-        //         time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-        //            hour: "numeric", 
-        //            minute: "numeric"}), date: new Date()
-        //    });
         return signatureDataCreate;
     } catch (error) {
         throw new Error(`Cant create signatures: ${error.message}`);
@@ -424,12 +432,11 @@ const findById = async (id) => {
 }
 
 const update = async (DataToUpdate, id) => {
-    const result = await Joi.validate(DataToUpdate, signatureUpdate);
-    if (!result) {
-        return result;
-    }
-
-    console.log(DataToUpdate);
+    // let result = await Joi.validate(signatureData, signatureValidation);
+    // if (!result) {
+    //     return result;
+    // }
+    
     try {
         const updatedSignature = signatures.update({
             type: DataToUpdate.type,
@@ -508,11 +515,6 @@ const update = async (DataToUpdate, id) => {
             })
         );
 
-        // signatureStatusHistory.create({signatureId: id, userId: DataToUpdate.user_id, status: DataToUpdate.status, 
-        //      time:new Date().toLocaleTimeString('en-US', { hour12: false, 
-        //         hour: "numeric", 
-        //         minute: "numeric"}), date: new Date()
-        // })
 
         historyUsersActions.create({
             userId: '1', action_name: "edit",
@@ -524,8 +526,6 @@ const update = async (DataToUpdate, id) => {
             }), date: new Date()
         });
 
-        console.log('updatedSignature');
-        console.log(updatedSignature);
         return updatedSignature;
     } catch (error) {
         throw new Error(`Cant update signatures: ${error.message}`);
@@ -563,6 +563,7 @@ module.exports = {
     loadSignatures,
     loadSignaturesToExport,
     exportFile,
+    importFile,
     sigBySeverity,
     //findStatus
     exportAllFile

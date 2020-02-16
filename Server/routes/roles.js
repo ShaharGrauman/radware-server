@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 
 
 
-router.post('/new_role',admin, async (req, res, next) => {
+router.post('/new_role', async (req, res, next) => {
   console.log('sss');
   if (!req.body.name || !req.body.description) {
     res.status(400).json({ msg: "body is not valid" });

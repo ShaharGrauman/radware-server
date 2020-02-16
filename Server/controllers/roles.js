@@ -1,6 +1,8 @@
 const { roles, permissions } = require('../models');
 const { permissions_roles } = require('../models/index');
-//const { roleCreation, roleUpdate } = require('../middleware/validations');
+const { roleValidation } = require("../middleware/validations");
+
+
 // const getRoles = async (roleId) => {
 //     if (userId) {
 //         try {
@@ -20,12 +22,11 @@ const { permissions_roles } = require('../models/index');
 //     }
 // }
 const createRole = async (roleData) => {
-    // const result = await Joi.validate(roleData,roleCreation);
-    // console.log(result);
-    // if (!result) {
-    //     return result;
-    // }
-    // console.log(roleData);
+    console.log(roleData);
+    const result = await Joi.validate(roleData, roleValidation);
+    if (!result) {
+        return result;
+    }
     try {
 
         const roleAlreadyExist = await roles.findOne({
@@ -97,14 +98,11 @@ const getRoleWithPermissions = async (roleId) => {
 //     }
 // }
 
-const editRole = async (DataToUpdate, id) => {
-    // const result = await Joi.validate(DataToUpdate, roleUpdate);
-    // console.log(result);
-    // if (!result) {
-    //     return result;
-    // }
-
-    console.log(DataToUpdate);
+const editRole = async (roleData, id) => {
+    const result = await Joi.validate(roleData, roleValidation);
+    if (!result) {
+        return result;
+    }
     try {
         const editRole = await roles.update({
             name: roleData.name,

@@ -3,6 +3,7 @@ const fs = require('fs');
 var SignatureController = require('../controllers/signature');
 const { signatures, files } = require('../models');
 const SearchBuilder = require('../controllers/builders/SearchBuilder');
+// const { importXml }= require('XML/');
 const {researcher} = require('../middleware/authResearcher');
 const authRoles = require('../middleware/authRoles');
 const authPermissions = require('../middleware/authPermissions');
@@ -31,8 +32,6 @@ router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next)
     if (req.query.scanBody) search.setScanBody(req.query.scanBody);
     if (req.query.scanParameters) search.setScanParameters(req.query.scanParameters);
     if (req.query.scanFile) search.setScanFile(req.query.scanFile);
-
-
     if (req.query.reference) search.setReference(req.query.reference);
 
     try {
@@ -149,7 +148,17 @@ router.get('/:id',[authRoles(1, 2),authPermissions(1)],async (req, res, next) =>
     }
 });
 
-// 
+router.put('/importXml', async (req, res, next) => {
+    try {
+        const result = await SignatureController.importFile();
+        console.log(result);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
+
+
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
 router.post('/',[authRoles(1, 2),authPermissions(2)],async (req, res, next) => {
     try {

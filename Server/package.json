@@ -21,6 +21,8 @@
     "nodemailer": "^6.4.2",
     "nodemon": "^2.0.2",
     "sequelize": "^5.21.3",
+    "xml-js": "^1.6.11",
+    "xml2js": "^0.4.23",
     "xmlbuilder": "^13.0.2"
   }
 }
