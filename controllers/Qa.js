@@ -1,5 +1,5 @@
 const {signatures} = require('../models');
-const QABuilder = require('../controllers/builders/QABuilder');
+const QABuilder = require('./builders/QABuilder');
 const database = require('../config/database');
 const Sequelize = require('sequelize')
 

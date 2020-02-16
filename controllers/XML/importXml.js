@@ -1,8 +1,8 @@
 var fs = require('fs');
 
 
-const { findById } = require('../../controllers/signature');
-var SignatureController = require('../../controllers/signature');
+const { findById } = require('../signature');
+var SignatureController = require('../signature');
 var convert = require('xml-js');
 
 // With parser
