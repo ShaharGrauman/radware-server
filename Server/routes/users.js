@@ -1,11 +1,21 @@
 var express = require('express');
-var userController = require('../controllers/users');
-
 var router = express.Router();
+var userController = require('../controllers/users');
 var roleController = require('../controllers/roles');
+const {admin} = require('../middleware/authAdmin');
 
+
+
+router.get('/roles', async (req , res) => {
+  try {
+    const roles = await roleController.getRoles();
+    res.status(200).json(roles);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+});
 /* GET users listing. */
-router.get('/', async (req, res) => {
+router.get('/',admin, async (req, res) => {
   try {
     const users = await userController.getUserWithRoles();
     res.status(200).json(users);
@@ -13,8 +23,8 @@ router.get('/', async (req, res) => {
     res.status(500).json({ msg: error.message });
   }
 });
-
-router.post('/new_user', async (req, res, next) => {
+/// to use this route should to be the user role is 1  (admin) 
+router.post('/new_user',admin, async (req, res, next) => {
   try {
     const result = await userController.createUser(req.body);
     res.status(201).json( result );
@@ -22,8 +32,8 @@ router.post('/new_user', async (req, res, next) => {
     res.status(500).json({ msg: error.message });
   }
 });
-
-router.put('/delete_user', async (req, res, next) => {
+/// to use this route should to be the user role is 1  (admin) 
+router.put('/delete_user',admin, async (req, res, next) => {
   if (!req.body.username) {
     res.status(400).json({ msg: "username is not valid" });
   }
@@ -35,8 +45,8 @@ router.put('/delete_user', async (req, res, next) => {
   }
 });
 
-
-router.get('/:id', async (req, res) => {
+/// to use this route should to be the user role is 1  (admin) 
+router.get('/:id',admin, async (req, res) => {
   try {
     const user = await userController.getUserWithRoles(req.params.id);
     res.status(200).json(user);
@@ -45,8 +55,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-
-router.put('/:id', async (req, res, next) => {
+/// to use this route should to be the user role is 1  (admin) 
+router.put('/:id',admin, async (req, res, next) => {
   try {
     const result = await userController.editUser(req.body, req.params.id);
     res.status(201).json({ userId: req.params.id });
@@ -58,13 +68,5 @@ router.put('/:id', async (req, res, next) => {
 
 //constant
 
-// router.get('/roles', async (req, res) => {
-//   try {
-//     const roles = await roleController.getRoles();
-//     res.status(200).json(roles);
-//   } catch (error) {
-//     res.status(500).json({ msg: error.message });
-//   }
-// });
 
 module.exports = router;

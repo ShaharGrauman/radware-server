@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 
+
 const sequelize=new Sequelize('radware','root','eyas1994',{
     host:'localhost',
     dialect:'mysql'
@@ -7,4 +8,3 @@ const sequelize=new Sequelize('radware','root','eyas1994',{
 
 console.log(sequelize.config);
 module.exports=sequelize;
-
