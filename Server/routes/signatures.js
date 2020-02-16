@@ -6,6 +6,15 @@ const SearchBuilder = require('../controllers/builders/SearchBuilder');
 
 var router = express.Router();
 
+router.get('/severity', async (req, res, next) => {
+    try {
+        const Signatures = await SignatureController.sigBySeverity();
+        console.log(signatures);
+        res.json(Signatures);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
 router.get('/search', async (req, res, next) => {
     const search = new SearchBuilder();
     if (req.query.attackName) search.setAttackName(req.query.attackName);
@@ -115,6 +124,7 @@ router.get('/:id', async (req, res, next) => {
         res.status(500).json({ msg: error.message });
     }
 });
+
 
 
 router.post('/', async (req, res, next) => {
