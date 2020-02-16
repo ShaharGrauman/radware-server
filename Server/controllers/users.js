@@ -60,8 +60,17 @@ const createUser = async (userData) => {
     // if (!result) {
     //     return result;
     // }
-
+ 
     try {
+        const userAlreadyExist = await users.findOne({
+            where:{username:userData.username}
+        })
+
+        if(userAlreadyExist){
+            return `User is already exists with id: ${userAlreadyExist.id}`
+        }
+            
+        else{
         const newUser = await users.create({
             name: userData.name,
             username: userData.username,
@@ -79,12 +88,13 @@ const createUser = async (userData) => {
                 minute: "numeric"
             }), date: new Date()
         });
-        return newUser;
-    }
-    catch (error) {
+        return newUser.id;
+    }}
+        catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
     }
 }
+
 
 const editUser = async (userData, id) => {
     try {

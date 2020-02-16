@@ -21,9 +21,17 @@ const { permissions_roles } = require('../models/index');
 //     }
 // }
 const createRole = async (roleData) => {
-    console.log(roleData);
 
     try {
+
+        const roleAlreadyExist = await roles.findOne({
+            where:{name:roleData.name}
+        })
+
+        if(roleAlreadyExist){
+            return `Role is already exists with id: ${roleAlreadyExist.id}`
+        }
+
         const newRole = await roles.create({
             id: roleData.id,
             name: roleData.name,
@@ -38,6 +46,7 @@ const createRole = async (roleData) => {
             };
             rolesPermissions.push(rolePermission);
         }
+        console.log(rolesPermissions)
         permissions_roles.bulkCreate(rolesPermissions, { returning: true })
 
         return newRole;
