@@ -9,7 +9,7 @@ const { signatureValidation, external_referenceValidation, fileValidation, web_s
 
 
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
-const Op = require('Sequelize').Op;
+const Op = require('sequelize').Op;
 
 // const findStatus = async() =>{
 //     sequelize.define('model', {
