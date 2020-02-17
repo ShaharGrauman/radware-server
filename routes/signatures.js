@@ -178,7 +178,7 @@ router.put('/importXml', async (req, res, next) => {
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
-router.post('/',[authRoles(1, 2),authPermissions(2)],async (req, res, next) => {
+router.post('/',async (req, res, next) => {
     try {
         const result = await SignatureController.create(req.body);
         res.json(result);
