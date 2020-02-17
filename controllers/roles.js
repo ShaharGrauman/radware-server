@@ -34,7 +34,7 @@ const createRole = async (roleData) => {
         })
 
         if(roleAlreadyExist){
-            return `Role is already exists with id: ${roleAlreadyExist.id}`
+            throw new Error(`Role is already exists with id: ${roleAlreadyExist.id}`)
         }
 
         const newRole = await roles.create({

@@ -68,7 +68,7 @@ const createUser = async (userData) => {
         })
 
         if(userAlreadyExist){
-            return `User is already exists with id: ${userAlreadyExist.id}`
+            throw new Error(`User is already exists with id: ${userAlreadyExist.id}`)
         }
             
         else{

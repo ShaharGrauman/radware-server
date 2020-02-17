@@ -48,6 +48,67 @@ const sigBySeverity = async () => {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 } 
+
+const sigByReference = async (query) => {
+    
+    try{
+        let result = [], serialArray = [], signaturesCveid = [], count 
+    if(query.serial){
+
+        const referenceArray = await sequelize.query(`select SignatureId from external_references where type = "cveid" and reference like "%${query.year}-${query.serial}%"`, { type: sequelize.QueryTypes.SELECT })
+
+        for(i = 0 ; i < referenceArray.length ; i++){
+
+        const signaturesByCveId = await signatures.findOne({
+            attributes:['id',
+                        ['pattern_id', 'patternId'],
+                        'description',
+                        'status'],
+            where:{id:referenceArray[i].SignatureId}
+        })
+
+        signaturesCveid.push(signaturesByCveId)
+    }
+        return signaturesCveid
+
+    }
+
+    else{
+
+    const referencesArray = await sequelize.query(`select reference from external_references where type = "cveid" and reference like "%${query.year}-%"`, { type: sequelize.QueryTypes.SELECT })
+        
+    for( i = 0; i < referencesArray.length ; i++){
+        count = 0
+       serialNumber =  referencesArray[i].reference.slice(referencesArray[i].reference.length - 4)
+            if(!serialExist(serialArray, serialNumber)){
+                serialArray.push(serialNumber)
+        for(j = i ; j < referencesArray.length ; j++){
+            if(serialNumber === referencesArray[j].reference.slice(referencesArray[j].reference.length - 4))
+                count++
+        }
+
+        var temp = {cveid:`${query.year}-${serialNumber}`, quantity:count}
+        result.push(temp)
+    }
+    }
+
+    return result
+    }
+
+
+    }catch(error){
+        throw new Error(`${error.message}`)
+    }
+}
+
+const serialExist = (arr, serial) => {
+    for(let i of arr){
+        if (i == serial)
+            return true
+    }
+    return false
+}
+
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -596,7 +657,6 @@ module.exports = {
     importFile,
     sigBySeverity,
     //findStatus
-    exportAllFile
-
-
+    exportAllFile,
+    sigByReference
 };
