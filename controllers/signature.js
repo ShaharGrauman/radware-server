@@ -109,6 +109,52 @@ const serialExist = (arr, serial) => {
     return false
 }
 
+
+const copySignature = async(id) => {
+
+    try{
+    signatures.addHook('afterCreate', (copiedSignature, options) => {
+
+        signatures.update({
+            pattern_id: copiedSignature.id
+        }, { where: { id: copiedSignature.id } })
+    })
+
+    const currentSignature = await signatures.findOne({where:{id:id}})
+
+    const copiedSignature = await signatures.create({
+        attack_id: currentSignature.attack_id,
+        type: currentSignature.type,
+        creation_time: currentSignature.creation_time,
+        creation_date: currentSignature.creation_date,
+        status: currentSignature.status,
+        in_qa_internal_status_manual: currentSignature.in_qa_internal_status_manual,
+        in_qa_internal_status_performance: currentSignature.in_qa_internal_status_performance,
+        in_qa_internal_status_automation: currentSignature.in_qa_internal_status_automation,
+        vuln_data: currentSignature.vuln_data,
+        keep_order: currentSignature.keep_order,
+        start_break: currentSignature.start_break,
+        end_break: currentSignature.end_break,
+        right_index: currentSignature.right_index,
+        left_index: currentSignature.left_index,
+        scan_uri: currentSignature.scan_uri,
+        scan_header: currentSignature.scan_header,
+        scan_body: currentSignature.scan_body,
+        scan_parameters: currentSignature.scan_parameters,
+        scan_file_name: currentSignature.scan_file_name,
+        severity: currentSignature.severity,
+        description: currentSignature.description,
+        test_data: currentSignature.test_data,
+        attack_id: currentSignature.attackId,
+        user_id: currentSignature.userId,
+        limit: currentSignature.limit
+    })
+    return copiedSignature
+    }catch(error){
+        throw new Error(`Can't copy signature ${error.message}`)
+    }
+}
+
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -378,15 +424,14 @@ const create = async (signatureData) => {
             pattern_id: signatureDataCreate.id
         }, { where: { id: signatureDataCreate.id } })
     });
-
     try {
         const signatureDataCreate = await signatures.create({
             // id: signatureData.id,
             pattern_id: signatureData.pattern_id,
             attack_id: signatureData.attack_id,
             type: signatureData.type,
-            creation_time: signatureData.creation_time,
-            creation_date: signatureData.creation_date,
+            creation_time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
+            creation_date: new Date(),
             status: signatureData.status,
             in_qa_internal_status_manual: signatureData.in_qa_internal_status_manual,
             in_qa_internal_status_performance: signatureData.in_qa_internal_status_performance,
@@ -462,7 +507,7 @@ const create = async (signatureData) => {
         });
 
         historyUsersActions.create({
-            userId: '1', action_name: "created signature 1",
+            userId: '1', action_name: "add",
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: "numeric",
@@ -658,5 +703,6 @@ module.exports = {
     sigBySeverity,
     //findStatus
     exportAllFile,
-    sigByReference
+    sigByReference,
+    copySignature
 };

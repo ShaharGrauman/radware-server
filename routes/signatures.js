@@ -41,6 +41,17 @@ router.get('/cveid', async (req, res, next) => {
 });
 
 
+router.post('/copy/:id', async (req, res, next) => {
+    try {
+        const result = await SignatureController.copySignature(req.params.id);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+});
+
+
+
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 3 (search  signature )
 router.get('/search', [authRoles(1, 2), authPermissions(3)], async (req, res, next) => {
     const search = new SearchBuilder();
@@ -200,7 +211,7 @@ router.put('/importXml', async (req, res, next) => {
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
-router.post('/', [authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
+router.post('/',  async (req, res, next) => {
     try {
         const result = await SignatureController.create(req.body);
         res.json(result);
