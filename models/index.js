@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize');
+const sequelize = require('sequelize');
 
 const db = require("../config/database");
 const attackModel = require('./attack');
@@ -16,22 +16,22 @@ const Roles = require('./roles');
 const Permissions = require('./permissions');
 const Login = require('./login');
 
-const externalReferences = external_references(db, Sequelize);
-const file = files(db, Sequelize);
-const param = parameter(db, Sequelize);
-const vulnDataExtra = vuln_data_extra(db, Sequelize);
-const webServer = web_server_Model(db, Sequelize);
-const attack = attackModel(db, Sequelize);
-const users = Users(db, Sequelize);
-const signatures = Signatures(db, Sequelize);
-const signatureStatusHistory = signature_status_history(db, Sequelize);
-const historyUsersActions = history_users_actions(db, Sequelize);
+const externalReferences = external_references(db, sequelize);
+const file = files(db, sequelize);
+const param = parameter(db, sequelize);
+const vulnDataExtra = vuln_data_extra(db, sequelize);
+const webServer = web_server_Model(db, sequelize);
+const attack = attackModel(db, sequelize);
+const users = Users(db, sequelize);
+const signatures = Signatures(db, sequelize);
+const signatureStatusHistory = signature_status_history(db, sequelize);
+const historyUsersActions = history_users_actions(db, sequelize);
 
 
 
-const roles = Roles(db, Sequelize);
-const permissions = Permissions(db, Sequelize);
-const login = Login(db, Sequelize);
+const roles = Roles(db, sequelize);
+const permissions = Permissions(db, sequelize);
+const login = Login(db, sequelize);
 const permissions_roles = db.define('permissions_roles', {},{timestamps: false});
 const roles_users = db.define('roles_users', {},{timestamps: false});
 
