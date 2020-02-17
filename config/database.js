@@ -1,4 +1,4 @@
-const Sequelize = require('Sequelize');
+const Sequelize = require('sequelize');
 
 
 const sequelize=new Sequelize('heroku_82e8e5f108d916b','b9d57573ee14d5','3a5ec19f',{
