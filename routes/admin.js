@@ -21,7 +21,7 @@ router.get('/audit', async (req, res) => {
     const page = req.query.page || 1;
     const size = req.query.size || 20;
     const event = req.query.event || 'all';
-    const user_id = req.query.user_id || 'all';
+    const users_names = req.query.users_names || 'all';
     const startDate = req.query.startdate || '1970-01-01';
     const endDate = req.query.enddate || new Date();
     const startTime = req.query.starttime || '00:00:00';
@@ -32,7 +32,7 @@ router.get('/audit', async (req, res) => {
       size, 
       page,
         event,
-        user_id,
+        users_names,
         startDate,
         endDate,
         startTime,

@@ -26,7 +26,6 @@ const getData = async (query) => {
             [Op.between]: [startTime, endTime]
         }
     };
-    whereInUsers ={};
     if (query.event != 'all') {
         let event = query.event.split(',');
         Object.assign(where, {
@@ -36,33 +35,38 @@ const getData = async (query) => {
             }
         });
     }
-    let users_names;
-    if (query.users_names != 'all') {
-        users_names = query.users_names.split(',');
-        Object.assign(whereInUsers, {
-            username: {
-                [Op.in]: users_names
+
+    if (query.user_id != 'all') {
+        let users_id = query.user_id.split(','), id;
+        Object.assign(where, {
+            user_id: {
+                [Op.in]: users_id
             }
         });
     }
+
     try {
-        let history = await users.findAll({
-            attributes: ['username'],
+        const history = await historyUsersActions.findAll({
+            attributes: ['action_name', 'description', 'time', 'date'],
             include: [{
-                model: historyUsersActions,
-                attributes: ['action_name', 'description', 'time', 'date'],
-                where: where,
-                order:
+                model: users,
+                attributes: ['username'],
+              }],
+            where: where,
+            order:
                 [
                     ['date', query.orderBy],
                     ['time', query.orderBy]
                 ],
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
-              }],
-           where: whereInUsers,
-           
         });
+        history.map(action => {
+            Object.assign(action, { user: action.user.username });
+            return action;
+        //    return {...action, user: action.user.username};
+        });
+        history.map((action) => Object.assign(action, { user: action.user.username }));
         
         let hasNext = true, hasPrev = false;
         if (history.length % (query.size * query.page) != 0 || history.length === 0) {
