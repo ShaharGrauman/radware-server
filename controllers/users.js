@@ -1,8 +1,7 @@
-const { users, roles  } = require("../models/");
+const { users, roles } = require("../models/");
 const { roles_users, historyUsersActions } = require("../models/index")
 const { userValidation } = require("../middleware/validations");
-const { userCreation,userUpdate } = require('../middleware/validations');
-//>>>>>>> master
+const { userCreation, userUpdate } = require('../middleware/validations');
 const { encrypt } = require("./encrypt")
 
 
@@ -10,7 +9,7 @@ const getUserWithRoles = async (userId) => {
     if (!userId) {
         try {
             const data = await users.findAll({
-                attributes: ['id','name', 'username', 'phone', 'status'],
+                attributes: ['id', 'name', 'username', 'phone', 'status'],
 
                 include: { model: roles, attributes: ['description'], through: { attributes: [] } }
             });
@@ -23,7 +22,7 @@ const getUserWithRoles = async (userId) => {
         try {
             const user = await users.findByPk(userId,
                 {
-                    attributes: ['id','name', 'username', 'password', 'phone'],
+                    attributes: ['id', 'name', 'username', 'password', 'phone'],
                     include: { model: roles, attributes: ['id', 'name'], through: { attributes: [] } }
                 });
             return user;
@@ -63,10 +62,10 @@ const createUser = async (userData, user) => {
     // if (!result) {
     //     return result;
     // }
-    
+
     try {
         const userAlreadyExist = await users.findOne({
-            where:{username:userData.username}
+            where: { username: userData.username }
         })
         
         if(userAlreadyExist){
@@ -96,11 +95,38 @@ const createUser = async (userData, user) => {
         return newUser.id;
     }}
         catch (error) {
+
+        if (userAlreadyExist) {
+            return `User is already exists with id: ${userAlreadyExist.id}`
+        }
+
+        else {
+            const newUser = await users.create({
+                name: userData.name,
+                username: userData.username,
+                phone: userData.phone,
+                password: encrypt(userData.password)
+            });
+
+            updateRolesUsers(userData.roles, newUser.id);
+            historyUsersActions.create({
+                userId: newUser.id, action_name: "add",
+                description: `created user: ${newUser.id}`,
+                time: new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric"
+                }), date: new Date()
+            });
+            return newUser.id;
+        }
+    }
+    catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
     }
 }
 
-        const editUser = async (DataToUpdate, id, user) => {
+const editUser = async (DataToUpdate, id, user) => {
             // const result = await Joi.validate(DataToUpdate,userUpdate);
             // console.log(result);
             // if (!result) {
@@ -175,6 +201,7 @@ const createUser = async (userData, user) => {
             }
         }
 
+
 const updateRolesUsers = async (roles, userId) => {
     try {
         var rolesUsers = [];
@@ -185,19 +212,11 @@ const updateRolesUsers = async (roles, userId) => {
             };
             rolesUsers.push(roleUser);
         }
-        roles_users.bulkCreate(rolesUsers, {returning: true})
-    
+        roles_users.bulkCreate(rolesUsers, { returning: true })
+
 
         await roles_users.bulkCreate(rolesUsers, { returning: true });
-        historyUsersActions.create({
-            userId: '1', action_name: "edit",
-            description: "created user " + newUser.id,
-            time: new Date().toLocaleTimeString('en-US', {
-                hour12: false,
-                hour: "numeric",
-                minute: "numeric"
-            }), date: new Date()
-        });
+
 
     }
     catch (error) {
