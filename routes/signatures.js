@@ -42,6 +42,36 @@ router.get('/search',[authRoles(1, 2),authPermissions(3)],async (req, res, next)
     }
 
 });
+
+router.get('/export/text', async (req, res, next) => {
+        try {
+            const result = await SignatureController.exportAllTestDataFile();
+           res.download('testData.txt')
+        } catch (error) {
+            res.status(500).json({ msg: error.message });
+        }
+    
+ 
+})
+
+router.post('/export/text',async (req, res, next) => {
+    // if (req.body.id) {
+        console.log('sssssssssssssssssssss')
+        console.log(req.body.id)
+        try {
+            const result = await SignatureController.exportTestDataFile(req.body.id);
+            res.download('testData.txt')
+        } catch (error) {
+            res.status(500).json({ msg: error.message });
+        }
+    // }
+    // else{
+
+    // }
+})
+
+
+
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, next) => {
     // if (req.body.id) {
@@ -57,13 +87,17 @@ router.post('/export/xml',[authRoles(1, 2),authPermissions(4)],async (req, res, 
 
     // }
 })
+
+
+
+
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.get('/export/xml',[authRoles(1, 2),authPermissions(4)], async (req, res, next) => {
     if (req.query.exportTo) {
         console.log(req.query.exportTo)
         try {
             const result = await SignatureController.exportAllFile(req.query.exportTo);
-         //   res.download('xml.xml')
+           res.download('xml.xml')
         } catch (error) {
             res.status(500).json({ msg: error.message });
         }
