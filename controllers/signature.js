@@ -60,7 +60,7 @@ const findAll = async () => {
 
 const importFile = async () => {
     try {
-        const result = await routeByType();
+        const result = await importSignatures();
         return 'imported';
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
