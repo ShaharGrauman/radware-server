@@ -1,7 +1,7 @@
-const { users, roles  } = require("../models/");
+const { users, roles } = require("../models/");
 const { roles_users, historyUsersActions } = require("../models/index")
 const { userValidation } = require("../middleware/validations");
-const { userCreation,userUpdate } = require('../middleware/validations');
+const { userCreation, userUpdate } = require('../middleware/validations');
 //>>>>>>> master
 const { encrypt } = require("./encrypt")
 
@@ -10,7 +10,7 @@ const getUserWithRoles = async (userId) => {
     if (!userId) {
         try {
             const data = await users.findAll({
-                attributes: ['id','name', 'username', 'phone', 'status'],
+                attributes: ['id', 'name', 'username', 'phone', 'status'],
 
                 include: { model: roles, attributes: ['description'], through: { attributes: [] } }
             });
@@ -23,7 +23,7 @@ const getUserWithRoles = async (userId) => {
         try {
             const user = await users.findByPk(userId,
                 {
-                    attributes: ['id','name', 'username', 'password', 'phone'],
+                    attributes: ['id', 'name', 'username', 'password', 'phone'],
                     include: { model: roles, attributes: ['id', 'name'], through: { attributes: [] } }
                 });
             return user;
@@ -63,10 +63,9 @@ const createUser = async (userData, user) => {
     // if (!result) {
     //     return result;
     // }
-    
     try {
         const userAlreadyExist = await users.findOne({
-            where:{username:userData.username}
+            where: { username: userData.username }
         })
         
         if(userAlreadyExist){
@@ -185,8 +184,8 @@ const updateRolesUsers = async (roles, userId) => {
             };
             rolesUsers.push(roleUser);
         }
-        roles_users.bulkCreate(rolesUsers, {returning: true})
-    
+        roles_users.bulkCreate(rolesUsers, { returning: true })
+
 
         await roles_users.bulkCreate(rolesUsers, { returning: true });
         historyUsersActions.create({

@@ -5,14 +5,15 @@ module.exports = (db, type) => {
             autoIncrement: true,
             primaryKey: true
         },
-        SignatureId: {
-            type: type.INTEGER
-        },
         type:
         {
             type: type.ENUM('CveId', 'BugTraqId')
         
         },
+        SignatureId: {
+            type: type.INTEGER
+        },
+      
         
         reference: {
             type: type.STRING(2048),

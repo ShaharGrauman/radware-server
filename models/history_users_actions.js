@@ -1,4 +1,3 @@
-
 module.exports = (db, type) => {
     return db.define('history_users_actions', {
         id: {
