@@ -46,21 +46,22 @@ const getData = async (query) => {
         });
     }
     try {
-        let history = await users.findAll({
-            attributes: ['username'],
+        let history = await historyUsersActions.findAll({
+            attributes: ['action_name', 'description', 'time', 'date'],
             include: [{
-                model: historyUsersActions,
-                attributes: ['action_name', 'description', 'time', 'date'],
-                where: where,
-                order:
+                model: users,
+                attributes:['username'], 
+                where: whereInUsers,
+                
+              }],
+           where: where,
+           order:
                 [
                     ['date', query.orderBy],
                     ['time', query.orderBy]
                 ],
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
             limit: parseInt(query.size),
-              }],
-           where: whereInUsers,
            
         });
         
