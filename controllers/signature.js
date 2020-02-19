@@ -48,9 +48,6 @@ const sigBySeverity = async () => {
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
-<<<<<<< HEAD
-}
-=======
 } 
 
 
@@ -83,7 +80,6 @@ const exportAllTestDataFile = async () => {
 
 
 
->>>>>>> master
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
