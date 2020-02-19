@@ -3,13 +3,14 @@ const sequelize = require('../config/database');
 require('./sendEmail');
 require('./XML/exportXML');
 require('./XML/importXml');
+require('./Text/exportFile');
 
 const { signatureValidation, external_referenceValidation, fileValidation, web_serverValidation
     , attackValidation, permessionValidation, parameterValidation, vuln_data_extraValidation } = require('../middleware/validations');
 
 
 const { signatureCreation, signatureUpdate } = require('../middleware/validations');
-const Op = require('Sequelize').Op;
+const Op = require('sequelize').Op;
 
 // const findStatus = async() =>{
 //     sequelize.define('model', {
@@ -47,7 +48,42 @@ const sigBySeverity = async () => {
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
+<<<<<<< HEAD
 }
+=======
+} 
+
+
+
+const exportTestDataFile = async id => {
+    try {
+        const signatureData = await signatures.findAll({
+            where: {
+                id
+            },
+        });
+        /// func to write 
+        exportTestData(signatureData);
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
+    }
+}
+
+const exportAllTestDataFile = async () => {
+
+
+    try {
+        const signatureData = await signatures.findAll();
+        console.log(signatureData)
+        exportTestData(signatureData);
+    } catch (error) {
+        throw new Error(`cant get signatures: ${error.message}`)
+    }
+}
+
+
+
+>>>>>>> master
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -596,7 +632,7 @@ module.exports = {
     importFile,
     sigBySeverity,
     //findStatus
-    exportAllFile
-
-
+    exportAllFile,
+    exportTestDataFile,
+    exportAllTestDataFile
 };
