@@ -5,11 +5,19 @@ module.exports = (db, type) => {
             autoIncrement: true,
             primaryKey: true
         },
+<<<<<<< HEAD
+        type :
+=======
         type:
+>>>>>>> master
         {
             type: type.ENUM('CveId', 'BugTraqId')
         
         },
+        SignatureId: {
+            type: type.INTEGER
+        },
+      
         
         reference: {
             type: type.STRING(2048),

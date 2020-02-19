@@ -25,7 +25,7 @@ const Op = require('sequelize').Op;
 // const sigByAttack = async () => {
 //     try {
 //         const signaturesByAttack = await signatures.findAll({
-            
+
 //             include:[{model:attack, attributes:['name']}],
 //             group: ['attack_id'],
 //             attributes: ['attack_id', [sequelize.fn('COUNT', 'attack_id'), 'SigCount']],
@@ -38,16 +38,19 @@ const Op = require('sequelize').Op;
 // }
 const sigBySeverity = async () => {
     try {
-        const signaturesBySeverity = await signatures.findAll({
-            include:[{model:attack, attributes:['name']}],
-            group: ['attack_id','severity'],
-            attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'attackSev']],
-        }) 
+        const signaturesBySeverity = await attack.findAll({
+            attributes: ['name'],
+            include: [{ model: signatures, attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'attackSevCount'],] }],
+            group: ['attack_id', 'severity'],
+        })
         console.log(signaturesBySeverity);
         return signaturesBySeverity;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
+<<<<<<< HEAD
+}
+=======
 } 
 
 
@@ -80,6 +83,7 @@ const exportAllTestDataFile = async () => {
 
 
 
+>>>>>>> master
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -251,11 +255,11 @@ const loadSignaturesToExport = async (query) => {
 const sigByAttack = async () => {
     try {
         const signaturesByAttack = await signatures.findAll({
-            
-            include:[{model:attack, attributes:['name']}],
+
+            include: [{ model: attack, attributes: ['name'] }],
             group: ['attack_id'],
             attributes: ['attack_id', [sequelize.fn('COUNT', 'attack_id'), 'SigCount']],
-        }) 
+        })
         console.log(signaturesByAttack);
         return signaturesByAttack;
     } catch (error) {
@@ -268,7 +272,7 @@ const sigPerSeverity = async () => {
         const sigPerSeverity = await signatures.findAll({
             group: ['severity'],
             attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'SigSevCount']],
-        }) 
+        })
         console.log(sigPerSeverity);
         return sigPerSeverity;
     } catch (error) {
@@ -340,8 +344,8 @@ const create = async (signatureData) => {
     // if (!result) {
     //     return result;
     // }
-    
-    
+
+
 
     signatures.addHook('afterCreate', (signatureDataCreate, options) => {
 
@@ -441,7 +445,7 @@ const create = async (signatureData) => {
             }), date: new Date()
         });
 
-        
+
 
 
         return signatureDataCreate;
@@ -495,7 +499,7 @@ const update = async (DataToUpdate, id) => {
     // if (!result) {
     //     return result;
     // }
-    
+
     try {
         const updatedSignature = signatures.update({
             type: DataToUpdate.type,
