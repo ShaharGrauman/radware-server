@@ -40,7 +40,9 @@ router.get('/audit', async (req, res) => {
         sortBy,
         orderBy
     });
-    const auditReport = await auditController.getData(query);
+    const cookie = req.headers['radware']
+    const user = JSON.parse(cookie)
+    const auditReport = await auditController.getData(query, user);
     res.status(200).json(auditReport);
   }catch(error){
     res.status(500).json({msg: error.message});

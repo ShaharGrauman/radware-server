@@ -1,4 +1,4 @@
-const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
+const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users} = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
 require('./XML/exportXML');
@@ -49,7 +49,7 @@ const sigBySeverity = async () => {
     }
 } 
 
-const sigByReference = async (query) => {
+const sigByReference = async (query, user) => {
     
     try{
         let result = [], serialArray = [], signaturesCveid = [], count 
@@ -69,6 +69,15 @@ const sigByReference = async (query) => {
 
         signaturesCveid.push(signaturesByCveId)
     }
+    historyUsersActions.create({
+        userId: user.id, action_name: "report",
+        description: "View signature reports by year and serial number",
+        time: new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: "numeric",
+            minute: "numeric"
+        }), date: new Date()
+    });
         return signaturesCveid
 
     }
@@ -91,6 +100,16 @@ const sigByReference = async (query) => {
         result.push(temp)
     }
     }
+
+    historyUsersActions.create({
+        userId: user.id, action_name: "report",
+        description: "View signature reports by year",
+        time: new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: "numeric",
+            minute: "numeric"
+        }), date: new Date()
+    });
 
     return result
     }
@@ -410,7 +429,7 @@ const loadSignatures = async (query) => {
 }
 
 
-const create = async (signatureData) => {
+const create = async (signatureData, user) => {
     // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
@@ -507,17 +526,15 @@ const create = async (signatureData) => {
         });
 
         historyUsersActions.create({
-            userId: '1', action_name: "add",
+            userId: user.id, action_name: "add_signature",
+            description: "add signature: " + signatureDataCreate.id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: "numeric",
                 minute: "numeric"
             }), date: new Date()
         });
-
         
-
-
         return signatureDataCreate;
     } catch (error) {
         throw new Error(`Cant create signatures: ${error.message}`);
@@ -525,17 +542,25 @@ const create = async (signatureData) => {
 
 }
 
-const searchSignature = async (search) => {
-    console.log(search)
+const searchSignature = async (search, user) => {
     try {
         const signatureData = await signatures.findAll(search);
+        historyUsersActions.create({
+            userId: user.id, action_name: "search",
+            description: "search signatures",
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
         return signatureData;
     } catch (error) {
-        throw new Error(`Cant get signatures: ${error.message}`);
+        throw new Error(`Can't get signatures: ${error.message}`);
     }
 }
 
-const findById = async (id) => {
+const findById = async (id, user) => {
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -550,8 +575,8 @@ const findById = async (id) => {
             // include: [{ all: true }]
         });
         historyUsersActions.create({
-            userId: '1', action_name: "search",
-            description: "search signature " + id,
+            userId: user.id, action_name: "search",
+            description: "search signature by id " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: "numeric",
@@ -564,7 +589,7 @@ const findById = async (id) => {
     }
 }
 
-const update = async (DataToUpdate, id) => {
+const update = async (DataToUpdate, id, user) => {
     // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
@@ -650,7 +675,7 @@ const update = async (DataToUpdate, id) => {
 
 
         historyUsersActions.create({
-            userId: '1', action_name: "edit",
+            userId: user.id, action_name: "edit_signature",
             description: "edit signature " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -665,13 +690,13 @@ const update = async (DataToUpdate, id) => {
     }
 }
 
-const Delete = async id => {
+const Delete = async (id, user) => {
     try {
         const result = signatures.destroy({
             where: { id: id }
         })
         historyUsersActions.create({
-            userId: '1', action_name: "delete",
+            userId: user.id, action_name: "delete_signature",
             description: "delete signature " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,

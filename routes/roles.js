@@ -27,13 +27,14 @@ router.get('/', async (req, res) => {
 
 
 router.post('/new_role', async (req, res, next) => {
-  console.log('sss');
   if (!req.body.name || !req.body.description) {
     res.status(400).json({ msg: "body is not valid" });
    }
 
   try {
-    const result = await roleController.createRole(req.body);
+    const cookie = req.headers['radware'];
+    const user = JSON.parse(cookie)
+    const result = await roleController.createRole(req.body, user);
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ msg: error.message });
@@ -51,10 +52,24 @@ router.get('/:id',admin, async (req, res) => {
   });
 
 
-  router.put('/:id',admin, async (req, res, next) => {
+  router.put('/:id', async (req, res, next) => {
     try {
-      const roles = await roleController.editRole(req.body, req.params.id);
+      const cookie = req.headers['radware'];
+      const user = JSON.parse(cookie)
+      const roles = await roleController.editRole(req.body, req.params.id,user);
       res.status(201).json({ roleId: req.params.id });
+    } catch (error) {
+      res.status(500).json({ msg: error.message });
+    }
+  });
+
+
+  router.put('/delete/:id', async (req, res, next) => {
+    try {
+      const cookie = req.headers['radware'];
+      const user = JSON.parse(cookie)
+      const result = await roleController.DeleteRole(req.params.id, user);
+      res.status(201).json(result);
     } catch (error) {
       res.status(500).json({ msg: error.message });
     }

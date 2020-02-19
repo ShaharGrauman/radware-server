@@ -3,7 +3,7 @@ const { historyUsersActions, users } = require('../models');
 const { Op } = require("sequelize");
 
 
-const getData = async (query) => {
+const getData = async (query, user) => {
     // event,user_id,startDate,endDate,startTime,endTime,sortBy,orderBy
 
 
@@ -75,6 +75,17 @@ const getData = async (query) => {
         if (query.page != 1) {
             hasPrev = true;
         }
+
+        historyUsersActions.create({
+            userId: user.id, action_name: "search",
+            description: `View audit`,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        })
+
         return { history, hasNext, hasPrev };
     } catch (error) {
         throw new Error(`Can't get the audit: ${error.message}`);

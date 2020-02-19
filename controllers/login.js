@@ -1,4 +1,4 @@
-const { users, roles, login, file, permissions, permissions_roles, roles_users } = require('../models');
+const { users, roles, login, file, permissions, permissions_roles, roles_users, historyUsersActions } = require('../models');
 const { loginAttempt } = require('../middleware/validations');
 const { sendEmail } = require('./sendEmail');
 const { encrypt } = require("./encrypt")
@@ -47,6 +47,17 @@ const Login = async (user) => {
             } catch (error) {
                 throw new Error(`Can't create login: ${error.message}`);
             }
+
+
+            historyUsersActions.create({
+                userId: userExist.id, action_name: "login",
+                description: "loged in",
+                time: new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric"
+                }), date: new Date()
+            })
             return userExist
         }
 
@@ -101,7 +112,7 @@ const Login = async (user) => {
                             })
 
                         sendMail(`<h1>Unfortunately! your account ${exist.username} is locked after 3 invalid login attempts</h1>`);
-                            throw new Error( "Incorrect email or password, Your account is locked Now")
+                        throw new Error("Incorrect email or password, Your account is locked Now")
                     }
                 }
             }
@@ -116,7 +127,7 @@ const Login = async (user) => {
 
 
 
-const reset = async (username) => {
+const reset = async (username, userCookie) => {
     try {
         const user = await users.findOne({
             where: { username: username } //checking if the email address sent by client is present in the db(valid)
@@ -128,6 +139,15 @@ const reset = async (username) => {
                     returning: true, where: { id: user.id }
                 }
             );
+            historyUsersActions.create({
+                userId: userCookie.id, action_name: "reset_password",
+                description: `reset password for ${username}`,
+                time: new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric"
+                }), date: new Date()
+            })
             sendEmail(user.username, `<h1>Reset Password => temp password: ${tempPwd}</h1>`);
             return user.username;
         }

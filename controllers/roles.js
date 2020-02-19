@@ -1,4 +1,4 @@
-const { roles, permissions } = require('../models');
+const { roles, permissions, historyUsersActions } = require('../models');
 const { permissions_roles } = require('../models/index');
 const { roleValidation } = require("../middleware/validations");
 
@@ -21,8 +21,7 @@ const { roleValidation } = require("../middleware/validations");
 //         }
 //     }
 // }
-const createRole = async (roleData) => {
-    console.log(roleData);
+const createRole = async (roleData, user) => {
     const result = await Joi.validate(roleData, roleValidation);
     if (!result) {
         return result;
@@ -51,8 +50,18 @@ const createRole = async (roleData) => {
             };
             rolesPermissions.push(rolePermission);
         }
-        console.log(rolesPermissions)
         permissions_roles.bulkCreate(rolesPermissions, { returning: true })
+
+        historyUsersActions.create({
+            userId: user.id, action_name: "add_role",
+            description: `added role ${newRole.id}` ,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        })
+
         return newRole;
     }
     catch (error) {
@@ -98,7 +107,7 @@ const getRoleWithPermissions = async (roleId) => {
 //     }
 // }
 
-const editRole = async (roleData, id) => {
+const editRole = async (roleData, id, user) => {
     const result = await Joi.validate(roleData, roleValidation);
     if (!result) {
         return result;
@@ -127,10 +136,40 @@ const editRole = async (roleData, id) => {
         }
         permissions_roles.bulkCreate(rolesPermissions, { returning: true })
 
+        historyUsersActions.create({
+            userId: user.id, action_name: "edit_role",
+            description: `edited role ${id}` ,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        })
+
+
     }
     catch (error) {
         throw new Error(`Cant create role: ${error.message}`);
     }
+}
+
+const DeleteRole = async (id, user)=> {
+
+    try{
+        await roles.destroy({where:{id:id}})
+    }catch(error){
+        throw new Error(`can't delete role ${error.message}`)
+    }
+
+    historyUsersActions.create({
+        userId: user.id, action_name: "delete_role",
+        description: `deleted role ${id}` ,
+        time: new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: "numeric",
+            minute: "numeric"
+        }), date: new Date()
+    })
 }
 
 const getRoles = async () => {
@@ -149,5 +188,6 @@ module.exports = {
     createRole,
     getRoleWithPermissions,
     editRole,
-    getRoles
+    getRoles,
+    DeleteRole
 };
