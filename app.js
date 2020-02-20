@@ -14,7 +14,6 @@ var signatureRouter = require('./routes/signatures');
 var roleRouter = require('./routes/roles');
 var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
-var pwdRouter = require('./routes/pwd');
 
 var app = express();
 app.use(cors({origin: 'http://localhost:3000', credentials: true}));
@@ -65,7 +64,6 @@ app.use('/attack', attackRouter);
 app.use('/signature', signatureRouter);
 app.use('/login', loginRouter);
 app.use('/Qa', QaRouter);
-app.use('/pwd', pwdRouter);
 
 
 // catch 404 and forward to error handler
