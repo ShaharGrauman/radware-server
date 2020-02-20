@@ -597,7 +597,7 @@ module.exports = {
     importFile,
     sigBySeverity,
     //findStatus
-    exportAllFile,
-    exportTestDataFile,
-    exportAllTestDataFile
+   // exportAllFile,
+   // exportTestDataFile,
+  //  exportAllTestDataFile
 };
