@@ -1,4 +1,4 @@
-const { users, roles, login, file, permissions, permissions_roles, roles_users } = require('../models');
+const { users, roles, login, file, permissions, permissions_roles, roles_users, historyUsersActions } = require('../models');
 const { loginAttempt } = require('../middleware/validations');
 const { sendEmail } = require('./sendEmail');
 const { encrypt } = require("./encrypt")
@@ -32,21 +32,32 @@ const Login = async (user) => {
             let userStatus = await users.findOne({ attributes: ['status'], where: { username: user.username, password: encrypt(user.password) } })
 
             if (userStatus.status === 'locked')
-                return "Your account is already locked"
+                throw new Error("Your account is already locked")
             else if (userStatus.status === 'deleted')
-                return "Your account is already deleted"
+                throw new Error("Your account is already deleted")
 
             //create login
             try {
                 login.create({
                     user_id: userExist.id,
                     time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
-                    date: new Date().toLocaleString("he-IL"),
-                    success: 0
+                    date: new Date(),
+                    failed: 0
                 })
             } catch (error) {
-                throw new Error(`Cant create login: ${error.message}`);
+                throw new Error(`Can't create login: ${error.message}`);
             }
+
+
+            historyUsersActions.create({
+                userId: userExist.id, action_name: "login",
+                description: "loged in",
+                time: new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric"
+                }), date: new Date()
+            })
             return userExist
         }
 
@@ -56,9 +67,9 @@ const Login = async (user) => {
             if (exist) {// valid username with incorrect pass
 
                 if (exist.status === 'locked')
-                    return "Your account is already locked"
+                    throw new Error("Your account is already locked")
                 else if (exist.status === 'deleted')
-                    return "Your account is already deleted"
+                    throw new Error("Your account is already deleted")
 
 
                 const lastLogin = await login.findOne({
@@ -74,24 +85,24 @@ const Login = async (user) => {
                         login.create({
                             user_id: exist.id,
                             time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
-                            date: new Date().toLocaleString("he-IL"),
-                            success: 1
+                            date: new Date(),
+                            failed: 1
                         })
                     } catch (error) {
-                        throw new Error(`Cant create login: ${error.message}`);
+                        throw new Error(`Can't create login: ${error.message}`);
                     }
                 }
 
-                else { // increment success field to this user
-                    lastLogin.success++
+                else { // increment failed field to this user
+                    lastLogin.failed++
                     login.update({
-                        success: lastLogin.success
+                        failed: lastLogin.failed
                     },
                         {
                             returning: true, where: { id: lastLogin.id }
                         })
 
-                    if (lastLogin.success == 3) {
+                    if (lastLogin.failed == 3) {
                         users.update({
                             status: "locked"
                         },
@@ -101,22 +112,22 @@ const Login = async (user) => {
                             })
 
                         sendMail(`<h1>Unfortunately! your account ${exist.username} is locked after 3 invalid login attempts</h1>`);
-                        return "Incorrect email or password, Your account is locked Now"
+                        throw new Error("Incorrect email or password, Your account is locked Now")
                     }
                 }
             }
 
-            return "Incorrect email or password"
+            throw new Error("Incorrect email or password")
         }
 
     } catch (error) {
-        throw new Error(`Cannot login: ${error.message}`);
+        throw new Error(`Can't login: ${error.message}`);
     }
 }
 
 
 
-const reset = async (username) => {
+const reset = async (username, userCookie) => {
     try {
         const user = await users.findOne({
             where: { username: username } //checking if the email address sent by client is present in the db(valid)
@@ -128,6 +139,15 @@ const reset = async (username) => {
                     returning: true, where: { id: user.id }
                 }
             );
+            historyUsersActions.create({
+                userId: userCookie.id, action_name: "reset_password",
+                description: `reset password for ${username}`,
+                time: new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric"
+                }), date: new Date()
+            })
             sendEmail(user.username, `<h1>Reset Password => temp password: ${tempPwd}</h1>`);
             return user.username;
         }

@@ -21,7 +21,9 @@ router.post('/', async (req, res) => {
 
 router.post('/resetPassword', async (req, res) => {
     try {
-        const resetPwd = await loginController.reset(req.body.username);
+        const cookie = req.headers['radware']
+        const user = JSON.parse(cookie)
+        const resetPwd = await loginController.reset(req.body.username, user);
         res.status(200).json('reset email was sent to ' + resetPwd);
     } catch (error) {
         res.status(500).json({ msg: error.message });

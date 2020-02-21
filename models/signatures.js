@@ -18,10 +18,10 @@ module.exports = (db, type) => {
             type: type.ENUM('vuln', 'vuln_ex', 'vuln_reg_ex')
         },
         creation_time: {
-            type: type.DATE
+            type: type.TIME
         },
         creation_date: {
-            type: type.TIME
+            type: type.DATE
         },
         status: {
             type: type.ENUM('in_progress', 'in_test', 'in_QA', 'published', 'deleted', 'suspended')

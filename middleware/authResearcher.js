@@ -1,6 +1,6 @@
 const researcher = (req, res, next) => {
 
-    const cookie = req.headers['radware-auth'];
+    const cookie = req.headers['radware'];
     if (cookie) {
         const user = JSON.parse(cookie);
         if (user.roles.some(role => role.id == 2)) {
