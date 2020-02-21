@@ -643,6 +643,7 @@ const update = async (DataToUpdate, id, user) => {
             description: DataToUpdate.description,
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
+            limit: DataToUpdate.limit
         }, { returning: true, where: { id: id } });
 
         DataToUpdate.web_servers.map(() =>

@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 
 
 
-router.post('/new_role', async (req, res, next) => {
+router.post('/new_role', admin, async (req, res, next) => {
   if (!req.body.name || !req.body.description) {
     res.status(400).json({ msg: "body is not valid" });
    }
@@ -52,7 +52,7 @@ router.get('/:id',admin, async (req, res) => {
   });
 
 
-  router.put('/:id', async (req, res, next) => {
+  router.put('/:id', admin,async (req, res, next) => {
     try {
       const cookie = req.headers['radware'];
       const user = JSON.parse(cookie)
@@ -64,7 +64,7 @@ router.get('/:id',admin, async (req, res) => {
   });
 
 
-  router.put('/delete/:id', async (req, res, next) => {
+  router.put('/delete/:id', admin, async (req, res, next) => {
     try {
       const cookie = req.headers['radware'];
       const user = JSON.parse(cookie)

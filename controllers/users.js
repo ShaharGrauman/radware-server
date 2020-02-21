@@ -188,15 +188,6 @@ const updateRolesUsers = async (roles, userId) => {
 
 
         await roles_users.bulkCreate(rolesUsers, { returning: true });
-        historyUsersActions.create({
-            userId: '1', action_name: "edit",
-            description: "created user " + newUser.id,
-            time: new Date().toLocaleTimeString('en-US', {
-                hour12: false,
-                hour: "numeric",
-                minute: "numeric"
-            }), date: new Date()
-        });
 
     }
     catch (error) {
