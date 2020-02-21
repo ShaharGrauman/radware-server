@@ -9,7 +9,9 @@ module.exports = (db, type) => {
             type: type.INTEGER
         },
         action_name: {
+
             type: type.ENUM('edit', 'search', 'delete', 'report', 'export_for_git', 'export_for_qa', 'export_for_testing', 'login', 'add_signature', 'edit_signature', 'delete_signature', 'delete_user', 'create_user', 'edit_user', 'add_role', 'edit_role', 'delete_role', 'reset_password')
+
         },
         description: {
             type: type.STRING

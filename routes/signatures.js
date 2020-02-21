@@ -135,6 +135,7 @@ router.get('/export/xml', [authRoles(1, 2), authPermissions(4)], async (req, res
         try {
             const result = await SignatureController.exportAllFile(req.query.exportTo);
             //   res.download('xml.xml')
+
            res.download('xml.xml')
         } catch (error) {
             res.status(500).json({ msg: error.message });

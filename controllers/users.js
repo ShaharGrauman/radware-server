@@ -2,7 +2,6 @@ const { users, roles } = require("../models/");
 const { roles_users, historyUsersActions } = require("../models/index")
 const { userValidation } = require("../middleware/validations");
 const { userCreation, userUpdate } = require('../middleware/validations');
-//>>>>>>> master
 const { encrypt } = require("./encrypt")
 
 
@@ -93,13 +92,15 @@ const createUser = async (userData, user) => {
 
 
         return newUser.id;
-    }}
-        catch (error) {
+    }
+
+    }
+    catch (error) {
         throw new Error(`Cant create user: ${error.message}`);
     }
 }
 
-        const editUser = async (DataToUpdate, id, user) => {
+const editUser = async (DataToUpdate, id, user) => {
             // const result = await Joi.validate(DataToUpdate,userUpdate);
             // console.log(result);
             // if (!result) {

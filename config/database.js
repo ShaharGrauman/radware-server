@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 
-
 const sequelize=new Sequelize('radware','root','eyas1994',{
 
     host:'localhost',
