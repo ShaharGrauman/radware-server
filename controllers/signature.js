@@ -202,6 +202,7 @@ const exportAllTestDataFile = async () => {
 }
 
 
+
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
@@ -714,6 +715,7 @@ const update = async (DataToUpdate, id, user) => {
 
         return updatedSignature;
     } catch (error) {
+        
         throw new Error(`Cant update signatures: ${error.message}`);
     }
 }
