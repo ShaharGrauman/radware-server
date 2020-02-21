@@ -24,21 +24,22 @@ router.get('/severity', async (req, res, next) => {
 router.get('/cveid', async (req, res, next) => {
 
     const year = req.query.year
-    const serial = req.query.serial 
+    const serial = req.query.serial
 
-     query = Object.assign({}, {
+    query = Object.assign({}, {
         year,
         serial,
-     })
+    })
 
-    try{
+    try {
         const cookie = req.headers['radware']
         const user = JSON.parse(cookie)
         const result = await SignatureController.sigByReference(query, user);
-            res.status(200).json(result);
+        res.status(200).json(result);
 
-    }catch(error){
-        res.status(500).json({msg: error.message})}
+    } catch (error) {
+        res.status(500).json({ msg: error.message })
+    }
 
 });
 
@@ -53,11 +54,11 @@ router.post('/copy/:id', async (req, res, next) => {
 });
 
 
-
+/// [authRoles(1, 2), authPermissions(3)],
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 3 (search  signature )
 router.get('/search', [authRoles(1, 2), authPermissions(3)], async (req, res, next) => {
     const search = new SearchBuilder();
-    if (req.query.attackName) search.setAttackName(req.query.attackName);
+    if (req.query.attackId) search.setAttackId(req.query.attackId);
     if (req.query.description) search.setDescription(req.query.description);
     if (req.query.severity) search.setSeverity(req.query.severity);
     if (req.query.status) search.setStatus(req.query.status);
@@ -72,7 +73,7 @@ router.get('/search', [authRoles(1, 2), authPermissions(3)], async (req, res, ne
     try {
         const cookie = req.headers['radware'];
         const user = JSON.parse(cookie)
-        const data = await SignatureController.searchSignature(search.build(), user);
+        const data = await SignatureController.searchSignature(search.build());
         res.json(data);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -81,26 +82,26 @@ router.get('/search', [authRoles(1, 2), authPermissions(3)], async (req, res, ne
 });
 
 router.get('/export/text', async (req, res, next) => {
-        try {
-            const result = await SignatureController.exportAllTestDataFile();
-           res.download('testData.txt')
-        } catch (error) {
-            res.status(500).json({ msg: error.message });
-        }
-    
- 
+    try {
+        const result = await SignatureController.exportAllTestDataFile();
+        res.download('testData.txt')
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+
+
 })
 
-router.post('/export/text',async (req, res, next) => {
+router.post('/export/text', async (req, res, next) => {
     // if (req.body.id) {
-        console.log('sssssssssssssssssssss')
-        console.log(req.body.id)
-        try {
-            const result = await SignatureController.exportTestDataFile(req.body.id);
-            res.download('testData.txt')
-        } catch (error) {
-            res.status(500).json({ msg: error.message });
-        }
+    console.log('sssssssssssssssssssss')
+    console.log(req.body.id)
+    try {
+        const result = await SignatureController.exportTestDataFile(req.body.id);
+        res.download('testData.txt')
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
     // }
     // else{
 
@@ -136,7 +137,7 @@ router.get('/export/xml', [authRoles(1, 2), authPermissions(4)], async (req, res
             const result = await SignatureController.exportAllFile(req.query.exportTo);
             //   res.download('xml.xml')
 
-           res.download('xml.xml')
+            res.download('xml.xml')
         } catch (error) {
             res.status(500).json({ msg: error.message });
         }
@@ -253,7 +254,7 @@ router.put('/importXml', async (req, res, next) => {
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
-router.post('/',  async (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
         const cookie = req.headers['radware'];
         const user = JSON.parse(cookie)
