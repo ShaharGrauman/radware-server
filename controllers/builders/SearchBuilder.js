@@ -24,33 +24,28 @@ class SearchBuilder {
         Object.assign(this.where, { scan_uri });
 
     }
-    setScanHeader(scan_header){
+    setScanHeader(scan_header) {
         Object.assign(this.where, { scan_header });
 
     }
-    setScanBody(scan_body){
+    setScanBody(scan_body) {
         Object.assign(this.where, { scan_body });
 
     }
-    setScanParameters(scan_parameters){
+    setScanParameters(scan_parameters) {
         Object.assign(this.where, { scan_parameters });
 
     }
-    setScanFile(scan_file_name){
+    setScanFile(scan_file_name) {
         Object.assign(this.where, { scan_file_name });
     }
     setDescription(description) {
         Object.assign(this.where, { description });
 
     }
-    setAttackName(name) {
-        this.include.push({
-            model: attack,
-            where: {
-                name
-            },
-            attributes: ['name']
-        });
+    setAttackId(attack_id) {
+        Object.assign(this.where, { attack_id });
+
 
     }
     setSeverity(severity) {
