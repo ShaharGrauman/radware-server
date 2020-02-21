@@ -258,8 +258,8 @@ router.put('/importXml', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const cookie = req.headers['radware'];
-        const user = JSON.parse(cookie)
-        const result = await SignatureController.create(req.body, user);
+        // const user = JSON.parse(cookie)
+        const result = await SignatureController.create(req.body);
         res.json(result);
     } catch (error) {
         console.log(error)
