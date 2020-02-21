@@ -1,7 +1,7 @@
 var fs = require('fs');
 var convert = require('xml-js');
 
-const { roles_users, users, signatures, externalReferences, webServer, attack } = require('../../models');
+const { roles_users, users, signatures, externalReferences, webServer, attack, vulnDataExtra } = require('../../models');
 const { findById } = require('../../controllers/signature');
 var SignatureController = require('../../controllers/signature');
 
@@ -72,14 +72,16 @@ addSignatureToDataTable = async (signatureData) => {
     })
   }catch{ err => console.log(err);}
 
-    // ///feach vuln_data_extras data 
-    // signatureData.vuln_data_extras.map(vlunData => {
-    //     vulnDataExtra.create({
-    //         // id: vlunData.id,
-    //         signatureId: signatureDataCreate.id,
-    //         description: vlunData.description
-    //     });
-    // });
+  try{
+    ///feach vuln_data_extras data 
+    signatureData.vuln_data_ex.map(vulnData => {
+        vulnDataExtra.create({
+            // id: vlunData.id,
+            signatureId: signatureDataCreate.id,
+            description: vulnData
+        });
+    });
+  }catch{}
     // /// feach parameters data 
     signatureData.Params.map(params => {
         param.create({
@@ -89,6 +91,15 @@ addSignatureToDataTable = async (signatureData) => {
     });
 
   } catch (error) {
+    historyUsersActions.create({
+      userId: users.id, action_name: "edit",
+      description: "failed to import ",
+      time: new Date().toLocaleTimeString('en-US', {
+          hour12: false,
+          hour: "numeric",
+          minute: "numeric"
+      }), date: new Date()
+  });
     throw new Error(`Cant create signatures: ${error.message}`);
   }
 
@@ -153,7 +164,7 @@ import_XML_Signature = async () => {
             });
             if([element.name] == 'VulnDataEx'){
               vuln_data.push(data[0].text || null);
-              console.log(data[0].text+'----------------------');
+              console.log(vuln_data+'----------------------');
             }
           } catch{ err => console.log(err); }
         });
@@ -180,6 +191,13 @@ import_XML_Signature = async () => {
           });
         } catch{ err => console.log("assign reference doesn't work"); }
         //----------------------------------------------------------------------------//
+          //}
+          try {
+            Object.assign(signatureOfXml, {
+              vuln_data_ex: vuln_data
+            });
+          } catch{ err => console.log("vuln_dataEx doesn't work"); }
+          //----------------------------------------------------------------------------//
         let web_servers = [];
 
         try {

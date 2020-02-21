@@ -51,6 +51,7 @@ const sigBySeverity = async () => {
 } 
 
 
+
 const exportTestDataFile = async id => {
     try {
         const signatureData = await signatures.findAll({
@@ -586,7 +587,7 @@ const update = async (DataToUpdate, id) => {
 
         return updatedSignature;
     } catch (error) {
-        return error.message;
+        
         throw new Error(`Cant update signatures: ${error.message}`);
     }
 }
