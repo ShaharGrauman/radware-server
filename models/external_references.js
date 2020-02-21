@@ -5,7 +5,7 @@ module.exports = (db, type) => {
             autoIncrement: true,
             primaryKey: true
         },
-        type :
+        type:
         {
             type: type.ENUM('CveId', 'BugTraqId')
         

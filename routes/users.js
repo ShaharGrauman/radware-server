@@ -26,7 +26,9 @@ router.get('/',admin, async (req, res) => {
 /// to use this route should to be the user role is 1  (admin) 
 router.post('/new_user',admin, async (req, res, next) => {
   try {
-    const result = await userController.createUser(req.body);
+    const cookie = req.headers['radware'];
+    const user = JSON.parse(cookie)
+    const result = await userController.createUser(req.body, user);
     res.status(201).json( result );
   } catch (error) {
     res.status(500).json({ msg: error.message });
@@ -38,7 +40,9 @@ router.put('/delete_user',admin, async (req, res, next) => {
     res.status(400).json({ msg: "username is not valid" });
   }
   try {
-    const result = await userController.deleteUser(req.body.username);
+    const cookie = req.headers['radware'];
+    const user = JSON.parse(cookie)
+    const result = await userController.deleteUser(req.body, user);
     res.status(201).json({ msg: 'deleted successfully' });
   } catch (error) {
     res.status(500).json({ msg: error.message });
@@ -56,9 +60,11 @@ router.get('/:id',admin, async (req, res) => {
 });
 
 /// to use this route should to be the user role is 1  (admin) 
-router.put('/:id',admin, async (req, res, next) => {
+router.put('/:id', admin, async (req, res, next) => {
   try {
-    const result = await userController.editUser(req.body, req.params.id);
+    const cookie = req.headers['radware'];
+    const user = JSON.parse(cookie)
+    const result = await userController.editUser(req.body, req.params.id, user);
     res.status(201).json({ userId: req.params.id });
   } catch (error) {
     res.status(500).json({ msg: error.message });

@@ -16,7 +16,7 @@ module.exports = (db, type) => {
         date:{
             type: type.DATE
         },
-        success:{
+        failed:{
             type: type.TINYINT
         }
     },{timestamps: false, underscored: true, freezeTableName: true})
