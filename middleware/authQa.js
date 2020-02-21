@@ -1,7 +1,5 @@
 const Qa = (req, res, next) => {
-    console.log('req.headers.name')
-    console.log(req.headers)
-    const cookie = req.headers['radware-auth'];
+    const cookie = req.headers['radware'];
     if (cookie) {
         const user = JSON.parse(cookie);
         if (user.roles.some(role => role.id == 4 || role.id == 5 || role.id == 6)) {

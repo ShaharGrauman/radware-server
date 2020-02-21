@@ -37,7 +37,7 @@ addSignatureToDataTable = async (signatureData) => {
       scan_file_name: signatureData.scan_file_name,
       severity: signatureData.Severity,
       description: signatureData.Description || null,
-      test_data: 'FAKE TEST DATA',
+      test_data: null,
       attack_id: signatureData.attackId || null,
       user_id: signatureData.userId,
       limit: signatureData.limit || null

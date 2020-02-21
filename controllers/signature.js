@@ -1,4 +1,4 @@
-const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
+const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users} = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
 require('./XML/exportXML');
@@ -48,9 +48,132 @@ const sigBySeverity = async () => {
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
-} 
+}
+
+const sigByReference = async (query, user) => {
+    
+    try{
+        let result = [], serialArray = [], signaturesCveid = [], count 
+    if(query.serial){
+
+        const referenceArray = await sequelize.query(`select SignatureId from external_references where type = "cveid" and reference like "%${query.year}-${query.serial}%"`, { type: sequelize.QueryTypes.SELECT })
+
+        for(i = 0 ; i < referenceArray.length ; i++){
+
+        const signaturesByCveId = await signatures.findOne({
+            attributes:['id',
+                        ['pattern_id', 'patternId'],
+                        'description',
+                        'status'],
+            where:{id:referenceArray[i].SignatureId}
+        })
+
+        signaturesCveid.push(signaturesByCveId)
+    }
+    historyUsersActions.create({
+        userId: user.id, action_name: "report",
+        description: "View signature reports by year and serial number",
+        time: new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: "numeric",
+            minute: "numeric"
+        }), date: new Date()
+    });
+        return signaturesCveid
+
+    }
+
+    else{
+
+    const referencesArray = await sequelize.query(`select reference from external_references where type = "cveid" and reference like "%${query.year}-%"`, { type: sequelize.QueryTypes.SELECT })
+        
+    for( i = 0; i < referencesArray.length ; i++){
+        count = 0
+       serialNumber =  referencesArray[i].reference.slice(referencesArray[i].reference.length - 4)
+            if(!serialExist(serialArray, serialNumber)){
+                serialArray.push(serialNumber)
+        for(j = i ; j < referencesArray.length ; j++){
+            if(serialNumber === referencesArray[j].reference.slice(referencesArray[j].reference.length - 4))
+                count++
+        }
+
+        var temp = {cveid:`${query.year}-${serialNumber}`, quantity:count}
+        result.push(temp)
+    }
+    }
+
+    historyUsersActions.create({
+        userId: user.id, action_name: "report",
+        description: "View signature reports by year",
+        time: new Date().toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: "numeric",
+            minute: "numeric"
+        }), date: new Date()
+    });
+
+    return result
+    }
 
 
+    }catch(error){
+        throw new Error(`${error.message}`)
+    }
+}
+
+const serialExist = (arr, serial) => {
+    for(let i of arr){
+        if (i == serial)
+            return true
+    }
+    return false
+}
+
+
+const copySignature = async(id) => {
+
+    try{
+    signatures.addHook('afterCreate', (copiedSignature, options) => {
+
+        signatures.update({
+            pattern_id: copiedSignature.id
+        }, { where: { id: copiedSignature.id } })
+    })
+
+    const currentSignature = await signatures.findOne({where:{id:id}})
+
+    const copiedSignature = await signatures.create({
+        attack_id: currentSignature.attack_id,
+        type: currentSignature.type,
+        creation_time: currentSignature.creation_time,
+        creation_date: currentSignature.creation_date,
+        status: currentSignature.status,
+        in_qa_internal_status_manual: currentSignature.in_qa_internal_status_manual,
+        in_qa_internal_status_performance: currentSignature.in_qa_internal_status_performance,
+        in_qa_internal_status_automation: currentSignature.in_qa_internal_status_automation,
+        vuln_data: currentSignature.vuln_data,
+        keep_order: currentSignature.keep_order,
+        start_break: currentSignature.start_break,
+        end_break: currentSignature.end_break,
+        right_index: currentSignature.right_index,
+        left_index: currentSignature.left_index,
+        scan_uri: currentSignature.scan_uri,
+        scan_header: currentSignature.scan_header,
+        scan_body: currentSignature.scan_body,
+        scan_parameters: currentSignature.scan_parameters,
+        scan_file_name: currentSignature.scan_file_name,
+        severity: currentSignature.severity,
+        description: currentSignature.description,
+        test_data: currentSignature.test_data,
+        attack_id: currentSignature.attackId,
+        user_id: currentSignature.userId,
+        limit: currentSignature.limit
+    })
+    return copiedSignature
+    }catch(error){
+        throw new Error(`Can't copy signature ${error.message}`)
+    }
+}
 
 const exportTestDataFile = async id => {
     try {
@@ -152,7 +275,6 @@ const exportAllFile = async (query) => {
                 { model: webServer }
             ]
         });
-        console.log(signatureData)
         routeByType(signatureData);
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
@@ -335,7 +457,7 @@ const loadSignatures = async (query) => {
 }
 
 
-const create = async (signatureData) => {
+const create = async (signatureData, user) => {
     // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
@@ -349,15 +471,14 @@ const create = async (signatureData) => {
             pattern_id: signatureDataCreate.id
         }, { where: { id: signatureDataCreate.id } })
     });
-
     try {
         const signatureDataCreate = await signatures.create({
             // id: signatureData.id,
             pattern_id: signatureData.pattern_id,
             attack_id: signatureData.attack_id,
             type: signatureData.type,
-            creation_time: signatureData.creation_time,
-            creation_date: signatureData.creation_date,
+            creation_time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
+            creation_date: new Date(),
             status: signatureData.status,
             in_qa_internal_status_manual: signatureData.in_qa_internal_status_manual,
             in_qa_internal_status_performance: signatureData.in_qa_internal_status_performance,
@@ -433,16 +554,14 @@ const create = async (signatureData) => {
         });
 
         historyUsersActions.create({
-            userId: '1', action_name: "created signature 1",
+            userId: user.id, action_name: "add_signature",
+            description: "add signature: " + signatureDataCreate.id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: "numeric",
                 minute: "numeric"
             }), date: new Date()
         });
-
-
-
 
         return signatureDataCreate;
     } catch (error) {
@@ -451,17 +570,25 @@ const create = async (signatureData) => {
 
 }
 
-const searchSignature = async (search) => {
-    console.log(search)
+const searchSignature = async (search, user) => {
     try {
         const signatureData = await signatures.findAll(search);
+        historyUsersActions.create({
+            userId: user.id, action_name: "search",
+            description: "search signatures",
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
         return signatureData;
     } catch (error) {
-        throw new Error(`Cant get signatures: ${error.message}`);
+        throw new Error(`Can't get signatures: ${error.message}`);
     }
 }
 
-const findById = async (id) => {
+const findById = async (id, user) => {
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -476,8 +603,8 @@ const findById = async (id) => {
             // include: [{ all: true }]
         });
         historyUsersActions.create({
-            userId: '1', action_name: "search",
-            description: "search signature " + id,
+            userId: user.id, action_name: "search",
+            description: "search signature by id " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: "numeric",
@@ -490,7 +617,7 @@ const findById = async (id) => {
     }
 }
 
-const update = async (DataToUpdate, id) => {
+const update = async (DataToUpdate, id, user) => {
     // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
@@ -517,6 +644,7 @@ const update = async (DataToUpdate, id) => {
             description: DataToUpdate.description,
             test_data: DataToUpdate.test_data,
             attack_id: DataToUpdate.attackId,
+            limit: DataToUpdate.limit
         }, { returning: true, where: { id: id } });
 
         DataToUpdate.web_servers.map(() =>
@@ -576,7 +704,7 @@ const update = async (DataToUpdate, id) => {
 
 
         historyUsersActions.create({
-            userId: '1', action_name: "edit",
+            userId: user.id, action_name: "edit_signature",
             description: "edit signature " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -592,13 +720,13 @@ const update = async (DataToUpdate, id) => {
     }
 }
 
-const Delete = async id => {
+const Delete = async (id, user) => {
     try {
         const result = signatures.destroy({
             where: { id: id }
         })
         historyUsersActions.create({
-            userId: '1', action_name: "delete",
+            userId: user.id, action_name: "delete_signature",
             description: "delete signature " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -630,6 +758,9 @@ module.exports = {
     sigBySeverity,
     //findStatus
     exportAllFile,
+    sigByReference,
+    copySignature,
     exportTestDataFile,
     exportAllTestDataFile
+
 };

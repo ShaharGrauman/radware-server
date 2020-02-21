@@ -1,4 +1,4 @@
-const {signatures} = require('../models');
+const {signatures, historyUsersActions} = require('../models');
 const QABuilder = require('./builders/QABuilder');
 const database = require('../config/database');
 const Sequelize = require('sequelize')
@@ -10,12 +10,12 @@ const findAll = async () => {
             ['pattern_id', 'PatternID'],
             ['scan_uri', 'URI'],
             ['scan_header', 'Headers'],
-            ['scan_body', 'body'],
-            ['scan_parameters', 'parameters'],
-            ['scan_file_name', 'file'],
-            ['in_qa_internal_status_manual', 'manual'],
-            ['in_qa_internal_status_performance', 'performance'],
-            ['in_qa_internal_status_automation', 'automation']
+            ['scan_body', 'Body'],
+            ['scan_parameters', 'Parameters'],
+            ['scan_file_name', 'File'],
+            ['in_qa_internal_status_manual', 'Manual'],
+            ['in_qa_internal_status_performance', 'Performance'],
+            ['in_qa_internal_status_automation', 'Automation']
                 ],
                 where: {status: 'in_qa'}
           })
@@ -26,7 +26,7 @@ return inQa;
 }
 
 
-const Update = (DataToUpdate) => {
+const Update = (DataToUpdate, user) => {
     try {
     const Qa = new QABuilder();
     console.log(DataToUpdate)
@@ -39,7 +39,6 @@ const Update = (DataToUpdate) => {
             if (DataToUpdate[key].performance != undefined)
                 Qa.setPerformance(DataToUpdate[key].performance);
             Qa.build();
-           
             if (Qa.automation != undefined) {
                  signatures.update({
                     in_qa_internal_status_automation: Qa.automation
@@ -62,6 +61,16 @@ const Update = (DataToUpdate) => {
                 });
             }
         })
+
+        historyUsersActions.create({
+            userId: user.id, action_name: "edit",
+            description: "Update qa status",
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
 
         checkInit()
 
