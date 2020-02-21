@@ -529,7 +529,7 @@ const create = async (signatureData, user) => {
             webServer.create({
                 // id: webServ.id,
 
-                web: webServ.webserver,
+                web: webServ.web,
                 signatureId: signatureDataCreate.id
             });
         })
@@ -551,15 +551,15 @@ const create = async (signatureData, user) => {
             });
         });
 
-        historyUsersActions.create({
-            userId: user.id, action_name: "add_signature",
-            description: "add signature: " + signatureDataCreate.id,
-            time: new Date().toLocaleTimeString('en-US', {
-                hour12: false,
-                hour: "numeric",
-                minute: "numeric"
-            }), date: new Date()
-        });
+        // historyUsersActions.create({
+        //     userId: user.id, action_name: "add_signature",
+        //     description: "add signature: " + signatureDataCreate.id,
+        //     time: new Date().toLocaleTimeString('en-US', {
+        //         hour12: false,
+        //         hour: "numeric",
+        //         minute: "numeric"
+        //     }), date: new Date()
+        // });
 
         signatureStatusHistory.create({
             user_id: user.id, signature_id: signatureDataCreate.id,
