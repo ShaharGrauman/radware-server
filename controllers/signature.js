@@ -527,11 +527,11 @@ const create = async (signatureData, user) => {
         })
         ///feach web server data
         signatureData.web_servers.map(webServ => {
-            console.log(webServ.webserver)
+            console.log(webServ.web)
             webServer.create({
                 // id: webServ.id,
 
-                web: webServ.webserver,
+                web: webServ.web,
                 signatureId: signatureDataCreate.id
             });
         })
