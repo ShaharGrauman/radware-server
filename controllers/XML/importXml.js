@@ -1,7 +1,7 @@
 var fs = require('fs');
 var convert = require('xml-js');
 
-const { roles_users, users, signatures, externalReferences, webServer, attack, vulnDataExtra } = require('../../models');
+const { roles_users, users, signatures, externalReferences, webServer, attack, vulnDataExtra, historyUsersActions } = require('../../models');
 const { findById } = require('../../controllers/signature');
 var SignatureController = require('../../controllers/signature');
 
@@ -124,6 +124,7 @@ import_XML_Signature = async () => {
         if (signature.name === 'Vuln') { typeOfData = 'vuln' };
         if (signature.name === 'VulnRegEx') { typeOfData = 'vuln_reg_ex' };
 
+        console.log(userId+"of researcher");
 
         let signatureOfXml = {
           user_id: userId, attack_id: null, type: typeOfData, creation_time: new Date().toLocaleTimeString('en-US', {
