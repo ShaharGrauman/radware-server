@@ -213,9 +213,9 @@ const findAll = async () => {
     }
 }
 
-const importFile = async () => {
+const importFile = async (user) => {
     try {
-        const result = await importSignatures();
+        await importSignatures(user);
         return 'imported';
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)

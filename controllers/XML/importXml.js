@@ -7,7 +7,7 @@ var SignatureController = require('../../controllers/signature');
 
 
 
-addSignatureToDataTable = async (signatureData) => {
+addSignatureToDataTable = async (signatureData, user) => {
   try {
     // /// attack data 
     const AttackCreate = await attack.create({
@@ -39,7 +39,6 @@ addSignatureToDataTable = async (signatureData) => {
       description: signatureData.Description || null,
       test_data: null,
       attack_id: signatureData.attackId || null,
-      user_id: signatureData.userId,
       limit: signatureData.limit || null
     });
     //// feach file data 
@@ -92,7 +91,7 @@ addSignatureToDataTable = async (signatureData) => {
 
   } catch (error) {
     historyUsersActions.create({
-      userId: users.id, action_name: "edit",
+      userId: user.id, action_name: "add_signature",
       description: "failed to import ",
       time: new Date().toLocaleTimeString('en-US', {
           hour12: false,
@@ -105,7 +104,7 @@ addSignatureToDataTable = async (signatureData) => {
 
 }
 // With parser
-import_XML_Signature = async () => {
+import_XML_Signature = async (user) => {
   dirname = '../radware-server/vuln-example-signatures.xml';
   let userId = await roles_users.findOne({
     attributes: ['user_id'],
@@ -221,7 +220,7 @@ import_XML_Signature = async () => {
         } catch{ err => console.log(err); }
 
 
-        addSignatureToDataTable(signatureOfXml);
+        addSignatureToDataTable(signatureOfXml, user);
 
       } catch{ console.log(signature.name); }
     });
@@ -233,8 +232,8 @@ import_XML_Signature = async () => {
 
 
 
-importSignatures = async () => {
-  const result = await import_XML_Signature();
+importSignatures = async (user) => {
+  await import_XML_Signature(user);
 }
 
 module.exports = { importSignatures }
