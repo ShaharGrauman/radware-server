@@ -94,8 +94,6 @@ router.get('/export/text', async (req, res, next) => {
 
 router.post('/export/text', async (req, res, next) => {
     // if (req.body.id) {
-    console.log('sssssssssssssssssssss')
-    console.log(req.body.id)
     try {
         const result = await SignatureController.exportTestDataFile(req.body.id);
         res.download('testData.txt')
@@ -113,7 +111,6 @@ router.post('/export/text', async (req, res, next) => {
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
 router.post('/export/xml', [authRoles(1, 2), authPermissions(4)], async (req, res, next) => {
     // if (req.body.id) {
-    console.log(req.body.id)
     try {
         const result = await SignatureController.exportFile(req.body.id);
         res.download('xml.xml')
@@ -222,8 +219,6 @@ router.get('/export', [authRoles(1, 2), authPermissions(4)], async (req, res, ne
 
         const signatures = await SignatureController.loadSignaturesToExport(query);
 
-        console.log(signatures)
-
         res.status(200).json(signatures);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -244,9 +239,9 @@ router.get('/:id', [authRoles(1, 2), authPermissions(1)], async (req, res, next)
 
 router.put('/importXml', async (req, res, next) => {
     try { 
-        
-        const result = await SignatureController.importFile();
-        console.log(result);
+        const cookie = req.headers['radware']
+        const user = JSON.parse(cookie)
+        const result = await SignatureController.importFile(user);
         res.json(result);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -262,7 +257,6 @@ router.post('/', async (req, res, next) => {
         const result = await SignatureController.create(req.body);
         res.json(result);
     } catch (error) {
-        console.log(error)
         res.status(500).json({ msg: error.message });
     }
 })
