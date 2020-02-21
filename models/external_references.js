@@ -8,8 +8,10 @@ module.exports = (db, type) => {
         type:
         {
             type: type.ENUM('CveId', 'BugTraqId')
-        
-        },  
+        },
+     
+      
+      
         reference: {
             type: type.STRING(2048),
         }
