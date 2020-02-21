@@ -9,12 +9,7 @@ module.exports = (db, type) => {
         {
             type: type.ENUM('CveId', 'BugTraqId')
         
-        },
-        SignatureId: {
-            type: type.INTEGER
-        },
-      
-        
+        },  
         reference: {
             type: type.STRING(2048),
         }
