@@ -1,4 +1,4 @@
-const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users} = require('../models');
+const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory} = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
 require('./XML/exportXML');
@@ -463,7 +463,6 @@ const create = async (signatureData, user) => {
     // }
 
 
-
     signatures.addHook('afterCreate', (signatureDataCreate, options) => {
 
         signatures.update({
@@ -497,7 +496,7 @@ const create = async (signatureData, user) => {
             description: signatureData.description,
             test_data: signatureData.test_data,
             attack_id: signatureData.attackId,
-            user_id: signatureData.userId,
+            user_id: user.id,
             limit: signatureData.limit
         });
         //// feach file data 
@@ -525,8 +524,7 @@ const create = async (signatureData, user) => {
             });
         })
         ///feach web server data
-        signatureData.web_servers.map(webServ => {
-            console.log(webServ.webserver)
+        signatureData.web.map(webServ => {
             webServer.create({
                 // id: webServ.id,
 
@@ -561,6 +559,16 @@ const create = async (signatureData, user) => {
                 minute: "numeric"
             }), date: new Date()
         });
+
+        signatureStatusHistory.create({
+            user_id: user.id, signature_id: signatureDataCreate.id,
+            status: signatureDataCreate.status,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        })
 
         return signatureDataCreate;
     } catch (error) {
@@ -610,6 +618,7 @@ const findById = async (id, user) => {
                 minute: "numeric"
             }), date: new Date()
         });
+
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -621,7 +630,16 @@ const update = async (DataToUpdate, id, user) => {
     // if (!result) {
     //     return result;
     // }
+    const sigStatus = await signatures.findOne({attributes:['status'], where:{id:id}})
+    if(sigStatus.status === 'suspended' || sigStatus.status === 'deleted'){
+        throw new Error("can't update signature, signature is in suspended or deleted status.")
+    }
 
+    if(DataToUpdate.status === 'in_qa' && sigStatus.status != 'in_qa'){
+        DataToUpdate.in_qa_internal_status_manual = 'init'
+        DataToUpdate.in_qa_internal_status_performance = 'init' 
+        DataToUpdate.in_qa_internal_status_automation = 'init'
+    }
     try {
         const updatedSignature = signatures.update({
             type: DataToUpdate.type,
@@ -711,6 +729,18 @@ const update = async (DataToUpdate, id, user) => {
                 minute: "numeric"
             }), date: new Date()
         });
+        // console.log(DataToUpdate.status)
+
+        signatureStatusHistory.create({
+            user_id: user.id, signature_id: id,
+            status: DataToUpdate.status,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        
+        })
 
         return updatedSignature;
     } catch (error) {

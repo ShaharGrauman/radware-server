@@ -94,8 +94,6 @@ router.get('/export/text', async (req, res, next) => {
 
 router.post('/export/text', async (req, res, next) => {
     // if (req.body.id) {
-    console.log('sssssssssssssssssssss')
-    console.log(req.body.id)
     try {
         const result = await SignatureController.exportTestDataFile(req.body.id);
         res.download('testData.txt')
@@ -222,8 +220,6 @@ router.get('/export', [authRoles(1, 2), authPermissions(4)], async (req, res, ne
 
         const signatures = await SignatureController.loadSignaturesToExport(query);
 
-        console.log(signatures)
-
         res.status(200).json(signatures);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -261,7 +257,6 @@ router.post('/', async (req, res, next) => {
         const result = await SignatureController.create(req.body, user);
         res.json(result);
     } catch (error) {
-        console.log(error)
         res.status(500).json({ msg: error.message });
     }
 })

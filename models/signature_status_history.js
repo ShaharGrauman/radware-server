@@ -13,7 +13,7 @@ module.exports = (db, type) => {
             type: type.INTEGER
         }, 
         status: {
-            type: type.ENUM('in_progress', 'in_test', 'in_qa', 'published', 'deleted')
+            type: type.ENUM('in_progress', 'in_test', 'in_qa', 'published', 'deleted', 'suspended')
         },
         time: {
             type: type.TIME        },
