@@ -239,9 +239,7 @@ router.get('/:id', [authRoles(1, 2), authPermissions(1)], async (req, res, next)
 
 router.put('/importXml', async (req, res, next) => {
     try { 
-        const cookie = req.headers['radware']
-        const user = JSON.parse(cookie)
-        const result = await SignatureController.importFile(user);
+        const result = await SignatureController.importFile("1");
         res.json(result);
     } catch (error) {
         res.status(500).json({ msg: error.message });
