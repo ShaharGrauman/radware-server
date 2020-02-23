@@ -66,7 +66,7 @@ const getData = async (query, user) => {
         });
         
         let hasNext = true, hasPrev = false;
-        if (history.length % (query.size * query.page) != 0 || history.length === 0) {
+        if ((query.size * query.page) % history.length != 0 || history.length === 0) {
             hasNext = false;
         }
         if (query.page != 1) {

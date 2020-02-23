@@ -1,5 +1,5 @@
 const { roles, permissions, historyUsersActions } = require('../models');
-const { permissions_roles } = require('../models/index');
+const { permissions_roles , roles_users} = require('../models/index');
 const { roleValidation } = require("../middleware/validations");
 
 
@@ -156,9 +156,13 @@ const editRole = async (roleData, id, user) => {
 const DeleteRole = async (id, user)=> {
 
     try{
+        const userWithRole = await roles_users.findOne({where:{role_id:id}})
+            if(userWithRole){
+                throw new Error("Role can't be deleted, it's used by one or more users.")
+            }
         await roles.destroy({where:{id:id}})
     }catch(error){
-        throw new Error(`can't delete role ${error.message}`)
+        throw new Error(`Role can't be deleted ${error.message}`)
     }
 
     historyUsersActions.create({
