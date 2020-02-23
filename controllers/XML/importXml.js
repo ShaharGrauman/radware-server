@@ -7,16 +7,24 @@ var SignatureController = require('../../controllers/signature');
 
 
 
-addSignatureToDataTable = async (signatureData) => {
+addSignatureToDataTable = async (signatureData, user) => {
   try {
     // /// attack data 
     const AttackCreate = await attack.create({
       name: signatureData.AttackName
   });
+
+  let userId = await roles_users.findOne({
+    attributes: ['user_id'],
+    where: { role_id: 2 },
+
+  });
+  console.log(AttackCreate.dataValues.id+"////////////////////////////");
+  userId = userId.dataValues.user_id;
     const signatureDataCreate = await signatures.create({
-      user_id: signatureData.user_id,
+      user_id: userId,
       pattern_id: signatureData.PatternID,
-      attack_id: AttackCreate.id,
+      attack_id: parseInt(AttackCreate.dataValues.id),
       type: signatureData.type,
       creation_time: signatureData.creation_time,
       creation_date: signatureData.creation_date,
@@ -38,8 +46,6 @@ addSignatureToDataTable = async (signatureData) => {
       severity: signatureData.Severity,
       description: signatureData.Description || null,
       test_data: null,
-      attack_id: signatureData.attackId || null,
-      user_id: signatureData.userId,
       limit: signatureData.limit || null
     });
     //// feach file data 
@@ -92,7 +98,7 @@ addSignatureToDataTable = async (signatureData) => {
 
   } catch (error) {
     historyUsersActions.create({
-      userId: users.id, action_name: "edit",
+      userId: user.id, action_name: "add_signature",
       description: "failed to import ",
       time: new Date().toLocaleTimeString('en-US', {
           hour12: false,
@@ -105,14 +111,9 @@ addSignatureToDataTable = async (signatureData) => {
 
 }
 // With parser
-import_XML_Signature = async () => {
+import_XML_Signature = async (user) => {
   dirname = '../radware-server/vuln-example-signatures.xml';
-  let userId = await roles_users.findOne({
-    attributes: ['user_id'],
-    where: { role_id: 2 },
-
-  });
-  userId = userId.dataValues.user_id;
+ 
 
   fs.readFile(dirname, function (err, data) {
     const signaturesToImport = JSON.parse(convert.xml2json(data, { compact: false, spaces: 4 }));
@@ -124,10 +125,9 @@ import_XML_Signature = async () => {
         if (signature.name === 'Vuln') { typeOfData = 'vuln' };
         if (signature.name === 'VulnRegEx') { typeOfData = 'vuln_reg_ex' };
 
-        console.log(userId+"of researcher");
 
         let signatureOfXml = {
-          user_id: userId, attack_id: null, type: typeOfData, creation_time: new Date().toLocaleTimeString('en-US', {
+          user_id: "id", attack_id: null, type: typeOfData, creation_time: new Date().toLocaleTimeString('en-US', {
             hour12: false,
             hour: "numeric",
             minute: "numeric"
@@ -142,7 +142,6 @@ import_XML_Signature = async () => {
             Object.assign(signatureCopy, {
               [element.name]: element.elements || null,
             });
-            
 
           } catch{ err => console.log(err); }
 
@@ -165,14 +164,10 @@ import_XML_Signature = async () => {
             });
             if([element.name] == 'VulnDataEx'){
               vuln_data.push(data[0].text || null);
-              console.log(vuln_data+'----------------------');
             }
           } catch{ err => console.log(err); }
         });
-        console.log(signatureOfXml);
-        console.log(signatureOfXml.RelatedInfo);
-        // 
-        // if(signatureOfXml.RelatedInfo.typeOf === 'array'){
+        
         let externalReferences = [];
 
         try {
@@ -220,8 +215,7 @@ import_XML_Signature = async () => {
           });
         } catch{ err => console.log(err); }
 
-
-        addSignatureToDataTable(signatureOfXml);
+        addSignatureToDataTable(signatureOfXml, user);
 
       } catch{ console.log(signature.name); }
     });
@@ -233,8 +227,8 @@ import_XML_Signature = async () => {
 
 
 
-importSignatures = async () => {
-  const result = await import_XML_Signature();
+importSignatures = async (user) => {
+  const result = await import_XML_Signature(user);
 }
 
 module.exports = { importSignatures }

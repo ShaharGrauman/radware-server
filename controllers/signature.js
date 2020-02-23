@@ -213,9 +213,9 @@ const findAll = async () => {
     }
 }
 
-const importFile = async () => {
+const importFile = async (user) => {
     try {
-        const result = await importSignatures();
+        const result = await importSignatures(user);
         return 'imported';
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
@@ -333,7 +333,7 @@ const loadSignaturesToExport = async (query) => {
 
 
         let hasNext = true, hasPrev = false;
-        if (signatureData.length % (query.size * query.page) != 0) {
+        if ((query.size * query.page)%signatureData.length != 0) {
             hasNext = false;
         }
         if (query.page != 1) {
@@ -436,7 +436,7 @@ const loadSignatures = async (query) => {
             attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
         });
         let hasNext = true, hasPrev = false;
-        if (signatureData.length % (query.size * query.page) != 0) {
+        if (signatureData.length % (query.size * query.page) != 0 || signatureData.length === 0) {
             hasNext = false;
         }
         if (query.page != 1) {
