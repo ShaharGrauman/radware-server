@@ -32,9 +32,7 @@ router.post('/new_role', admin, async (req, res, next) => {
    }
 
   try {
-    const cookie = req.headers['radware'];
-    const user = JSON.parse(cookie)
-    const result = await roleController.createRole(req.body, user);
+    const result = await roleController.createRole(req.body, req.userId);
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ msg: error.message });
@@ -54,9 +52,7 @@ router.get('/:id',admin, async (req, res) => {
 
   router.put('/:id', admin,async (req, res, next) => {
     try {
-      const cookie = req.headers['radware'];
-      const user = JSON.parse(cookie)
-      const roles = await roleController.editRole(req.body, req.params.id,user);
+      await roleController.editRole(req.body, req.params.id,req.userId);
       res.status(201).json({ roleId: req.params.id });
     } catch (error) {
       res.status(500).json({ msg: error.message });
@@ -66,9 +62,7 @@ router.get('/:id',admin, async (req, res) => {
 
   router.put('/delete/:id', admin, async (req, res, next) => {
     try {
-      const cookie = req.headers['radware'];
-      const user = JSON.parse(cookie)
-      const result = await roleController.DeleteRole(req.params.id, user);
+      const result = await roleController.DeleteRole(req.params.id, req.userId);
       res.status(201).json(result);
     } catch (error) {
       res.status(500).json({ msg: error.message });

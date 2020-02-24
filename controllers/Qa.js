@@ -26,7 +26,7 @@ return inQa;
 }
 
 
-const Update = (DataToUpdate, user) => {
+const Update = (DataToUpdate, userId) => {
     try {
     const Qa = new QABuilder();
     const keys = Object.keys(DataToUpdate); 
@@ -62,7 +62,7 @@ const Update = (DataToUpdate, user) => {
         })
 
         historyUsersActions.create({
-            userId: user.id, action_name: "edit",
+            userId, action_name: "edit",
             description: "Update qa status",
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,

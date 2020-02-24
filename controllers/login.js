@@ -127,7 +127,7 @@ const Login = async (user) => {
 
 
 
-const reset = async (username, userCookie) => {
+const reset = async (username, userId) => {
     try {
         const user = await users.findOne({
             where: { username: username } //checking if the email address sent by client is present in the db(valid)
@@ -140,7 +140,7 @@ const reset = async (username, userCookie) => {
                 }
             );
             historyUsersActions.create({
-                userId: userCookie.id, action_name: "reset_password",
+                userId, action_name: "reset_password",
                 description: `reset password for ${username}`,
                 time: new Date().toLocaleTimeString('en-US', {
                     hour12: false,

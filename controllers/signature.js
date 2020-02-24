@@ -1,4 +1,4 @@
-const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory} = require('../models');
+const { signatures, historyUsersActions, attack, file, param, externalReferences, vulnDataExtra, webServer, users, signatureStatusHistory } = require('../models');
 const sequelize = require('../config/database');
 require('./sendEmail');
 require('./XML/exportXML');
@@ -59,130 +59,141 @@ const sigBySeverity = async (userId) => {
 }
 
 const sigByReference = async (query, userId) => {
-    
-    try{
-        let result = [], serialArray = [], signaturesCveid = [], count 
-    if(query.serial){
 
-        const referenceArray = await sequelize.query(`select SignatureId from external_references where type = "cveid" and reference like "%${query.year}-${query.serial}%"`, { type: sequelize.QueryTypes.SELECT })
+    try {
+        let result = [], serialArray = [], signaturesCveid = [], count
+        if (query.serial) {
 
-        for(i = 0 ; i < referenceArray.length ; i++){
+            const referenceArray = await sequelize.query(`select SignatureId from external_references where type = "cveid" and reference like "%${query.year}-${query.serial}%"`, { type: sequelize.QueryTypes.SELECT })
 
-        const signaturesByCveId = await signatures.findOne({
-            attributes:['id',
+            for (i = 0; i < referenceArray.length; i++) {
+
+                const signaturesByCveId = await signatures.findOne({
+                    attributes: ['id',
                         ['pattern_id', 'patternId'],
                         'description',
                         'status'],
-            where:{id:referenceArray[i].SignatureId}
-        })
+                    where: { id: referenceArray[i].SignatureId }
+                })
 
-        signaturesCveid.push(signaturesByCveId)
-    }
-    historyUsersActions.create({
-        user_id: userId, action_name: "report",
-        description: "View signature reports by year and serial number",
-        time: new Date().toLocaleTimeString('en-US', {
-            hour12: false,
-            hour: "numeric",
-            minute: "numeric"
-        }), date: new Date()
-    });
-        return signaturesCveid
+                signaturesCveid.push(signaturesByCveId)
+            }
+            historyUsersActions.create({
+                userId, action_name: "report",
+                description: "View signature reports by year and serial number",
+                time: new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric"
+                }), date: new Date()
+            });
+            return signaturesCveid
 
-    }
-
-    else{
-
-    const referencesArray = await sequelize.query(`select reference from external_references where type = "cveid" and reference like "%${query.year}-%"`, { type: sequelize.QueryTypes.SELECT })
-        
-    for( i = 0; i < referencesArray.length ; i++){
-        count = 0
-       serialNumber =  referencesArray[i].reference.slice(referencesArray[i].reference.length - 4)
-            if(!serialExist(serialArray, serialNumber)){
-                serialArray.push(serialNumber)
-        for(j = i ; j < referencesArray.length ; j++){
-            if(serialNumber === referencesArray[j].reference.slice(referencesArray[j].reference.length - 4))
-                count++
         }
 
-        var temp = {cveid:`${query.year}-${serialNumber}`, quantity:count}
-        result.push(temp)
-    }
-    }
+        else {
 
-    historyUsersActions.create({
-        userId: user.id, action_name: "report",
-        description: "View signature reports by year",
-        time: new Date().toLocaleTimeString('en-US', {
-            hour12: false,
-            hour: "numeric",
-            minute: "numeric"
-        }), date: new Date()
-    });
+            const referencesArray = await sequelize.query(`select reference from external_references where type = "cveid" and reference like "%${query.year}-%"`, { type: sequelize.QueryTypes.SELECT })
 
-    return result
-    }
+            for (i = 0; i < referencesArray.length; i++) {
+                count = 0
+                serialNumber = referencesArray[i].reference.slice(referencesArray[i].reference.length - 4)
+                if (!serialExist(serialArray, serialNumber)) {
+                    serialArray.push(serialNumber)
+                    for (j = i; j < referencesArray.length; j++) {
+                        if (serialNumber === referencesArray[j].reference.slice(referencesArray[j].reference.length - 4))
+                            count++
+                    }
+
+                    var temp = { cveid: `${query.year}-${serialNumber}`, quantity: count }
+                    result.push(temp)
+                }
+            }
+
+            historyUsersActions.create({
+                userId, action_name: "report",
+                description: "View signature reports by year",
+                time: new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric"
+                }), date: new Date()
+            });
+
+            return result
+        }
 
 
-    }catch(error){
+    } catch (error) {
         throw new Error(`${error.message}`)
     }
 }
 
 const serialExist = (arr, serial) => {
-    for(let i of arr){
+    for (let i of arr) {
         if (i == serial)
             return true
     }
     return false
 }
 
+/// history 
+const copySignature = async (id, userId) => {
 
-const copySignature = async(id) => {
+    try {
+        signatures.addHook('afterCreate', (copiedSignature, options) => {
 
-    try{
-    signatures.addHook('afterCreate', (copiedSignature, options) => {
+            signatures.update({
+                pattern_id: copiedSignature.id
+            }, { where: { id: copiedSignature.id } })
+        })
 
-        signatures.update({
-            pattern_id: copiedSignature.id
-        }, { where: { id: copiedSignature.id } })
-    })
+        const currentSignature = await signatures.findOne({ where: { id: id } })
 
-    const currentSignature = await signatures.findOne({where:{id:id}})
+        const copiedSignature = await signatures.create({
+            attack_id: currentSignature.attack_id,
+            type: currentSignature.type,
+            creation_time: currentSignature.creation_time,
+            creation_date: currentSignature.creation_date,
+            status: currentSignature.status,
+            in_qa_internal_status_manual: currentSignature.in_qa_internal_status_manual,
+            in_qa_internal_status_performance: currentSignature.in_qa_internal_status_performance,
+            in_qa_internal_status_automation: currentSignature.in_qa_internal_status_automation,
+            vuln_data: currentSignature.vuln_data,
+            keep_order: currentSignature.keep_order,
+            start_break: currentSignature.start_break,
+            end_break: currentSignature.end_break,
+            right_index: currentSignature.right_index,
+            left_index: currentSignature.left_index,
+            scan_uri: currentSignature.scan_uri,
+            scan_header: currentSignature.scan_header,
+            scan_body: currentSignature.scan_body,
+            scan_parameters: currentSignature.scan_parameters,
+            scan_file_name: currentSignature.scan_file_name,
+            severity: currentSignature.severity,
+            description: currentSignature.description,
+            test_data: currentSignature.test_data,
+            attack_id: currentSignature.attackId,
+            user_id: currentSignature.userId,
+            limit: currentSignature.limit
+        })
 
-    const copiedSignature = await signatures.create({
-        attack_id: currentSignature.attack_id,
-        type: currentSignature.type,
-        creation_time: currentSignature.creation_time,
-        creation_date: currentSignature.creation_date,
-        status: currentSignature.status,
-        in_qa_internal_status_manual: currentSignature.in_qa_internal_status_manual,
-        in_qa_internal_status_performance: currentSignature.in_qa_internal_status_performance,
-        in_qa_internal_status_automation: currentSignature.in_qa_internal_status_automation,
-        vuln_data: currentSignature.vuln_data,
-        keep_order: currentSignature.keep_order,
-        start_break: currentSignature.start_break,
-        end_break: currentSignature.end_break,
-        right_index: currentSignature.right_index,
-        left_index: currentSignature.left_index,
-        scan_uri: currentSignature.scan_uri,
-        scan_header: currentSignature.scan_header,
-        scan_body: currentSignature.scan_body,
-        scan_parameters: currentSignature.scan_parameters,
-        scan_file_name: currentSignature.scan_file_name,
-        severity: currentSignature.severity,
-        description: currentSignature.description,
-        test_data: currentSignature.test_data,
-        attack_id: currentSignature.attackId,
-        user_id: currentSignature.userId,
-        limit: currentSignature.limit
-    })
-    return copiedSignature
-    }catch(error){
+        historyUsersActions.create({
+            userId, action_name: "add_signature",
+            description: "Copy signature " + id,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
+        return copiedSignature
+    } catch (error) {
         throw new Error(`Can't copy signature ${error.message}`)
     }
 }
 
+/// history 
 const exportTestDataFile = async id => {
     try {
         const signatureData = await signatures.findAll({
@@ -197,6 +208,7 @@ const exportTestDataFile = async id => {
     }
 }
 
+/// history 
 const exportAllTestDataFile = async () => {
 
 
@@ -213,17 +225,17 @@ const exportAllTestDataFile = async () => {
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
-            sendMail('<h1>find all success </h1>');
+        sendMail('<h1>find all success </h1>');
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
 
-const importFile = async (user) => {
+const importFile = async (userId) => {
     try {
-        await importSignatures(user);
-            return 'imported';
+        await importSignatures(userId);
+        return 'imported';
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
     }
@@ -340,7 +352,7 @@ const loadSignaturesToExport = async (query) => {
 
 
         let hasNext = true, hasPrev = false;
-        if (signatureData.length % (query.size * query.page) != 0) {
+        if ((query.size * query.page) % signatureData.length != 0) {
             hasNext = false;
         }
         if (query.page != 1) {
@@ -423,7 +435,7 @@ const sigPerSeverity = async (user) => {
 
 const loadSignatures = async (query) => {
     try {
-        let signatureData, signaturesCountByStatus;
+        let signatureData, signaturesCountByStatus, hasMore;
         if (query.status === 'all') {
 
             signatureData = await signatures.findAll({
@@ -435,6 +447,17 @@ const loadSignatures = async (query) => {
 
                 offset: (parseInt(query.page) - 1) * parseInt(query.size),
                 limit: parseInt(query.size),
+            });
+
+            hasMore = await signatures.findAll({
+                attributes: ['id'],
+                order:
+                    [
+                        [query.sortBy, query.orderBy]
+                    ],
+
+                offset: (parseInt(query.page) - 1) * parseInt(query.size),
+                limit: parseInt(query.size + 1),
             });
         } else {
 
@@ -453,15 +476,48 @@ const loadSignatures = async (query) => {
                 limit: parseInt(query.size),
             });
 
+            hasMore = await signatures.findAll({
+                attributes: ['id', 'pattern_id', 'description'],
+                where: {
+                    status: query.status
+                },
+                order:
+                    [
+                        [query.sortBy, query.orderBy]
+                    ],
+
+                offset: (parseInt(query.page) - 1) * parseInt(query.size),
+
+                limit: parseInt(query.size + 1),
+            });
+
         }
-        signaturesCountByStatus = await signatures.findAll({
+        signaturesCountByStatus = [{ status: "published", Count: 0 },
+        { status: "in_progress", Count: 0 },
+        { status: "in_test", Count: 0 },
+        { status: "in_qa", Count: 0 }, 
+        { status: "suspended", Count: 0 },
+        { status: "deleted", Count: 0 }
+        ]
+
+        const statuses = await signatures.findAll({
             group: ['status'],
             attributes: ['status', [sequelize.fn('COUNT', 'status'), 'Count']],
         });
-        let hasNext = true, hasPrev = false;
-        if (signatureData.length % (query.size * query.page) != 0) {
-            hasNext = false;
-        }
+
+
+        statuses.map(sts => {
+            signaturesCountByStatus.map(sig => {
+                if(sts.status == sig.status)
+                    sig.Count = sts.dataValues.Count
+            })
+        })
+
+
+        let hasNext = false, hasPrev = false;
+        if (hasMore.length > query.size)
+            hasNext = true;
+
         if (query.page != 1) {
             hasPrev = true;
         }
@@ -478,6 +534,7 @@ const loadSignatures = async (query) => {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
+
 
 
 const create = async (signatureData, userId) => {
@@ -575,7 +632,7 @@ const create = async (signatureData, userId) => {
         });
 
         historyUsersActions.create({
-            userId: userId, action_name: "add_signature",
+            userId, action_name: "add_signature",
             description: "add signature: " + signatureDataCreate.id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -596,16 +653,17 @@ const create = async (signatureData, userId) => {
 
         return signatureDataCreate;
     } catch (error) {
+
         throw new Error(`Cant create signatures: ${error.message}`);
     }
 
 }
 
-const searchSignature = async (search, user) => {
+const searchSignature = async (search, userId) => {
     try {
         const signatureData = await signatures.findAll(search);
         historyUsersActions.create({
-            userId: user.id, action_name: "search",
+            userId, action_name: "search",
             description: "search signatures",
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -619,7 +677,7 @@ const searchSignature = async (search, user) => {
     }
 }
 
-const findById = async (id, user) => {
+const findById = async (id, userId) => {
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -634,7 +692,7 @@ const findById = async (id, user) => {
             // include: [{ all: true }]
         });
         historyUsersActions.create({
-            userId: user.id, action_name: "search",
+            userId, action_name: "search",
             description: "search signature by id " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -649,19 +707,19 @@ const findById = async (id, user) => {
     }
 }
 
-const update = async (DataToUpdate, id, user) => {
+const update = async (DataToUpdate, id, userId) => {
     // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
     // }
-    const sigStatus = await signatures.findOne({attributes:['status'], where:{id:id}})
-    if(sigStatus.status === 'suspended' || sigStatus.status === 'deleted'){
+    const sigStatus = await signatures.findOne({ attributes: ['status'], where: { id: id } })
+    if (sigStatus.status === 'suspended' || sigStatus.status === 'deleted') {
         return "Can't update signature, signature is in suspended or deleted status."
     }
 
-    if(DataToUpdate.status === 'in_qa' && sigStatus.status != 'in_qa'){
+    if (DataToUpdate.status === 'in_qa' && sigStatus.status != 'in_qa') {
         DataToUpdate.in_qa_internal_status_manual = 'init'
-        DataToUpdate.in_qa_internal_status_performance = 'init' 
+        DataToUpdate.in_qa_internal_status_performance = 'init'
         DataToUpdate.in_qa_internal_status_automation = 'init'
     }
     try {
@@ -688,10 +746,10 @@ const update = async (DataToUpdate, id, user) => {
             limit: DataToUpdate.limit
         }, { returning: true, where: { id: id } });
 
-        
-            webServer.destroy(
-                { where: { signatureId: id } })
-        
+
+        webServer.destroy(
+            { where: { signatureId: id } })
+
 
         DataToUpdate.web_servers.map(webServ =>
             webServer.create({
@@ -700,20 +758,20 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        
-            vulnDataExtra.destroy(
-                { where: { signatureId: id } })
-        
+
+        vulnDataExtra.destroy(
+            { where: { signatureId: id } })
+
 
         DataToUpdate.vuln_data_extras.map((vuln) =>
             vulnDataExtra.create({
                 signatureId: id, description: vuln.description
             })
         );
-        
-            param.destroy(
-                { where: { signatureId: id } })
-        
+
+        param.destroy(
+            { where: { signatureId: id } })
+
 
         DataToUpdate.parameters.map(paramNode =>
             param.create({
@@ -721,10 +779,10 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        
-            file.destroy(
-                { where: { signatureId: id } })
-        
+
+        file.destroy(
+            { where: { signatureId: id } })
+
 
         DataToUpdate.files.map(fileNode =>
             file.create({
@@ -732,10 +790,9 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        
-            externalReferences.destroy(
-                { where: { signatureId: id } })
-        
+
+        externalReferences.destroy(
+            { where: { signatureId: id } })
 
         DataToUpdate.external_references.map(ref =>
             externalReferences.create({
@@ -745,7 +802,7 @@ const update = async (DataToUpdate, id, user) => {
 
 
         historyUsersActions.create({
-            userId: user.id, action_name: "edit_signature",
+            userId, action_name: "edit_signature",
             description: "edit signature " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -756,30 +813,30 @@ const update = async (DataToUpdate, id, user) => {
         // console.log(DataToUpdate.status)
 
         signatureStatusHistory.create({
-            user_id: user.id, signature_id: id,
+            user_id: userId, signature_id: id,
             status: DataToUpdate.status,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
                 hour: "numeric",
                 minute: "numeric"
             }), date: new Date()
-        
+
         })
 
         return updatedSignature;
     } catch (error) {
-        
+
         throw new Error(`Cant update signatures: ${error.message}`);
     }
 }
 
-const Delete = async (id, user) => {
+const Delete = async (id, userId) => {
     try {
         const result = signatures.destroy({
             where: { id: id }
         })
         historyUsersActions.create({
-            userId: user.id, action_name: "delete_signature",
+            userId, action_name: "delete_signature",
             description: "delete signature " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
