@@ -21,23 +21,22 @@ const findAll = async () => {
           })
 return inQa;
     } catch (error) {
-    throw new Error(`Cant get roles: ${error.message}`);
+    throw new Error(`Can't get signatures: ${error.message}`);
 }
 }
 
 
-const Update = (DataToUpdate, user) => {
+const Update = (DataToUpdate, userId) => {
     try {
     const Qa = new QABuilder();
-    console.log(DataToUpdate)
     const keys = Object.keys(DataToUpdate); 
     keys.forEach( (key) => {
-            if (DataToUpdate[key].automation != undefined)
-                Qa.setAutomation(DataToUpdate[key].automation);
-            if (DataToUpdate[key].manual != undefined)
-                Qa.setManual(DataToUpdate[key].manual);
-            if (DataToUpdate[key].performance != undefined)
-                Qa.setPerformance(DataToUpdate[key].performance);
+            if (DataToUpdate[key].Automation != undefined)
+                Qa.setAutomation(DataToUpdate[key].Automation);
+            if (DataToUpdate[key].Manual != undefined)
+                Qa.setManual(DataToUpdate[key].Manual);
+            if (DataToUpdate[key].Performance != undefined)
+                Qa.setPerformance(DataToUpdate[key].Performance);
             Qa.build();
             if (Qa.automation != undefined) {
                  signatures.update({
@@ -63,7 +62,7 @@ const Update = (DataToUpdate, user) => {
         })
 
         historyUsersActions.create({
-            userId: user.id, action_name: "edit",
+            userId, action_name: "edit",
             description: "Update qa status",
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,

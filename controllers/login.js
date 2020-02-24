@@ -32,9 +32,9 @@ const Login = async (user) => {
             let userStatus = await users.findOne({ attributes: ['status'], where: { username: user.username, password: encrypt(user.password) } })
 
             if (userStatus.status === 'locked')
-                throw new Error("Your account is already locked")
+                return "Your account is already locked"
             else if (userStatus.status === 'deleted')
-                throw new Error("Your account is already deleted")
+                return "Your account is already deleted"
 
             //create login
             try {
@@ -67,9 +67,9 @@ const Login = async (user) => {
             if (exist) {// valid username with incorrect pass
 
                 if (exist.status === 'locked')
-                    throw new Error("Your account is already locked")
+                    return "Your account is already locked"
                 else if (exist.status === 'deleted')
-                    throw new Error("Your account is already deleted")
+                    return "Your account is already deleted"
 
 
                 const lastLogin = await login.findOne({
@@ -112,12 +112,12 @@ const Login = async (user) => {
                             })
 
                         sendMail(`<h1>Unfortunately! your account ${exist.username} is locked after 3 invalid login attempts</h1>`);
-                        throw new Error("Incorrect email or password, Your account is locked Now")
+                            return "Incorrect email or password, Your account is locked Now"
                     }
                 }
             }
 
-            throw new Error("Incorrect email or password")
+            return "Incorrect email or password"
         }
 
     } catch (error) {
@@ -127,7 +127,7 @@ const Login = async (user) => {
 
 
 
-const reset = async (username, userCookie) => {
+const reset = async (username, userId) => {
     try {
         const user = await users.findOne({
             where: { username: username } //checking if the email address sent by client is present in the db(valid)
@@ -140,7 +140,7 @@ const reset = async (username, userCookie) => {
                 }
             );
             historyUsersActions.create({
-                userId: userCookie.id, action_name: "reset_password",
+                userId, action_name: "reset_password",
                 description: `reset password for ${username}`,
                 time: new Date().toLocaleTimeString('en-US', {
                     hour12: false,
@@ -149,10 +149,10 @@ const reset = async (username, userCookie) => {
                 }), date: new Date()
             })
             sendEmail(user.username, `<h1>Reset Password => temp password: ${tempPwd}</h1>`);
-            return user.username;
+                return user.username;
         }
         else {
-            throw new Error('No user found with that email address.')
+            return 'No user found with that email address.'
         }
     } catch (error) {
         throw new Error(`${error.message}`);
@@ -172,7 +172,7 @@ const updatePassword = async (user) => {
         });
 
         if (!username) {
-            throw new Error('incorrect username');
+            return 'incorrect username'
         }
 
         if (tempPwd) {
@@ -189,7 +189,7 @@ const updatePassword = async (user) => {
             }
         }
         else {
-            throw new Error('incorrect temp password');
+            return 'incorrect temp password'
         }
 
 

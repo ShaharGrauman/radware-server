@@ -7,7 +7,6 @@ var auditController = require('../controllers/audit');
 
 router.get('/roles',admin, async (req, res) => {
   try{
-    console.log('admin/roles headers', req.headers)
     const roles = await RolesController.getRoleWithPermissions();
     res.status(200).json(roles);
   } catch (error) {
@@ -40,9 +39,8 @@ router.get('/audit', async (req, res) => {
         sortBy,
         orderBy
     });
-    const cookie = req.headers['radware']
-    const user = JSON.parse(cookie)
-    const auditReport = await auditController.getData(query, user);
+    
+    const auditReport = await auditController.getData(query, req.userID);
     res.status(200).json(auditReport);
   }catch(error){
     res.status(500).json({msg: error.message});

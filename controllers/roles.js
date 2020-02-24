@@ -3,25 +3,8 @@ const { permissions_roles , roles_users} = require('../models/index');
 const { roleValidation } = require("../middleware/validations");
 
 
-// const getRoles = async (roleId) => {
-//     if (userId) {
-//         try {
-//             const user = await users.findByPk(userId);
-//             return user;
-//         } catch (error) {
-//             throw new Error(`Cant get user: ${error.message}`);
-//         }
-//     }
-//     else {
-//         try {
-//             const users = await users.findAll();
-//             return users;
-//         } catch (error) {
-//             throw new Error(`Cant get users: ${error.message}`);
-//         }
-//     }
-// }
-const createRole = async (roleData, user) => {
+
+const createRole = async (roleData, userId) => {
     const result = await Joi.validate(roleData, roleValidation);
     if (!result) {
         return result;
@@ -33,7 +16,7 @@ const createRole = async (roleData, user) => {
         })
 
         if(roleAlreadyExist){
-            throw new Error(`Role is already exists with id: ${roleAlreadyExist.id}`)
+            return `Role is already exists with id: ${roleAlreadyExist.id}`
         }
 
         const newRole = await roles.create({
@@ -53,7 +36,7 @@ const createRole = async (roleData, user) => {
         permissions_roles.bulkCreate(rolesPermissions, { returning: true })
 
         historyUsersActions.create({
-            userId: user.id, action_name: "add_role",
+            userId, action_name: "add_role",
             description: `added role ${newRole.id}` ,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -96,18 +79,7 @@ const getRoleWithPermissions = async (roleId) => {
 }
 
 
-// const getRoles = async () => {
-//     try {
-//         const rolesData = await roles.findAll({
-//             attributes: ['id', 'name']
-//         })
-//         return rolesData;
-//     } catch (error) {
-//         throw new Error(`Cant get roles: ${error.message}`);
-//     }
-// }
-
-const editRole = async (roleData, id, user) => {
+const editRole = async (roleData, id, userId) => {
     const result = await Joi.validate(roleData, roleValidation);
     if (!result) {
         return result;
@@ -137,7 +109,7 @@ const editRole = async (roleData, id, user) => {
         permissions_roles.bulkCreate(rolesPermissions, { returning: true })
 
         historyUsersActions.create({
-            userId: user.id, action_name: "edit_role",
+            userId, action_name: "edit_role",
             description: `edited role ${id}` ,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -153,12 +125,12 @@ const editRole = async (roleData, id, user) => {
     }
 }
 
-const DeleteRole = async (id, user)=> {
+const DeleteRole = async (id, userId)=> {
 
     try{
         const userWithRole = await roles_users.findOne({where:{role_id:id}})
             if(userWithRole){
-                throw new Error("Role can't be deleted, it's used by one or more users.")
+                return "Role can't be deleted, it's used by one or more users."
             }
         await roles.destroy({where:{id:id}})
     }catch(error){
@@ -166,7 +138,7 @@ const DeleteRole = async (id, user)=> {
     }
 
     historyUsersActions.create({
-        userId: user.id, action_name: "delete_role",
+        userId, action_name: "delete_role",
         description: `deleted role ${id}` ,
         time: new Date().toLocaleTimeString('en-US', {
             hour12: false,
@@ -174,24 +146,13 @@ const DeleteRole = async (id, user)=> {
             minute: "numeric"
         }), date: new Date()
     })
+    return "Role deleted successfully"
 }
 
-const getRoles = async () => {
-    try {
-        const rolesData = await roles.findAll({
-            //  attributes: ['id', 'name']
-        })
-        console.log(rolesData);
-        return rolesData;
-    } catch (error) {
-        throw new Error(`Cant get roles: ${error.message}`);
-    }
-}
 
 module.exports = {
     createRole,
     getRoleWithPermissions,
     editRole,
-    getRoles,
     DeleteRole
 };

@@ -10,7 +10,6 @@ const getconstants = async () => {
       actionName: historyUsersActions.rawAttributes.action_name.values,
       status:signatures.rawAttributes.status.values
     }
-  console.log(obj);
     return obj;
   }
   catch (error) {

@@ -33,7 +33,7 @@ const getUserWithRoles = async (userId) => {
 }
 
 
-const deleteUser = async (user, userCookie) => {
+const deleteUser = async (user, userId) => {
 
     const id = await users.findOne({attributes:['id'],where:{username: user.username}})
     users.update(
@@ -42,7 +42,7 @@ const deleteUser = async (user, userCookie) => {
     )
         .then(function () {
             historyUsersActions.create({
-                userId: userCookie.id, action_name: "delete_user",
+                userId, action_name: "delete_user",
                 description: `deleted user: ${id.id}`,
                 time: new Date().toLocaleTimeString('en-US', {
                     hour12: false,
@@ -56,7 +56,7 @@ const deleteUser = async (user, userCookie) => {
         });
 }
 
-const createUser = async (userData, user) => {
+const createUser = async (userData, userId) => {
     // const result = await Joi.validate(userData, userCreation);
     // console.log(result);
     // if (!result) {
@@ -68,7 +68,7 @@ const createUser = async (userData, user) => {
         })
         
         if(userAlreadyExist){
-            throw new Error(`User is already exists with id: ${userAlreadyExist.id}`)
+            return `User is already exists with id: ${userAlreadyExist.id}`
         }
         
         else{
@@ -81,7 +81,7 @@ const createUser = async (userData, user) => {
         updateRolesUsers(userData.roles, newUser.id);
   
         historyUsersActions.create({
-            userId: user.id, action_name: "create_user",
+            userId, action_name: "create_user",
             description: `created user: ${newUser.id}`,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -100,7 +100,7 @@ const createUser = async (userData, user) => {
     }
 }
 
-const editUser = async (DataToUpdate, id, user) => {
+const editUser = async (DataToUpdate, id, userId) => {
             // const result = await Joi.validate(DataToUpdate,userUpdate);
             // console.log(result);
             // if (!result) {
@@ -160,7 +160,7 @@ const editUser = async (DataToUpdate, id, user) => {
                 }
 
                 historyUsersActions.create({
-                    userId: user.id, action_name: "edit_user",
+                    userId, action_name: "edit_user",
                     description: `edited user ${id}` ,
                     time: new Date().toLocaleTimeString('en-US', {
                         hour12: false,

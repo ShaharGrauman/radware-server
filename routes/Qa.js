@@ -18,9 +18,7 @@ router.get('/dashboard', authRoles(4, 5, 6), async (req, res) => {
 /// to use this route should to be the user role is 4 or 5 or 6  QA (Manual,performance,automation) ***need to add permissions***
 router.put('/dashboard', authRoles(4, 5, 6), async (req, res) => {
   try {
-    const cookie = req.headers['radware']
-    const user = JSON.parse(cookie)
-    const result = await QaController.Update(req.body, user);
+    const result = await QaController.Update(req.body, req.userId);
     res.json(result);
   } catch (error) {
     res.status(500).json({ msg: error.message });

@@ -1,5 +1,4 @@
 const admin = (req, res, next) => {
-
     const cookie = req.headers['radware'];
     if (cookie) {
         const user = JSON.parse(cookie);
