@@ -5,6 +5,7 @@ const authPermissions = (...permissions) => (req, res, next) => {
     if (cookie) {
         const user = JSON.parse(cookie);
         if (user.roles[0].permissions.some(per => permissions.includes(per.id))) {
+            req.userId = user.id;
             next();
             return;
         }

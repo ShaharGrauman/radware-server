@@ -50,7 +50,7 @@ const sigBySeverity = async () => {
     }
 }
 
-const sigByReference = async (query, user) => {
+const sigByReference = async (query, userId) => {
     
     try{
         let result = [], serialArray = [], signaturesCveid = [], count 
@@ -71,7 +71,7 @@ const sigByReference = async (query, user) => {
         signaturesCveid.push(signaturesByCveId)
     }
     historyUsersActions.create({
-        userId: user.id, action_name: "report",
+        userId, action_name: "report",
         description: "View signature reports by year and serial number",
         time: new Date().toLocaleTimeString('en-US', {
             hour12: false,
@@ -103,7 +103,7 @@ const sigByReference = async (query, user) => {
     }
 
     historyUsersActions.create({
-        userId: user.id, action_name: "report",
+        userId, action_name: "report",
         description: "View signature reports by year",
         time: new Date().toLocaleTimeString('en-US', {
             hour12: false,
@@ -129,7 +129,7 @@ const serialExist = (arr, serial) => {
     return false
 }
 
-
+/// history 
 const copySignature = async(id) => {
 
     try{
@@ -175,6 +175,7 @@ const copySignature = async(id) => {
     }
 }
 
+/// history 
 const exportTestDataFile = async id => {
     try {
         const signatureData = await signatures.findAll({
@@ -189,6 +190,7 @@ const exportTestDataFile = async id => {
     }
 }
 
+/// history 
 const exportAllTestDataFile = async () => {
 
 
@@ -213,9 +215,9 @@ const findAll = async () => {
     }
 }
 
-const importFile = async (user) => {
+const importFile = async (userId) => {
     try {
-        await importSignatures(user);
+        await importSignatures(userId);
         return 'imported';
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
@@ -457,7 +459,7 @@ const loadSignatures = async (query) => {
 }
 
 
-const create = async (signatureData, user) => {
+const create = async (signatureData, userId) => {
     // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
@@ -497,7 +499,7 @@ const create = async (signatureData, user) => {
             description: signatureData.description,
             test_data: signatureData.test_data,
             attack_id: signatureData.attackId,
-            user_id: user.id,
+            user_id: userId,
             limit: signatureData.limit
         });
         //// feach file data 
@@ -525,7 +527,7 @@ const create = async (signatureData, user) => {
             });
         })
         ///feach web server data
-        signatureData.web.map(webServ => {
+        signatureData.web_servers.map(webServ => {
             webServer.create({
                 // id: webServ.id,
 
@@ -551,18 +553,18 @@ const create = async (signatureData, user) => {
             });
         });
 
-        // historyUsersActions.create({
-        //     userId: user.id, action_name: "add_signature",
-        //     description: "add signature: " + signatureDataCreate.id,
-        //     time: new Date().toLocaleTimeString('en-US', {
-        //         hour12: false,
-        //         hour: "numeric",
-        //         minute: "numeric"
-        //     }), date: new Date()
-        // });
+        historyUsersActions.create({
+            userId, action_name: "add_signature",
+            description: "add signature: " + signatureDataCreate.id,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
 
         signatureStatusHistory.create({
-            user_id: user.id, signature_id: signatureDataCreate.id,
+            user_id: userId, signature_id: signatureDataCreate.id,
             status: signatureDataCreate.status,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -573,16 +575,17 @@ const create = async (signatureData, user) => {
 
         return signatureDataCreate;
     } catch (error) {
+
         throw new Error(`Cant create signatures: ${error.message}`);
     }
 
 }
 
-const searchSignature = async (search, user) => {
+const searchSignature = async (search, userId) => {
     try {
         const signatureData = await signatures.findAll(search);
         historyUsersActions.create({
-            userId: user.id, action_name: "search",
+            userId, action_name: "search",
             description: "search signatures",
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -596,7 +599,7 @@ const searchSignature = async (search, user) => {
     }
 }
 
-const findById = async (id, user) => {
+const findById = async (id, userId) => {
     try {
         const signatureData = await signatures.findAll({
             where: { id: id },
@@ -611,7 +614,7 @@ const findById = async (id, user) => {
             // include: [{ all: true }]
         });
         historyUsersActions.create({
-            userId: user.id, action_name: "search",
+            userId, action_name: "search",
             description: "search signature by id " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -626,7 +629,7 @@ const findById = async (id, user) => {
     }
 }
 
-const update = async (DataToUpdate, id, user) => {
+const update = async (DataToUpdate, id, userId) => {
     // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
@@ -665,10 +668,10 @@ const update = async (DataToUpdate, id, user) => {
             limit: DataToUpdate.limit
         }, { returning: true, where: { id: id } });
 
-        DataToUpdate.web_servers.map(() =>
+        
             webServer.destroy(
                 { where: { signatureId: id } })
-        );
+       
 
         DataToUpdate.web_servers.map(webServ =>
             webServer.create({
@@ -677,20 +680,20 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        DataToUpdate.vuln_data_extras.map(() =>
+        
             vulnDataExtra.destroy(
                 { where: { signatureId: id } })
-        );
+        
 
         DataToUpdate.vuln_data_extras.map((vuln) =>
             vulnDataExtra.create({
                 signatureId: id, description: vuln.description
             })
         );
-        DataToUpdate.parameters.map(() =>
+       
             param.destroy(
                 { where: { signatureId: id } })
-        );
+       
 
         DataToUpdate.parameters.map(paramNode =>
             param.create({
@@ -698,10 +701,10 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        DataToUpdate.files.map(() =>
+       
             file.destroy(
                 { where: { signatureId: id } })
-        );
+        
 
         DataToUpdate.files.map(fileNode =>
             file.create({
@@ -709,10 +712,9 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        DataToUpdate.external_references.map(() =>
+      
             externalReferences.destroy(
                 { where: { signatureId: id } })
-        );
 
         DataToUpdate.external_references.map(ref =>
             externalReferences.create({
@@ -722,7 +724,7 @@ const update = async (DataToUpdate, id, user) => {
 
 
         historyUsersActions.create({
-            userId: user.id, action_name: "edit_signature",
+            userId, action_name: "edit_signature",
             description: "edit signature " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -733,7 +735,7 @@ const update = async (DataToUpdate, id, user) => {
         // console.log(DataToUpdate.status)
 
         signatureStatusHistory.create({
-            user_id: user.id, signature_id: id,
+            user_id: userId, signature_id: id,
             status: DataToUpdate.status,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -750,13 +752,13 @@ const update = async (DataToUpdate, id, user) => {
     }
 }
 
-const Delete = async (id, user) => {
+const Delete = async (id, userId) => {
     try {
         const result = signatures.destroy({
             where: { id: id }
         })
         historyUsersActions.create({
-            userId: user.id, action_name: "delete_signature",
+            userId , action_name: "delete_signature",
             description: "delete signature " + id,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
