@@ -316,7 +316,7 @@ const loadSignaturesToExport = async (query) => {
                 ],
             limit: 1,
         });
-        let date = lastExportedSignatureDateByStatus[0].date;
+        let date = lastExportedSignatureDateByStatus.length ? lastExportedSignatureDateByStatus[0].date : new Date();
 
         signatureData = await signatures.findAll({
             attributes: ['id', 'pattern_id', 'description', 'test_data'],
