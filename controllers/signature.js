@@ -475,15 +475,15 @@ const create = async (signatureData, userId) => {
     try {
         const signatureDataCreate = await signatures.create({
             // id: signatureData.id,
-            pattern_id: signatureData.pattern_id,
+            // pattern_id: signatureData.pattern_id,
             attack_id: signatureData.attack_id,
             type: signatureData.type,
             creation_time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
             creation_date: new Date(),
             status: signatureData.status,
-            in_qa_internal_status_manual: signatureData.in_qa_internal_status_manual,
-            in_qa_internal_status_performance: signatureData.in_qa_internal_status_performance,
-            in_qa_internal_status_automation: signatureData.in_qa_internal_status_automation,
+            // in_qa_internal_status_manual: signatureData.in_qa_internal_status_manual,
+            // in_qa_internal_status_performance: signatureData.in_qa_internal_status_performance,
+            // in_qa_internal_status_automation: signatureData.in_qa_internal_status_automation,
             vuln_data: signatureData.vuln_data,
             keep_order: signatureData.keep_order,
             start_break: signatureData.start_break,
@@ -498,25 +498,20 @@ const create = async (signatureData, userId) => {
             severity: signatureData.severity,
             description: signatureData.description,
             test_data: signatureData.test_data,
-            attack_id: signatureData.attackId,
+            // attack_id: signatureData.attackId,
             user_id: userId,
             limit: signatureData.limit
         });
+
         //// feach file data 
-        signatureData.files.map(FileData => {
+        // signatureData.files.map(FileData => {
+        //     file.create({
+        //         // id: FileData.id,
+        //         signatureId: signatureDataCreate.id,
+        //         file: FileData.file
+        //     });
+        // })
 
-            file.create({
-                // id: FileData.id,
-                signatureId: signatureDataCreate.id,
-                file: FileData.file
-            });
-
-        })
-        /// attack data 
-        attack.create({
-            id: signatureData.attack.id,
-            name: signatureData.attack.name
-        });
         ///feach external reference data
         signatureData.external_references.map(externalRef => {
             externalReferences.create({
