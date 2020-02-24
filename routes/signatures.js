@@ -10,7 +10,7 @@ const authPermissions = require('../middleware/authPermissions');
 
 var router = express.Router();
 
-router.get('/severity', async (req, res, next) => {
+router.get('/severity',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
         const Signatures = await SignatureController.sigBySeverity();
         console.log(signatures);
@@ -21,7 +21,7 @@ router.get('/severity', async (req, res, next) => {
 });
 
 // /cveid?year=2010&serial=0001
-router.get('/cveid', async (req, res, next) => {
+router.get('/cveid',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
 
     const year = req.query.year
     const serial = req.query.serial
@@ -44,7 +44,7 @@ router.get('/cveid', async (req, res, next) => {
 });
 
 
-router.post('/copy/:id', async (req, res, next) => {
+router.post('/copy/:id',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
         const result = await SignatureController.copySignature(req.params.id);
         res.status(200).json(result);
@@ -81,7 +81,7 @@ router.get('/search', [authRoles(1, 2), authPermissions(3)], async (req, res, ne
 
 });
 
-router.get('/export/text', async (req, res, next) => {
+router.get('/export/text',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
         const result = await SignatureController.exportAllTestDataFile();
         res.download('testData.txt')
@@ -92,7 +92,7 @@ router.get('/export/text', async (req, res, next) => {
 
 })
 
-router.post('/export/text', async (req, res, next) => {
+router.post('/export/text',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     // if (req.body.id) {
     try {
         const result = await SignatureController.exportTestDataFile(req.body.id);
@@ -145,7 +145,7 @@ router.get('/export/xml', [authRoles(1, 2), authPermissions(4)], async (req, res
 })
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (researcher dashboard)
-router.get('/', async (req, res, next) => {
+router.get('/',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
         const Signatures = await SignatureController.findAll();
         res.json(Signatures);
@@ -154,7 +154,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 // ************
-router.get('/attacks', async (req, res, next) => {
+router.get('/attacks',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
         const Signatures = await SignatureController.sigByAttack();
         res.json(Signatures);
@@ -163,7 +163,7 @@ router.get('/attacks', async (req, res, next) => {
     }
 });
 
-router.get('/SignaturePerSeverity', async (req, res, next) => {
+router.get('/SignaturePerSeverity',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
         const Signatures = await SignatureController.sigPerSeverity();
         res.json(Signatures);
@@ -174,7 +174,7 @@ router.get('/SignaturePerSeverity', async (req, res, next) => {
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (researcher dashboard)
-router.get('/researcher', async (req, res, next) => {
+router.get('/researcher',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
         // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&status=all
         const page = req.query.page || 1;
@@ -237,7 +237,7 @@ router.get('/:id', [authRoles(1, 2), authPermissions(1)], async (req, res, next)
     }
 });
 
-router.put('/importXml', async (req, res, next) => {
+router.put('/importXml',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try { 
         const result = await SignatureController.importFile("1");
         res.json(result);
@@ -248,11 +248,9 @@ router.put('/importXml', async (req, res, next) => {
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
-router.post('/', async (req, res, next) => {
+router.post('/', [authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
-        const cookie = req.headers['radware'];
-        // const user = JSON.parse(cookie)
-        const result = await SignatureController.create(req.body);
+        const result = await SignatureController.create(req.body, req.userId);
         res.json(result);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -262,9 +260,7 @@ router.post('/', async (req, res, next) => {
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
 router.put('/:id', [authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
-        const cookie = req.headers['radware'];
-        const user = JSON.parse(cookie)
-        const result = await SignatureController.update(req.body, req.params.id, user);
+        const result = await SignatureController.update(req.body, req.params.id, req.userId);
         res.json({ result, id: req.params.id });
     } catch (error) {
         res.status(500).json({ msg: error.message });

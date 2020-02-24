@@ -5,6 +5,7 @@ const authRoles = (...roles) => (req, res, next) => {
     if (cookie) {
         const user = JSON.parse(cookie);
         if (user.roles.some(role => roles.includes(role.id))) {
+            req.userId = user.id;
             next();
             return;
         }
