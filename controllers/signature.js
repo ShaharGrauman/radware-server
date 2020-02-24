@@ -36,21 +36,29 @@ const Op = require('sequelize').Op;
 //         throw new Error(`Cant get signatures: ${error.message}`);
 //     }
 // }
-const sigBySeverity = async () => {
+const sigBySeverity = async (userId) => {
     try {
         const signaturesBySeverity = await attack.findAll({
             attributes: ['name'],
             include: [{ model: signatures, attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'attackSevCount'],] }],
             group: ['attack_id', 'severity'],
         })
-        console.log(signaturesBySeverity);
+        historyUsersActions.create({
+            user_id: userId, action_name: "search",
+            description: "Search signature by severity",
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
         return signaturesBySeverity;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
 
-const sigByReference = async (query, user) => {
+const sigByReference = async (query, userId) => {
     
     try{
         let result = [], serialArray = [], signaturesCveid = [], count 
@@ -71,7 +79,7 @@ const sigByReference = async (query, user) => {
         signaturesCveid.push(signaturesByCveId)
     }
     historyUsersActions.create({
-        userId: user.id, action_name: "report",
+        user_id: userId, action_name: "report",
         description: "View signature reports by year and serial number",
         time: new Date().toLocaleTimeString('en-US', {
             hour12: false,
@@ -194,7 +202,6 @@ const exportAllTestDataFile = async () => {
 
     try {
         const signatureData = await signatures.findAll();
-        console.log(signatureData)
         exportTestData(signatureData);
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
@@ -206,7 +213,7 @@ const exportAllTestDataFile = async () => {
 const findAll = async () => {
     try {
         const signatureData = await signatures.findAll();
-        sendMail('<h1>find all success </h1>');
+            sendMail('<h1>find all success </h1>');
         return signatureData;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -216,7 +223,7 @@ const findAll = async () => {
 const importFile = async (user) => {
     try {
         await importSignatures(user);
-        return 'imported';
+            return 'imported';
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
     }
@@ -370,7 +377,7 @@ const loadSignaturesToExport = async (query) => {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
-const sigByAttack = async () => {
+const sigByAttack = async (user) => {
     try {
         const signaturesByAttack = await signatures.findAll({
 
@@ -378,20 +385,36 @@ const sigByAttack = async () => {
             group: ['attack_id'],
             attributes: ['attack_id', [sequelize.fn('COUNT', 'attack_id'), 'SigCount']],
         })
-        console.log(signaturesByAttack);
+        historyUsersActions.create({
+            userId: user.id, action_name: "search",
+            description: "Search signature by attacks ",
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
         return signaturesByAttack;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
     }
 }
 
-const sigPerSeverity = async () => {
+const sigPerSeverity = async (user) => {
     try {
         const sigPerSeverity = await signatures.findAll({
             group: ['severity'],
             attributes: ['severity', [sequelize.fn('COUNT', 'severity'), 'SigSevCount']],
         })
-        console.log(sigPerSeverity);
+        historyUsersActions.create({
+            userId: user.id, action_name: "search",
+            description: "Search signature per severity ",
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
         return sigPerSeverity;
     } catch (error) {
         throw new Error(`Cant get signatures: ${error.message}`);
@@ -457,7 +480,7 @@ const loadSignatures = async (query) => {
 }
 
 
-const create = async (signatureData, user) => {
+const create = async (signatureData, userId) => {
     // let result = await Joi.validate(signatureData, signatureValidation);
     // if (!result) {
     //     return result;
@@ -497,7 +520,7 @@ const create = async (signatureData, user) => {
             description: signatureData.description,
             test_data: signatureData.test_data,
             attack_id: signatureData.attackId,
-            user_id: user.id,
+            user_id: userId,
             limit: signatureData.limit
         });
         //// feach file data 
@@ -525,7 +548,7 @@ const create = async (signatureData, user) => {
             });
         })
         ///feach web server data
-        signatureData.web.map(webServ => {
+        signatureData.web_servers.map(webServ => {
             webServer.create({
                 // id: webServ.id,
 
@@ -551,18 +574,18 @@ const create = async (signatureData, user) => {
             });
         });
 
-        // historyUsersActions.create({
-        //     userId: user.id, action_name: "add_signature",
-        //     description: "add signature: " + signatureDataCreate.id,
-        //     time: new Date().toLocaleTimeString('en-US', {
-        //         hour12: false,
-        //         hour: "numeric",
-        //         minute: "numeric"
-        //     }), date: new Date()
-        // });
+        historyUsersActions.create({
+            userId: userId, action_name: "add_signature",
+            description: "add signature: " + signatureDataCreate.id,
+            time: new Date().toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: "numeric",
+                minute: "numeric"
+            }), date: new Date()
+        });
 
         signatureStatusHistory.create({
-            user_id: user.id, signature_id: signatureDataCreate.id,
+            user_id: userId, signature_id: signatureDataCreate.id,
             status: signatureDataCreate.status,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,
@@ -633,7 +656,7 @@ const update = async (DataToUpdate, id, user) => {
     // }
     const sigStatus = await signatures.findOne({attributes:['status'], where:{id:id}})
     if(sigStatus.status === 'suspended' || sigStatus.status === 'deleted'){
-        throw new Error("can't update signature, signature is in suspended or deleted status.")
+        return "Can't update signature, signature is in suspended or deleted status."
     }
 
     if(DataToUpdate.status === 'in_qa' && sigStatus.status != 'in_qa'){
@@ -665,10 +688,10 @@ const update = async (DataToUpdate, id, user) => {
             limit: DataToUpdate.limit
         }, { returning: true, where: { id: id } });
 
-        DataToUpdate.web_servers.map(() =>
+        
             webServer.destroy(
                 { where: { signatureId: id } })
-        );
+        
 
         DataToUpdate.web_servers.map(webServ =>
             webServer.create({
@@ -677,20 +700,20 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        DataToUpdate.vuln_data_extras.map(() =>
+        
             vulnDataExtra.destroy(
                 { where: { signatureId: id } })
-        );
+        
 
         DataToUpdate.vuln_data_extras.map((vuln) =>
             vulnDataExtra.create({
                 signatureId: id, description: vuln.description
             })
         );
-        DataToUpdate.parameters.map(() =>
+        
             param.destroy(
                 { where: { signatureId: id } })
-        );
+        
 
         DataToUpdate.parameters.map(paramNode =>
             param.create({
@@ -698,10 +721,10 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        DataToUpdate.files.map(() =>
+        
             file.destroy(
                 { where: { signatureId: id } })
-        );
+        
 
         DataToUpdate.files.map(fileNode =>
             file.create({
@@ -709,10 +732,10 @@ const update = async (DataToUpdate, id, user) => {
             })
         );
 
-        DataToUpdate.external_references.map(() =>
+        
             externalReferences.destroy(
                 { where: { signatureId: id } })
-        );
+        
 
         DataToUpdate.external_references.map(ref =>
             externalReferences.create({

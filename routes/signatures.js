@@ -12,8 +12,7 @@ var router = express.Router();
 
 router.get('/severity', async (req, res, next) => {
     try {
-        const Signatures = await SignatureController.sigBySeverity();
-        console.log(signatures);
+        const Signatures = await SignatureController.sigBySeverity(req.userId);
         res.status(200).json(Signatures);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -32,9 +31,7 @@ router.get('/cveid', async (req, res, next) => {
     })
 
     try {
-        const cookie = req.headers['radware']
-        const user = JSON.parse(cookie)
-        const result = await SignatureController.sigByReference(query, user);
+        const result = await SignatureController.sigByReference(query, req.userId);
         res.status(200).json(result);
 
     } catch (error) {
@@ -73,7 +70,7 @@ router.get('/search', [authRoles(1, 2), authPermissions(3)], async (req, res, ne
     try {
         const cookie = req.headers['radware'];
         const user = JSON.parse(cookie)
-        const data = await SignatureController.searchSignature(search.build());
+        const data = await SignatureController.searchSignature(search.build(), user);
         res.json(data);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -156,7 +153,9 @@ router.get('/', async (req, res, next) => {
 // ************
 router.get('/attacks', async (req, res, next) => {
     try {
-        const Signatures = await SignatureController.sigByAttack();
+        const cookie = req.headers['radware']
+        const user = JSON.parse(cookie)
+        const Signatures = await SignatureController.sigByAttack(user);
         res.json(Signatures);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -165,7 +164,9 @@ router.get('/attacks', async (req, res, next) => {
 
 router.get('/SignaturePerSeverity', async (req, res, next) => {
     try {
-        const Signatures = await SignatureController.sigPerSeverity();
+        const cookie = req.headers['radware']
+        const user = JSON.parse(cookie)
+        const Signatures = await SignatureController.sigPerSeverity(user);
         res.json(Signatures);
     } catch (error) {
         res.status(500).json({ msg: error.message });
@@ -250,11 +251,9 @@ router.put('/importXml', async (req, res, next) => {
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)
-router.post('/', async (req, res, next) => {
+router.post('/', [authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
-        const cookie = req.headers['radware'];
-        // const user = JSON.parse(cookie)
-        const result = await SignatureController.create(req.body);
+        const result = await SignatureController.create(req.body, req.userId);
         res.json(result);
     } catch (error) {
         res.status(500).json({ msg: error.message });

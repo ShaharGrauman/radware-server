@@ -11,7 +11,7 @@ const getUserWithRoles = async (userId) => {
             const data = await users.findAll({
                 attributes: ['id', 'name', 'username', 'phone', 'status'],
 
-                include: { model: roles, attributes: ['description'], through: { attributes: [] } }
+                include: { model: roles, attributes: ['name'], through: { attributes: [] } }
             });
             return data;
         } catch (error) {
@@ -68,7 +68,7 @@ const createUser = async (userData, user) => {
         })
         
         if(userAlreadyExist){
-            throw new Error(`User is already exists with id: ${userAlreadyExist.id}`)
+            return `User is already exists with id: ${userAlreadyExist.id}`
         }
         
         else{

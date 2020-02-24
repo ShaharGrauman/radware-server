@@ -10,7 +10,6 @@ const findAll = async () => {
 }
 
 const create = async (data) =>{
-    console.log(data);
     try{
         const attacks = await attack.create({
             id:data.id,
