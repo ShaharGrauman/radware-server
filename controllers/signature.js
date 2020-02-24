@@ -659,26 +659,22 @@ const update = async (DataToUpdate, id, userId) => {
             severity: DataToUpdate.severity,
             description: DataToUpdate.description,
             test_data: DataToUpdate.test_data,
-            attack_id: DataToUpdate.attackId,
+            attack_id: DataToUpdate.attack_id,
             limit: DataToUpdate.limit
         }, { returning: true, where: { id: id } });
-
         
-            webServer.destroy(
-                { where: { signatureId: id } })
-       
+        webServer.destroy(
+            { where: { signatureId: id } })       
 
         DataToUpdate.web_servers.map(webServ =>
             webServer.create({
                 signatureId: id,
-                web: webServ.webserver
+                web: webServ.web
             })
         );
-
         
-            vulnDataExtra.destroy(
-                { where: { signatureId: id } })
-        
+        vulnDataExtra.destroy(
+            { where: { signatureId: id } })        
 
         DataToUpdate.vuln_data_extras.map((vuln) =>
             vulnDataExtra.create({
@@ -686,30 +682,26 @@ const update = async (DataToUpdate, id, userId) => {
             })
         );
        
-            param.destroy(
-                { where: { signatureId: id } })
-       
+        param.destroy(
+            { where: { signatureId: id } })       
 
         DataToUpdate.parameters.map(paramNode =>
             param.create({
                 signatureId: id, parameter: paramNode.parameter
             })
         );
-
        
-            file.destroy(
-                { where: { signatureId: id } })
-        
+        // file.destroy(
+        //     { where: { signatureId: id } })        
 
-        DataToUpdate.files.map(fileNode =>
-            file.create({
-                signatureId: id, file: fileNode.file
-            })
-        );
-
+        // DataToUpdate.files.map(fileNode =>
+        //     file.create({
+        //         signatureId: id, file: fileNode.file
+        //     })
+        // );
       
-            externalReferences.destroy(
-                { where: { signatureId: id } })
+        externalReferences.destroy(
+            { where: { signatureId: id } })
 
         DataToUpdate.external_references.map(ref =>
             externalReferences.create({
