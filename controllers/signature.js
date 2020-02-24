@@ -333,7 +333,7 @@ const loadSignaturesToExport = async (query) => {
                 ],
             limit: 1,
         });
-        let date = lastExportedSignatureDateByStatus[0].date;
+        let date = lastExportedSignatureDateByStatus.length ? lastExportedSignatureDateByStatus[0].date : new Date();
 
         signatureData = await signatures.findAll({
             attributes: ['id', 'pattern_id', 'description', 'test_data'],
@@ -553,15 +553,15 @@ const create = async (signatureData, userId) => {
     try {
         const signatureDataCreate = await signatures.create({
             // id: signatureData.id,
-            pattern_id: signatureData.pattern_id,
+            // pattern_id: signatureData.pattern_id,
             attack_id: signatureData.attack_id,
             type: signatureData.type,
             creation_time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
             creation_date: new Date(),
             status: signatureData.status,
-            in_qa_internal_status_manual: signatureData.in_qa_internal_status_manual,
-            in_qa_internal_status_performance: signatureData.in_qa_internal_status_performance,
-            in_qa_internal_status_automation: signatureData.in_qa_internal_status_automation,
+            // in_qa_internal_status_manual: signatureData.in_qa_internal_status_manual,
+            // in_qa_internal_status_performance: signatureData.in_qa_internal_status_performance,
+            // in_qa_internal_status_automation: signatureData.in_qa_internal_status_automation,
             vuln_data: signatureData.vuln_data,
             keep_order: signatureData.keep_order,
             start_break: signatureData.start_break,
@@ -576,25 +576,20 @@ const create = async (signatureData, userId) => {
             severity: signatureData.severity,
             description: signatureData.description,
             test_data: signatureData.test_data,
-            attack_id: signatureData.attackId,
+            // attack_id: signatureData.attackId,
             user_id: userId,
             limit: signatureData.limit
         });
+
         //// feach file data 
-        signatureData.files.map(FileData => {
+        // signatureData.files.map(FileData => {
+        //     file.create({
+        //         // id: FileData.id,
+        //         signatureId: signatureDataCreate.id,
+        //         file: FileData.file
+        //     });
+        // })
 
-            file.create({
-                // id: FileData.id,
-                signatureId: signatureDataCreate.id,
-                file: FileData.file
-            });
-
-        })
-        /// attack data 
-        attack.create({
-            id: signatureData.attack.id,
-            name: signatureData.attack.name
-        });
         ///feach external reference data
         signatureData.external_references.map(externalRef => {
             externalReferences.create({
@@ -742,36 +737,31 @@ const update = async (DataToUpdate, id, userId) => {
             severity: DataToUpdate.severity,
             description: DataToUpdate.description,
             test_data: DataToUpdate.test_data,
-            attack_id: DataToUpdate.attackId,
+            attack_id: DataToUpdate.attack_id,
             limit: DataToUpdate.limit
         }, { returning: true, where: { id: id } });
-
-
+        
         webServer.destroy(
-            { where: { signatureId: id } })
-
+            { where: { signatureId: id } })       
 
         DataToUpdate.web_servers.map(webServ =>
             webServer.create({
                 signatureId: id,
-                web: webServ.webserver
+                web: webServ.web
             })
         );
-
-
+        
         vulnDataExtra.destroy(
-            { where: { signatureId: id } })
-
+            { where: { signatureId: id } })        
 
         DataToUpdate.vuln_data_extras.map((vuln) =>
             vulnDataExtra.create({
                 signatureId: id, description: vuln.description
             })
         );
-
+       
         param.destroy(
-            { where: { signatureId: id } })
-
+            { where: { signatureId: id } })       
 
         DataToUpdate.parameters.map(paramNode =>
             param.create({
