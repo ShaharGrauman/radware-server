@@ -263,7 +263,6 @@ const exportFile = async id => {
 }
 
 const exportAllFile = async (query) => {
-
     let firstStatus, secStatus;
 
     if (query === 'Git') {
@@ -853,7 +852,6 @@ module.exports = {
     loadSignatures,
     loadSignaturesToExport,
     exportFile,
-    exportAllFile,
     sigByAttack,
     sigPerSeverity,
     importFile,
