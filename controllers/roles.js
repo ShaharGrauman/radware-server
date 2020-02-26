@@ -148,11 +148,22 @@ const DeleteRole = async (id, userId)=> {
     })
     return "Role deleted successfully"
 }
-
+const getRoles = async () => {
+    try {
+        const rolesData = await roles.findAll({
+            //  attributes: ['id', 'name']
+        })
+        console.log(rolesData);
+        return rolesData;
+    } catch (error) {
+        throw new Error(`Cant get roles: ${error.message}`);
+    }
+}
 
 module.exports = {
     createRole,
     getRoleWithPermissions,
     editRole,
-    DeleteRole
+    DeleteRole,
+    getRoles
 };

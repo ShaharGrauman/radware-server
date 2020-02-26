@@ -197,23 +197,12 @@ const updateRolesUsers = async (roles, userId) => {
 
 }
 
-const getRoles = async () => {
-    try {
-        const rolesData = await roles.findAll({
-            //  attributes: ['id', 'name']
-        })
-        console.log(rolesData);
-        return rolesData;
-    } catch (error) {
-        throw new Error(`Cant get roles: ${error.message}`);
-    }
-}
+
 
 module.exports = {
     getUserWithRoles,
     deleteUser,
     createUser,
     editUser,
-    updateRolesUsers,
-    getRoles
+    updateRolesUsers
 };
