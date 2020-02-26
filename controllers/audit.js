@@ -61,7 +61,7 @@ const getData = async (query, userID) => {
                     ['time', query.orderBy]
                 ],
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
-            limit: parseInt(query.size+1),
+            limit: parseInt(query.size) +1,
            
         });
         
