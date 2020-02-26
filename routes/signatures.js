@@ -123,7 +123,7 @@ router.post('/export/xml', [authRoles(1, 2), authPermissions(4)], async (req, re
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 4 (export  signature )
-router.get('/export/xml', [authRoles(1, 2), authPermissions(4)], async (req, res, next) => {
+router.get('/export/xml', async (req, res, next) => {
     if (req.query.exportTo) {
         try {
             const result = await SignatureController.exportAllFile(req.query.exportTo,req.userId);
@@ -149,7 +149,7 @@ router.get('/',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => 
     }
 });
 // ************
-router.get('/attacks',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
+router.get('/attacks', async (req, res, next) => {
     try {
         const Signatures = await SignatureController.sigByAttack(req.userId);
         res.json(Signatures);
