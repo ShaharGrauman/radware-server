@@ -347,14 +347,16 @@ const loadSignaturesToExport = async (query) => {
                     [query.sortBy, query.orderBy]
                 ],
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
-            limit: parseInt(query.size),
+            limit: parseInt(query.size) + 1
         });
 
+        
+        let hasNext = false, hasPrev = false;
+        if(query.size < signatureData.length)
+            hasNext = true;
 
-        let hasNext = true, hasPrev = false;
-        if ((query.size * query.page) % signatureData.length != 0) {
-            hasNext = false;
-        }
+        signatureData = signatureData.slice(0, -1)
+        
         if (query.page != 1) {
             hasPrev = true;
         }
