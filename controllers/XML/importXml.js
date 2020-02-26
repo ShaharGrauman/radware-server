@@ -15,22 +15,26 @@ addSignatureToDataTable = async (signatureData,userId) => {
   });
   userId = userId.dataValues.user_id;
   try {
-  //   // /// attack data 
-  //   const AttackCreate = await attack.create({
-  //     name: signatureData.AttackName
-  // });
-//   let attackData = await attack.findAll({
-//     where: {
-//       name: signatureData.AttackName
-//     },
-// });
-// console.log(attackData.dataValues.id+' ----------------attack id');
+  
+  let attackData = await attack.findOne({
+    where: {
+      name: signatureData.AttackName
+    },
+});
+//   // /// attack data 
+if(!attackData.dataValues.id){
+  attackData = await attack.create({
+    name: signatureData.AttackName
+  });
+}
+  
+
 
   
     const signatureDataCreate = await signatures.create({
       user_id: userId,
       pattern_id: signatureData.PatternID,
-      attack_id: parseInt('1'),
+      attack_id: parseInt(attackData.dataValues.id),
       type: signatureData.type,
       creation_time: signatureData.creation_time,
       creation_date: signatureData.creation_date,
