@@ -8,23 +8,29 @@ var SignatureController = require('../../controllers/signature');
 
 
 addSignatureToDataTable = async (signatureData,userId) => {
-  // let userId = await roles_users.findOne({
-  //   attributes: ['user_id'],
-  //   where: { role_id: 2 },
+  userId = await roles_users.findOne({
+    attributes: ['user_id'],
+    where: { role_id: 2 },
 
-  // });
-  // userId = userId.dataValues.user_id;
-  try {
-    // /// attack data 
-    const AttackCreate = await attack.create({
-      name: signatureData.AttackName
   });
+  userId = userId.dataValues.user_id;
+  try {
+  //   // /// attack data 
+  //   const AttackCreate = await attack.create({
+  //     name: signatureData.AttackName
+  // });
+  let attackData = await attack.findAll({
+    where: {
+      name: signatureData.AttackName
+    },
+});
+console.log(attackData.dataValues.id+' ----------------attack id');
 
   
     const signatureDataCreate = await signatures.create({
       user_id: userId,
       pattern_id: signatureData.PatternID,
-      attack_id: parseInt(AttackCreate.dataValues.id),
+      attack_id: parseInt('1'),
       type: signatureData.type,
       creation_time: signatureData.creation_time,
       creation_date: signatureData.creation_date,

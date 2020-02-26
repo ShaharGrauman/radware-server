@@ -64,7 +64,6 @@ const getData = async (query, userID) => {
             limit: parseInt(query.size+1),
            
         });
-        console.log(history);
         
         let hasNext = false, hasPrev = false;
         if ( history.length > query.size ) {
@@ -86,7 +85,6 @@ const getData = async (query, userID) => {
             })
         }
         history = history.slice(0, history.length-1);
-        console.log(history.length);
         return { history, hasNext, hasPrev };
     } catch (error) {
         throw new Error(`Can't get the audit: ${error.message}`);
