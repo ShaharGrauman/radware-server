@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
 router.post('/resetPassword', async (req, res) => {
     try {
         const resetPwd = await loginController.reset(req.body.username, req.userId);
-        res.status(200).json('reset email was sent to ' + resetPwd);
+        res.status(200).json(resetPwd);
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
