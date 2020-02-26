@@ -770,15 +770,15 @@ const update = async (DataToUpdate, id, userId) => {
         );
 
 
-        file.destroy(
-            { where: { signatureId: id } })
+        // file.destroy(
+        //     { where: { signatureId: id } })
 
 
-        DataToUpdate.files.map(fileNode =>
-            file.create({
-                signatureId: id, file: fileNode.file
-            })
-        );
+        // DataToUpdate.files.map(fileNode =>
+        //     file.create({
+        //         signatureId: id, file: fileNode.file
+        //     })
+        // );
 
 
         externalReferences.destroy(

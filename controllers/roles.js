@@ -192,6 +192,6 @@ module.exports = {
     createRole,
     getRoleWithPermissions,
     editRole,
-    getRoles,
-    DeleteRole
+    DeleteRole,
+    getRoles
 };

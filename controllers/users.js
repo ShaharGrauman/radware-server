@@ -197,9 +197,12 @@ const updateRolesUsers = async (roles, userId) => {
 
 }
 
+
+
 module.exports = {
     getUserWithRoles,
     deleteUser,
     createUser,
-    editUser
+    editUser,
+    updateRolesUsers
 };

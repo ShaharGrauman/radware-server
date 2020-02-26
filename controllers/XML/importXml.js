@@ -19,12 +19,12 @@ addSignatureToDataTable = async (signatureData,userId) => {
   //   const AttackCreate = await attack.create({
   //     name: signatureData.AttackName
   // });
-  let attackData = await attack.findAll({
-    where: {
-      name: signatureData.AttackName
-    },
-});
-console.log(attackData.dataValues.id+' ----------------attack id');
+//   let attackData = await attack.findAll({
+//     where: {
+//       name: signatureData.AttackName
+//     },
+// });
+// console.log(attackData.dataValues.id+' ----------------attack id');
 
   
     const signatureDataCreate = await signatures.create({
