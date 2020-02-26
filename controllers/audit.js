@@ -61,13 +61,14 @@ const getData = async (query, userID) => {
                     ['time', query.orderBy]
                 ],
             offset: (parseInt(query.page) - 1) * parseInt(query.size),
-            limit: parseInt(query.size),
+            limit: parseInt(query.size+1),
            
         });
+        console.log(history);
         
-        let hasNext = true, hasPrev = false;
-        if ((query.size * query.page) % history.length != 0 || history.length === 0) {
-            hasNext = false;
+        let hasNext = false, hasPrev = false;
+        if ( history.length > query.size ) {
+            hasNext = true;
         }
         if (query.page != 1) {
             hasPrev = true;
@@ -75,7 +76,7 @@ const getData = async (query, userID) => {
         if(query.page ==1){
 
             historyUsersActions.create({
-                userId, action_name: "search",
+                userId: userID, action_name: "search",
                 description: `View audit`,
                 time: new Date().toLocaleTimeString('en-US', {
                     hour12: false,
@@ -84,7 +85,8 @@ const getData = async (query, userID) => {
                 }), date: new Date()
             })
         }
-
+        history = history.slice(0, history.length-1);
+        console.log(history.length);
         return { history, hasNext, hasPrev };
     } catch (error) {
         throw new Error(`Can't get the audit: ${error.message}`);

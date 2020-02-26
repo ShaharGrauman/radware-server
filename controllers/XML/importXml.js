@@ -111,7 +111,7 @@ addSignatureToDataTable = async (signatureData,userId) => {
 
 }
 // With parser
-importSignatures = async (userId) => {
+importSignatures = async () => {
   dirname = '../radware-server/vuln-example-signatures.xml';
  
 
@@ -216,7 +216,7 @@ importSignatures = async (userId) => {
         } catch{ err => console.log(err); }
 
 
-        addSignatureToDataTable(signatureOfXml,userId);
+        addSignatureToDataTable(signatureOfXml,1);
 
       } catch{ console.log(signature.name); }
     });

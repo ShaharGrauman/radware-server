@@ -54,7 +54,7 @@
   </VulnEx>
  
   <Vuln>
-    <PatternID>7703</PatternID>
+    <PatternID>6903</PatternID>
     <Fragments>
       <Fragment>
         <VulnData>/path/url/example/</VulnData>
@@ -77,7 +77,7 @@
   </Vuln>
   
   <Vuln>
-    <PatternID>7707</PatternID>
+    <PatternID>6904</PatternID>
     <Fragments>
       <Fragment>
         <VulnData EndBreak="FileName">.php</VulnData>
@@ -99,7 +99,7 @@
     <WebServers />
   </Vuln>
  	<VulnRegEx>
-		<PatternID>112345</PatternID>
+		<PatternID>6905</PatternID>
 		<Fragments>
 		  <Fragment>
 			<VulnData>sleep\(\d*\)</VulnData>

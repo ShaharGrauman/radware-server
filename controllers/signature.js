@@ -232,9 +232,9 @@ const findAll = async () => {
     }
 }
 
-const importFile = async (userId) => {
+const importFile = async () => {
     try {
-        await importSignatures(userId);
+        await importSignatures();
         return 'imported';
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
