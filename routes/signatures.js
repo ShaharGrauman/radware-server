@@ -231,7 +231,7 @@ router.get('/:id', [authRoles(1, 2), authPermissions(1)], async (req, res, next)
     }
 });
 
-router.put('/importXml',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
+router.put('/importXml', async (req, res, next) => {
     try { 
         const result = await SignatureController.importFile("1",req.userId);
         res.json(result);
