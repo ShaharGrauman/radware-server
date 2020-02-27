@@ -158,7 +158,7 @@ const DeleteRole = async (id, user)=> {
     try{
         const userWithRole = await roles_users.findOne({where:{role_id:id}})
             if(userWithRole){
-                throw new Error("Role can't be deleted, it's used by one or more users.")
+                return "Role can't be deleted, it's used by one or more users."
             }
         await roles.destroy({where:{id:id}})
     }catch(error){
