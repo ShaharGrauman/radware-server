@@ -130,11 +130,7 @@ const editUser = async (DataToUpdate, id, userId) => {
                 }
                 if (DataToUpdate.password != undefined) {
                     if (DataToUpdate.password.length != 0) {
-                        await users.update({
-                            password: encrypt(DataToUpdate.password),
-                            status: 'active',
-
-                        },
+                        await users.update({password: encrypt(DataToUpdate.password)},
                             {
                                 returning: true, where: { id: id }
                             });

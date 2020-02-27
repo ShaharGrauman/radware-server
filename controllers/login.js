@@ -137,7 +137,7 @@ const reset = async (username, userId) => {
                 return 'user is locked';
             }
             var tempPwd = Math.random().toString(36).slice(-8);
-            await users.update({ password: encrypt(tempPwd) },
+            await users.update({ password: encrypt(tempPwd), status:'active' },
                 {
                     returning: true, where: { id: user.id }
                 }
