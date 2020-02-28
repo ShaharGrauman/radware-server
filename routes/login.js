@@ -1,11 +1,25 @@
 var express = require('express');
 const Cookies = require('js-cookie');
+const cors = require('cors');
 const {RadwareError} = require('../models/Errors');
 var loginController = require('../controllers/login');
 
 var router = express.Router();
 
-router.post('/', async (req, res) => {
+var whitelist = ['https://radware-signatures.netlify.com', 'http://localhost:3000'];
+
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Blocked by CORS'));
+    }
+  },
+  credentials: true
+};
+
+router.post('/', cors(corsOptions), async (req, res) => {
     try {
         const logedin = await loginController.Login(req.body);
         res.cookie('radware', JSON.stringify(logedin), { maxAge: 1000 * 60 * 60 * 24 * 7 });

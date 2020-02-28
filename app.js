@@ -29,7 +29,7 @@ var corsOptions = {
 };
 
 var app = express();
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 // view engine setups
 app.set('views', path.join(__dirname, 'views'));
 
