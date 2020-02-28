@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 
-var constantRouter=require('./routes/constant');
+var constantRouter = require('./routes/constant');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
@@ -16,7 +16,7 @@ var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
 
 var app = express();
-app.use(cors({origin: 'https://radware-signatures.netlify.com', credentials: true}));
+app.use(cors({ origin: 'https://radware-signatures.netlify.com', credentials: true }));
 // view engine setups
 app.set('views', path.join(__dirname, 'views'));
 
@@ -32,10 +32,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // })
 
 // app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Origin", "https://radware-signatures.netlify.com");
+//   res.header("Access-Control-Allow-Credentials", true);
 //   res.header(
 //     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization, radware"
 //   );
 //   if (req.method === 'OPTIONS') {
 //     res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
@@ -56,7 +57,7 @@ db
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-app.use('/constant',constantRouter);
+app.use('/constant', constantRouter);
 app.use('/role', roleRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
