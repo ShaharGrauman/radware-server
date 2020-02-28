@@ -32,9 +32,10 @@ const Login = async (user) => {
             let userStatus = await users.findOne({ attributes: ['status'], where: { username: user.username, password: encrypt(user.password) } })
 
             if (userStatus.status === 'locked')
-                return "Your account is already locked"
+                throw new RadwareError("Your account is already locked");
             else if (userStatus.status === 'deleted')
-                return "Your account is already deleted"
+                throw new RadwareError("Your account is already deleted");
+
 
             //create login
             try {
@@ -67,9 +68,9 @@ const Login = async (user) => {
             if (exist) {// valid username with incorrect pass
 
                 if (exist.status === 'locked')
-                    return "Your account is already locked"
+                    throw new RadwareError("Your account is already locked");
                 else if (exist.status === 'deleted')
-                    return "Your account is already deleted"
+                    throw new RadwareError("Your account is already deleted");
 
 
                 const lastLogin = await login.findOne({
@@ -112,12 +113,13 @@ const Login = async (user) => {
                             })
 
                         sendMail(`<h1>Unfortunately! your account ${exist.username} is locked after 3 invalid login attempts</h1>`);
-                            return "Incorrect email or password, Your account is locked Now"
+                            throw new RadwareError("Incorrect email or password, Your account is locked Now");
+
                     }
                 }
             }
 
-            return "Incorrect email or password"
+            throw new RadwareError("Incorrect email or password");
         }
 
     } catch (error) {
@@ -132,10 +134,10 @@ const reset = async (username, userId) => {
         const user = await users.findOne({
             where: { username: username } //checking if the email address sent by client is present in the db(valid)
         });
-        if (user) {
-            if(user.status === 'locked'){
-                return 'user is locked';
-            }
+        if(!user){
+            throw new RadwareError('No user found with that email address.');
+        }
+
             var tempPwd = Math.random().toString(36).slice(-8);
             await users.update({ password: encrypt(tempPwd), status:'active' },
                 {
@@ -152,11 +154,8 @@ const reset = async (username, userId) => {
                 }), date: new Date()
             })
             sendEmail(user.username, `<h1>Reset Password => temp password: ${tempPwd}</h1>`);
-                return `reset email was sent to ${user.username}`;
-        }
-        else {
-            return 'No user found with that email address.'
-        }
+                throw new RadwareError(`reset email was sent to ${user.username}`);
+                
     } catch (error) {
         throw new Error(`${error.message}`);
     }
@@ -175,12 +174,12 @@ const updatePassword = async (user) => {
         });
 
         if (!username) {
-            return 'incorrect username'
+            throw new RadwareError('incorrect username');
         }
 
         if (tempPwd) {
             try {
-                const editPwd = await users.update({
+                await users.update({
                     password: encrypt(user.newPwd)
                 },
                     {
@@ -192,7 +191,7 @@ const updatePassword = async (user) => {
             }
         }
         else {
-            return 'incorrect temp password'
+            throw new RadwareError('incorrect temp password');
         }
 
 

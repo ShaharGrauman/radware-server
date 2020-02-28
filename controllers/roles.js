@@ -16,7 +16,7 @@ const createRole = async (roleData, userId) => {
         })
 
         if(roleAlreadyExist){
-            return `Role is already exists with id: ${roleAlreadyExist.id}`
+            throw new RadwareError(`Role is already exists with id: ${roleAlreadyExist.id}`);
         }
 
         const newRole = await roles.create({
@@ -130,7 +130,7 @@ const DeleteRole = async (id, userId)=> {
     try{
         const userWithRole = await roles_users.findOne({where:{role_id:id}})
             if(userWithRole){
-                return "Role can't be deleted, it's used by one or more users."
+            throw new RadwareError("Role can't be deleted, it's used by one or more users.");
             }
         await roles.destroy({where:{id:id}})
     }catch(error){
@@ -153,7 +153,6 @@ const getRoles = async () => {
         const rolesData = await roles.findAll({
             //  attributes: ['id', 'name']
         })
-        console.log(rolesData);
         return rolesData;
     } catch (error) {
         throw new Error(`Cant get roles: ${error.message}`);
