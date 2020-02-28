@@ -96,7 +96,7 @@ const getRoleWithPermissions = async (roleId) => {
 }
 
 
-const editRole = async (roleData, id, user) => {
+const editRole = async (roleData, id, userId) => {
     const result = await Joi.validate(roleData, roleValidation);
     if (!result) {
         return result;
@@ -126,7 +126,7 @@ const editRole = async (roleData, id, user) => {
         permissions_roles.bulkCreate(rolesPermissions, { returning: true })
 
         historyUsersActions.create({
-            userId: user.id, action_name: "edit_role",
+            userId, action_name: "edit_role",
             description: `edited role ${id}` ,
             time: new Date().toLocaleTimeString('en-US', {
                 hour12: false,

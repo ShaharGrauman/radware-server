@@ -443,7 +443,7 @@ const loadSignatures = async (query) => {
                 attributes: ['id', 'pattern_id', 'description'],
                 order:
                     [
-                        [query.sortBy, query.orderBy]
+                        [query.sortBy, query.orderBy], ['creation_time', query.orderBy]
                     ],
 
                 offset: (parseInt(query.page) - 1) * parseInt(query.size),
@@ -469,7 +469,7 @@ const loadSignatures = async (query) => {
                 },
                 order:
                     [
-                        [query.sortBy, query.orderBy]
+                        [query.sortBy, query.orderBy], ['creation_time', query.orderBy]
                     ],
 
                 offset: (parseInt(query.page) - 1) * parseInt(query.size),
