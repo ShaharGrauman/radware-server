@@ -15,21 +15,8 @@ var roleRouter = require('./routes/roles');
 var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
 
-var whitelist = ['https://radware-signatures.netlify.com', 'http://localhost:3000'];
-
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Blocked by CORS'));
-    }
-  },
-  credentials: true
-};
-
 var app = express();
-// app.use(cors(corsOptions));
+app.use(cors({origin: 'https://radware-signatures.netlify.com', credentials: true}));
 // view engine setups
 app.set('views', path.join(__dirname, 'views'));
 
