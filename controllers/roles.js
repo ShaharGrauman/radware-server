@@ -33,7 +33,7 @@ const createRole = async (roleData, user) => {
         })
 
         if(roleAlreadyExist){
-            return `Role is already exists with id: ${roleAlreadyExist.id}`
+            throw new RadwareError(`Role is already exists with id: ${roleAlreadyExist.id}`);
         }
 
         const newRole = await roles.create({
@@ -96,17 +96,6 @@ const getRoleWithPermissions = async (roleId) => {
 }
 
 
-// const getRoles = async () => {
-//     try {
-//         const rolesData = await roles.findAll({
-//             attributes: ['id', 'name']
-//         })
-//         return rolesData;
-//     } catch (error) {
-//         throw new Error(`Cant get roles: ${error.message}`);
-//     }
-// }
-
 const editRole = async (roleData, id, user) => {
     const result = await Joi.validate(roleData, roleValidation);
     if (!result) {
@@ -158,7 +147,7 @@ const DeleteRole = async (id, user)=> {
     try{
         const userWithRole = await roles_users.findOne({where:{role_id:id}})
             if(userWithRole){
-                return "Role can't be deleted, it's used by one or more users."
+            throw new RadwareError("Role can't be deleted, it's used by one or more users.");
             }
         await roles.destroy({where:{id:id}})
     }catch(error){
@@ -181,7 +170,6 @@ const getRoles = async () => {
         const rolesData = await roles.findAll({
             //  attributes: ['id', 'name']
         })
-        console.log(rolesData);
         return rolesData;
     } catch (error) {
         throw new Error(`Cant get roles: ${error.message}`);
