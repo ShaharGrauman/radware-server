@@ -135,7 +135,7 @@ const reset = async (username, userId) => {
             where: { username: username } //checking if the email address sent by client is present in the db(valid)
         });
         if(!user){
-            throw new RadwareError('No user found with that email address.');
+            return 'No user found with that email address.';
         }
 
             var tempPwd = Math.random().toString(36).slice(-8);
@@ -154,7 +154,7 @@ const reset = async (username, userId) => {
                 }), date: new Date()
             })
             sendEmail(user.username, `<h1>Reset Password => temp password: ${tempPwd}</h1>`);
-                throw new RadwareError(`reset email was sent to ${user.username}`);
+                return `reset email was sent to ${user.username}`;
                 
     } catch (error) {
         throw new Error(`${error.message}`);
@@ -174,7 +174,7 @@ const updatePassword = async (user) => {
         });
 
         if (!username) {
-            throw new RadwareError('incorrect username');
+            return 'incorrect username';
         }
 
         if (tempPwd) {
@@ -191,7 +191,7 @@ const updatePassword = async (user) => {
             }
         }
         else {
-            throw new RadwareError('incorrect temp password');
+            return 'incorrect temp password';
         }
 
 
