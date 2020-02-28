@@ -16,7 +16,7 @@ var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
 
 var app = express();
-app.use(cors({ origin: 'https://radware-signatures.netlify.com', credentials: true }));
+app.use(cors());
 // view engine setups
 app.set('views', path.join(__dirname, 'views'));
 
