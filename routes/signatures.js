@@ -174,8 +174,8 @@ router.get('/researcher',[authRoles(1, 2), authPermissions(2)], async (req, res,
         // ?page=1&size=20&sortby=default=createTime/pattern/description &orderby=asc&status=all
         const page = req.query.page || 1;
         const size = req.query.size || 20;
-        let sortBy = req.query.sortby || 'creation_time';
-        const orderBy = req.query.orderby || 'asc';
+        let sortBy = req.query.sortby || 'creation_date';
+        const orderBy = req.query.orderby || 'desc';
         const status = req.query.status || 'all';
         // *status => all / inProgress / inTest / inQa / published / suspended
         query = Object.assign({}, {
