@@ -68,7 +68,7 @@ const createUser = async (userData, userId) => {
         })
 
         if (userAlreadyExist) {
-            throw new RadwareError(`User is already exists with id: ${userAlreadyExist.id}`);
+            return `User is already exists with id: ${userAlreadyExist.id}`;
         }
 
         else {
