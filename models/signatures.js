@@ -24,7 +24,7 @@ module.exports = (db, type) => {
             type: type.DATE
         },
         status: {
-            type: type.ENUM('in_progress', 'in_test', 'in_QA', 'published', 'deleted', 'suspended')
+            type: type.ENUM('in_progress', 'in_test', 'in_qa', 'published', 'deleted', 'suspended')
         },
         in_qa_internal_status_manual: {
             type: type.ENUM('init', 'passed', 'failed')
