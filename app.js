@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors');
 
-var constantRouter=require('./routes/constant');
+var constantRouter = require('./routes/constant');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
@@ -16,7 +16,7 @@ var loginRouter = require('./routes/login');
 var QaRouter = require('./routes/Qa');
 
 var app = express();
-app.use(cors({origin: 'https://radware-signatures.netlify.com', credentials: true}));
+app.use(cors({ origin: 'https://radware-signatures.netlify.com', credentials: true }));
 // view engine setups
 app.set('views', path.join(__dirname, 'views'));
 
@@ -56,7 +56,7 @@ db
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-app.use('/constant',constantRouter);
+app.use('/constant', constantRouter);
 app.use('/role', roleRouter);
 app.use('/users', usersRouter);
 app.use('/admin', adminRouter);
