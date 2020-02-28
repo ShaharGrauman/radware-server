@@ -32,9 +32,9 @@ const Login = async (user) => {
             let userStatus = await users.findOne({ attributes: ['status'], where: { username: user.username, password: encrypt(user.password) } })
 
             if (userStatus.status === 'locked')
-                throw new RadwareError("Your account is already locked");
+                return "Your account is already locked"
             else if (userStatus.status === 'deleted')
-                throw new RadwareError("Your account is already deleted");
+                return "Your account is already deleted"
 
 
             //create login
@@ -68,9 +68,9 @@ const Login = async (user) => {
             if (exist) {// valid username with incorrect pass
 
                 if (exist.status === 'locked')
-                    throw new RadwareError("Your account is already locked");
+                    return "Your account is already locked" 
                 else if (exist.status === 'deleted')
-                    throw new RadwareError("Your account is already deleted");
+                    return "Your account is already deleted"
 
 
                 const lastLogin = await login.findOne({
@@ -113,13 +113,13 @@ const Login = async (user) => {
                             })
 
                         sendMail(`<h1>Unfortunately! your account ${exist.username} is locked after 3 invalid login attempts</h1>`);
-                            throw new RadwareError("Incorrect email or password, Your account is locked Now");
+                            return "Incorrect email or password, Your account is locked Now"
 
                     }
                 }
             }
 
-            throw new RadwareError("Incorrect email or password");
+            return "Incorrect email or password"
         }
 
     } catch (error) {
