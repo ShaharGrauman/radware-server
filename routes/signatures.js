@@ -40,10 +40,10 @@ router.get('/cveid',[authRoles(1, 2), authPermissions(2)], async (req, res, next
 
 });
 
-
+///[authRoles(1, 2), authPermissions(2)],  , req.userId
 router.post('/copy/:id',[authRoles(1, 2), authPermissions(2)], async (req, res, next) => {
     try {
-        const result = await SignatureController.copySignature(req.params.id, req.userId);
+        const result = await SignatureController.copySignature(req.params.id,req.userId);
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ msg: error.message });

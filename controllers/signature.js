@@ -148,7 +148,26 @@ const copySignature = async (id, userId) => {
             }, { where: { id: copiedSignature.id } })
         })
 
-        const currentSignature = await signatures.findOne({ where: { id: id } })
+
+       
+
+
+        const currentSignature = await signatures.findByPk(id,{
+            // where: { id: id },
+            include: [
+            { model: param },
+            { model: externalReferences },
+            { model: vulnDataExtra },
+            { model: webServer },
+            ]
+            // include: [{ all: true }]
+        });
+
+
+        console.log('sssssssssssssssssssssssss')
+        console.log(currentSignature.dataValues.id)
+
+
 
         const copiedSignature = await signatures.create({
             attack_id: currentSignature.attack_id,
@@ -176,7 +195,45 @@ const copySignature = async (id, userId) => {
             attack_id: currentSignature.attackId,
             user_id: currentSignature.userId,
             limit: currentSignature.limit
-        })
+        });
+
+      
+                ///feach external reference data
+                
+                currentSignature.external_references.map(externalRef => {
+                    externalReferences.create({
+                        // id: externalRef.id,
+                        type: externalRef.type,
+                        reference: externalRef.reference,
+                        signatureId: copiedSignature.id
+                    });
+                })
+                ///feach web server data
+                currentSignature.web_servers.map(webServ => {
+                    webServer.create({
+                        // id: webServ.id,
+        
+                        web: webServ.web,
+                        signatureId: copiedSignature.id
+                    });
+                })
+        
+                ///feach vuln_data_extras data 
+                currentSignature.vuln_data_extras.map(vlunData => {
+                    vulnDataExtra.create({
+                        // id: vlunData.id,
+                        signatureId: copiedSignature.id,
+                        description: vlunData.description
+                    });
+                });
+                /// feach parameters data 
+                currentSignature.parameters.map(params => {
+                    param.create({
+                        // id: params.id,
+                        parameter: params.parameter,
+                        signatureId: copiedSignature.id,
+                    });
+                });
 
         historyUsersActions.create({
             userId, action_name: "add_signature",
@@ -187,6 +244,7 @@ const copySignature = async (id, userId) => {
                 minute: "numeric"
             }), date: new Date()
         });
+
         return copiedSignature
     } catch (error) {
         throw new Error(`Can't copy signature ${error.message}`)
@@ -553,16 +611,12 @@ const create = async (signatureData, userId) => {
     });
     try {
         const signatureDataCreate = await signatures.create({
-            // id: signatureData.id,
-            // pattern_id: signatureData.pattern_id,
+            
             attack_id: signatureData.attack_id,
             type: signatureData.type,
             creation_time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }),
             creation_date: new Date(),
             status: signatureData.status,
-            // in_qa_internal_status_manual: signatureData.in_qa_internal_status_manual,
-            // in_qa_internal_status_performance: signatureData.in_qa_internal_status_performance,
-            // in_qa_internal_status_automation: signatureData.in_qa_internal_status_automation,
             vuln_data: signatureData.vuln_data,
             keep_order: signatureData.keep_order,
             start_break: signatureData.start_break,
@@ -577,20 +631,11 @@ const create = async (signatureData, userId) => {
             severity: signatureData.severity,
             description: signatureData.description,
             test_data: signatureData.test_data,
-            // attack_id: signatureData.attackId,
             user_id: userId,
             limit: signatureData.limit
         });
 
-        //// feach file data 
-        // signatureData.files.map(FileData => {
-        //     file.create({
-        //         // id: FileData.id,
-        //         signatureId: signatureDataCreate.id,
-        //         file: FileData.file
-        //     });
-        // })
-
+    
         ///feach external reference data
         signatureData.external_references.map(externalRef => {
             externalReferences.create({
