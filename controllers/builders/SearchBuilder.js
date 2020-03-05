@@ -1,4 +1,6 @@
 const { externalReferences, attack, vulnDataExtra } = require('../../models');
+const sequelize = require('sequelize')
+const Op = sequelize.Op
 
 class SearchBuilder {
     constructor() {
@@ -40,7 +42,7 @@ class SearchBuilder {
         Object.assign(this.where, { scan_file_name });
     }
     setDescription(description) {
-        Object.assign(this.where, { description });
+        Object.assign(this.where, { description: { [Op.like]: `%${description}%` } });
 
     }
     setAttackId(attack_id) {

@@ -53,7 +53,7 @@ router.post('/copy/:id',[authRoles(1, 2), authPermissions(2)], async (req, res, 
 
 /// [authRoles(1, 2), authPermissions(3)],
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 3 (search  signature )
-router.get('/search', [authRoles(1, 2), authPermissions(3)], async (req, res, next) => {
+router.get('/search',[authRoles(1, 2), authPermissions(3)], async (req, res, next) => {
     const search = new SearchBuilder();
     if (req.query.attackId) search.setAttackId(req.query.attackId);
     if (req.query.description) search.setDescription(req.query.description);
