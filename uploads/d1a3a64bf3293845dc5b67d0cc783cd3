@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><!--Don't change this header, it will be changed automatically by the builder-->
 <Vulnerabilities Version="4.5.1.1" Date="2012/03/26">  <!-- Vuln-FalsePositives exist for future reference -->
   <VulnEx>
-    <PatternID>8908</PatternID>
+    <PatternID>987</PatternID>
     <Fragments>
       <Fragment>
         <VulnDataEx>htnl</VulnDataEx>
@@ -27,7 +27,7 @@
   </VulnEx>
   
   <VulnEx>
-    <PatternID>8907</PatternID>
+    <PatternID>986</PatternID>
     <Fragments>
       <Fragment>
         <VulnDataEx>php</VulnDataEx>
@@ -54,7 +54,7 @@
   </VulnEx>
  
   <Vuln>
-    <PatternID>8906</PatternID>
+    <PatternID>985</PatternID>
     <Fragments>
       <Fragment>
         <VulnData>/path/url/example/</VulnData>
@@ -77,7 +77,7 @@
   </Vuln>
   
   <Vuln>
-    <PatternID>8905</PatternID>
+    <PatternID>984</PatternID>
     <Fragments>
       <Fragment>
         <VulnData EndBreak="FileName">.php</VulnData>
@@ -98,5 +98,22 @@
     </RelatedInfo>
     <WebServers />
   </Vuln>
-
+ 	<VulnRegEx>
+		<PatternID>983</PatternID>
+		<Fragments>
+		  <Fragment>
+			<VulnData>sleep\(\d*\)</VulnData>
+			<ScanUri>1</ScanUri>
+			<ScanHeaders>0</ScanHeaders>
+			<ScanBody>0</ScanBody>
+			<ScanParameters>1</ScanParameters>
+			<LeftIndex>-1</LeftIndex>
+			<RightIndex>-1</RightIndex>
+		  </Fragment>
+		</Fragments>
+		<Severity>Medium</Severity>
+		<AttackName>SQL Injection</AttackName>
+		<Description>VulnREGEX example 1</Description>
+	</VulnRegEx>
+	
 </Vulnerabilities>

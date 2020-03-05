@@ -7,6 +7,8 @@ const SearchBuilder = require('../controllers/builders/SearchBuilder');
 const { researcher } = require('../middleware/authResearcher');
 const authRoles = require('../middleware/authRoles');
 const authPermissions = require('../middleware/authPermissions');
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
 
 var router = express.Router();
 
@@ -231,14 +233,24 @@ router.get('/:id', [authRoles(1, 2), authPermissions(1)], async (req, res, next)
     }
 });
 
-router.put('/importXml', async (req, res, next) => {
+
+router.post('/importXml', upload.single('signatureXmlFile'), async (req, res, next) => {
     try { 
-        const result = await SignatureController.importFile("1",req.userId);
+        const result = await SignatureController.importFile( req.file.path);
         res.json(result);
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
 });
+
+// router.put('/importXml', async (req, res, next) => {
+//     try { 
+//         const result = await SignatureController.importFile("1",req.userId);
+//         res.json(result);
+//     } catch (error) {
+//         res.status(500).json({ msg: error.message });
+//     }
+// });
 
 
 /// to use this route should to be the user role is 1 or 2 (admin or researcher) and permissions 1 (create/update signature)

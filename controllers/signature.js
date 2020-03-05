@@ -290,9 +290,20 @@ const findAll = async () => {
     }
 }
 
-const importFile = async () => {
+// const importFile = async () => {
+//     try {
+//         await importSignatures();
+//         return 'imported';
+//     } catch (error) {
+//         throw new Error(`cant get signatures: ${error.message}`)
+//     }
+// }
+
+
+
+const importFile = async (path) => {
     try {
-        await importSignatures();
+        await importSignatures(path);
         return 'imported';
     } catch (error) {
         throw new Error(`cant get signatures: ${error.message}`)
